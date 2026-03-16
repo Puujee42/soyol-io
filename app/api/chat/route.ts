@@ -1,88 +1,25 @@
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText, tool } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { streamText, tool, stepCountIs, convertToModelMessages, zodSchema, type ModelMessage, type ToolExecuteFunction } from 'ai';
 import { z } from 'zod';
 import { getCollection } from '@/lib/mongodb';
 import { auth } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
 import { User } from '@/models/User';
+import { Product } from '@/models/Product';
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+const openrouter = createOpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.Deepseek_API,
 });
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-// Helper function to convert UI messages to CoreMessages
-function convertToCoreMessages(messages: any[]): any[] {
-  const coreMessages: any[] = [];
-
-  for (const message of messages) {
-    const { role, content, toolInvocations, experimental_attachments } = message;
-
-    if (role === 'system') {
-      coreMessages.push({ role: 'system', content: content || '' });
-    } else if (role === 'user') {
-      if (experimental_attachments?.length) {
-        const contentParts: any[] = [];
-        if (content) {
-          contentParts.push({ type: 'text', text: content });
-        }
-
-        experimental_attachments.forEach((att: any) => {
-          if (att.contentType?.startsWith('image/') || att.url?.startsWith('data:image/')) {
-            contentParts.push({ type: 'image', image: att.url });
-          }
-          // Add other types if needed
-        });
-        coreMessages.push({ role: 'user', content: contentParts });
-      } else {
-        coreMessages.push({ role: 'user', content: content || '' });
-      }
-    } else if (role === 'assistant') {
-      const toolCalls = toolInvocations?.map((invocation: any) => ({
-        type: 'tool-call',
-        toolCallId: invocation.toolCallId,
-        toolName: invocation.toolName,
-        args: invocation.args,
-      })) || [];
-
-      const toolResults = toolInvocations?.filter((invocation: any) => 'result' in invocation).map((invocation: any) => ({
-        type: 'tool-result',
-        toolCallId: invocation.toolCallId,
-        toolName: invocation.toolName,
-        result: invocation.result,
-      })) || [];
-
-      if (toolCalls.length > 0) {
-        coreMessages.push({
-          role: 'assistant',
-          content: [
-            { type: 'text', text: content || '' },
-            ...toolCalls,
-          ].filter((part: any) => part.type === 'tool-call' || (part.type === 'text' && part.text)),
-        });
-
-        if (toolResults.length > 0) {
-          coreMessages.push({
-            role: 'tool',
-            content: toolResults,
-          });
-        }
-      } else {
-        coreMessages.push({ role: 'assistant', content: content || '' });
-      }
-    }
-  }
-
-  return coreMessages;
-}
-
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
-    const coreMessages = convertToCoreMessages(messages);
+    const modelMessages = await convertToModelMessages(messages);
 
     // LOGGING for debug
     try {
@@ -90,7 +27,7 @@ export async function POST(req: Request) {
       const path = await import('path');
       const logPath = path.join(process.cwd(), 'debug-log.txt');
       fs.appendFileSync(logPath, `\n\n--- Request ${new Date().toISOString()} ---\n`);
-      fs.appendFileSync(logPath, JSON.stringify(coreMessages, null, 2));
+      fs.appendFileSync(logPath, JSON.stringify(modelMessages, null, 2));
     } catch (e) { console.error('Logging failed', e); }
 
     const session = await auth();
@@ -115,10 +52,8 @@ export async function POST(req: Request) {
       }
     }
 
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-
     const result = await streamText({
-      model: google('gemini-2.5-flash'),
+      model: openrouter.chat('google/gemini-2.5-flash'),
       system: `
     You are the "Loyal Assistant Operator" for Soyol Video Shop, a premium electronics and video equipment store in Mongolia.
     
@@ -152,16 +87,15 @@ export async function POST(req: Request) {
     - Today's date is ${new Date().toLocaleDateString('mn-MN')}.
     ${userContext ? '- User Context: ' + userContext : ''}
     `,
-      // @ts-ignore
-      maxSteps: 8,
-      messages: coreMessages,
+      stopWhen: stepCountIs(8),
+      messages: modelMessages,
       toolChoice: 'auto',
       tools: {
         addToCart: tool({
-          description: 'Add a product to the shopping cart. You MUST provide the productId.',
-          parameters: z.object({
+          description: 'Хэрэглэгчийн сагсанд бараа нэмэх. Барааны ID болон тоо ширхэг шаардлагатай.',
+          inputSchema: zodSchema(z.object({
             productId: z.string(),
-          }),
+          })),
           execute: async ({ productId }: { productId: string }) => {
             if (!productId) return 'Error: productId is missing.';
 
@@ -193,14 +127,13 @@ export async function POST(req: Request) {
               return 'Error adding to cart.';
             }
           },
-        } as any),
+        }),
         navigateToPage: tool({
-          description: 'Navigate to a specific page. You MUST provide the page name.',
-          parameters: z.object({
+          description: 'Хэрэглэгчийг өөр хуудас руу шилжүүлэх (жишээ нь: сагс, захиалга, нүүр хуудас).',
+          inputSchema: zodSchema(z.object({
             page: z.string().describe('The page to navigate to (home, cart, orders, checkout, profile, wishlist). REQUIRED.'),
-          }),
+          })),
           execute: async ({ page }: { page: string }) => {
-
             if (!page) return 'Error: page argument is missing.';
 
             let path = '/';
@@ -214,12 +147,12 @@ export async function POST(req: Request) {
 
             return `[ACTION:NAVIGATE:${path}:END_ACTION] Navigating to ${path}.`;
           },
-        } as any),
+        }),
         checkInventory: tool({
-          description: 'Check inventory stock level for a product.',
-          parameters: z.object({
+          description: 'Барааны үлдэгдэл эсвэл дэлгэрэнгүй мэдээллийг шалгах.',
+          inputSchema: zodSchema(z.object({
             productName: z.string().describe('The name of the product to check. REQUIRED.'),
-          }),
+          })),
           execute: async ({ productName }: { productName: string }) => {
             if (!productName) return 'Error: productName is missing.';
             try {
@@ -239,21 +172,20 @@ export async function POST(req: Request) {
               return 'Error checking inventory.';
             }
           },
-        } as any),
+        }),
         searchProducts: tool({
-          description: 'Search for products. You MUST provide the searchQuery.',
-          parameters: z.object({
+          description: 'Дэлгүүрээс бараа хайх.',
+          inputSchema: zodSchema(z.object({
             searchQuery: z.string().describe('The search query. REQUIRED. e.g. "Sony", "camera"'),
-          }),
+          })),
           execute: async ({ searchQuery }: { searchQuery: string }) => {
-            let query = searchQuery;
-            if (!query) {
+            if (!searchQuery) {
               console.error('Search query is missing in args');
               return [];
             }
             try {
               const productsCollection = await getCollection('products');
-              const regex = new RegExp(query.split(' ').join('|'), 'i');
+              const regex = new RegExp(searchQuery.split(' ').join('|'), 'i');
               const products = await productsCollection.find({
                 $or: [
                   { name: { $regex: regex } },
@@ -275,12 +207,21 @@ export async function POST(req: Request) {
               return [];
             }
           },
-        } as any),
+        }),
       },
 
     });
 
-    return result.toUIMessageStreamResponse();
+    try {
+      return result.toUIMessageStreamResponse();
+    } catch (innerError: any) {
+      try {
+        const fs = await import('fs');
+        const path = await import('path');
+        fs.appendFileSync(path.join(process.cwd(), 'debug-log.txt'), `\n\nERROR:\n${JSON.stringify(innerError, Object.getOwnPropertyNames(innerError), 2)}`);
+      } catch (e) {}
+      throw innerError;
+    }
   } catch (error: any) {
     // Enhanced Error Logging
     console.error('Chat API Error Details:', {
@@ -289,6 +230,12 @@ export async function POST(req: Request) {
       cause: error.cause,
       stack: error.stack,
     });
+
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      fs.appendFileSync(path.join(process.cwd(), 'debug-log.txt'), `\n\nOUTER ERROR:\n${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`);
+    } catch (e) {}
 
     // Check for specific error types
     if (error.message?.includes('API key')) {

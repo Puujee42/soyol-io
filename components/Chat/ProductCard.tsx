@@ -19,6 +19,14 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
     const addItem = useCartStore((s) => s.addItem);
 
+    const getValidImageSrc = (src?: string) => {
+        if (!src) return '/placeholder.png';
+        if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:') || src.startsWith('/')) {
+            return src;
+        }
+        return `/${src}`;
+    };
+
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -26,7 +34,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             id: product.id,
             name: product.name,
             price: product.price,
-            image: product.image || '/placeholder.png',
+            image: getValidImageSrc(product.image),
             category: 'general',
             stockStatus: 'in-stock',
         });
@@ -42,7 +50,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Link href={`/product/${product.id}`} className="block">
                 <div className="relative aspect-square bg-slate-50">
                     <Image
-                        src={product.image || '/placeholder.png'}
+                        src={getValidImageSrc(product.image)}
                         alt={product.name}
                         fill
                         className="object-cover"

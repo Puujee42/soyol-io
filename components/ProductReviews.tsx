@@ -5,21 +5,31 @@ import { Star, ThumbsUp, ThumbsDown, Send, Loader2, AlertCircle } from 'lucide-r
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 
-const StarRating = ({ rating, setRating, readOnly = false }) => {
+const StarRating = ({ rating, setRating, readOnly = false }: { rating: number, setRating?: (rating: number) => void, readOnly?: boolean }) => {
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
           className={`w-6 h-6 cursor-pointer transition-all ${rating >= star ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-          onClick={() => !readOnly && setRating(star)}
+          onClick={() => !readOnly && setRating && setRating(star)}
         />
       ))}
     </div>
   );
 };
 
-const ReviewItem = ({ review }) => (
+interface Review {
+  _id: string;
+  userName?: string;
+  rating: number;
+  comment: string;
+  likes?: number;
+  dislikes?: number;
+  createdAt: string;
+}
+
+const ReviewItem = ({ review }: { review: Review }) => (
   <div className="py-4 border-b border-gray-100">
     <div className="flex items-center mb-2">
       <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600 text-sm mr-3">
@@ -39,9 +49,9 @@ const ReviewItem = ({ review }) => (
   </div>
 );
 
-export default function ProductReviews({ productId }) {
+export default function ProductReviews({ productId }: { productId: string }) {
   const { user, isAuthenticated } = useAuth();
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasPurchased, setHasPurchased] = useState(false);
   const [rating, setRating] = useState(0);
@@ -70,7 +80,7 @@ export default function ProductReviews({ productId }) {
     }
   }, [productId, isAuthenticated]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated) {
       toast.error('Үнэлгээ бичихийн тулд нэвтэрнэ үү.');
@@ -105,8 +115,7 @@ export default function ProductReviews({ productId }) {
       await fetchReviews(); // Refetch reviews
       setRating(0);
       setComment('');
-      toast.success('Таны үнэлгээг амжилттай нэмлээ!');
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error.message);
     } finally {
       setIsSubmitting(false);

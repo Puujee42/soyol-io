@@ -512,3 +512,950 @@
     "content": "Online"
   }
 ]
+
+--- Request 2026-03-16T16:42:01.993Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  }
+]
+
+--- Request 2026-03-16T16:50:03.158Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:50:52.597Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:51:03.423Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:51:07.553Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:52:07.000Z ---
+[
+  {
+    "role": "user",
+    "content": "Сайн байна уу"
+  }
+]
+
+--- Request 2026-03-16T16:53:29.362Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:56:05.767Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:56:22.110Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:56:27.819Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:56:42.078Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:56:46.867Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:57:00.208Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:57:19.446Z ---
+[
+  {
+    "role": "user",
+    "content": "Сайн байна уу"
+  }
+]
+
+--- Request 2026-03-16T16:57:37.089Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:58:03.159Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:58:48.583Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:59:03.872Z ---
+[
+  {
+    "role": "user",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": ""
+  }
+]
+
+--- Request 2026-03-16T16:59:31.795Z ---
+[
+  {
+    "role": "user",
+    "content": "ymr baraanuud baiga ym bol"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу? Та Soyol Video Shop-ын үнэнч туслагч оператортой холбогдлоо. Танд ямар нэгэн тусламж хэрэгтэй байна уу? 😊  \n\n\"Танд өөр туслах зүйл байна уу? 😊\" гэж асуухаас өмнө таны хүсэлтийг ойлгож, шаардлагатай үйлдлүүдийг гүйцэтгэнэ.  \n\nТа видео техник, камер, гэрэл, дрон, аудио тоног төхөөрөмж зэрэгтэй холбоотой асуудал асууж болно. Эсвэл тодорхой бүтээгдэхүүний талаар мэдээлэл авахыг хүсвэл бидэнтэй хуваалцаарай! 😊  \n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  }
+]
+
+--- Request 2026-03-16T16:59:46.204Z ---
+[
+  {
+    "role": "user",
+    "content": "Сайн байна уу"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! Юугаар туслах вэ?"
+  },
+  {
+    "role": "user",
+    "content": "Танай дэлгүүрт юу юу зардаг вэ?"
+  }
+]
+
+--- Request 2026-03-16T17:00:33.560Z ---
+[
+  {
+    "role": "user",
+    "content": "ymr baraanuud baiga ym bol"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу? Та Soyol Video Shop-ын үнэнч туслагч оператортой холбогдлоо. Танд ямар нэгэн тусламж хэрэгтэй байна уу? 😊  \n\n\"Танд өөр туслах зүйл байна уу? 😊\" гэж асуухаас өмнө таны хүсэлтийг ойлгож, шаардлагатай үйлдлүүдийг гүйцэтгэнэ.  \n\nТа видео техник, камер, гэрэл, дрон, аудио тоног төхөөрөмж зэрэгтэй холбоотой асуудал асууж болно. Эсвэл тодорхой бүтээгдэхүүний талаар мэдээлэл авахыг хүсвэл бидэнтэй хуваалцаарай! 😊  \n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  }
+]
+
+--- Request 2026-03-16T17:04:06.875Z ---
+[
+  {
+    "role": "user",
+    "content": "ymr baraanuud baiga ym bol"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу? Та Soyol Video Shop-ын үнэнч туслагч оператортой холбогдлоо. Танд ямар нэгэн тусламж хэрэгтэй байна уу? 😊  \n\n\"Танд өөр туслах зүйл байна уу? 😊\" гэж асуухаас өмнө таны хүсэлтийг ойлгож, шаардлагатай үйлдлүүдийг гүйцэтгэнэ.  \n\nТа видео техник, камер, гэрэл, дрон, аудио тоног төхөөрөмж зэрэгтэй холбоотой асуудал асууж болно. Эсвэл тодорхой бүтээгдэхүүний талаар мэдээлэл авахыг хүсвэл бидэнтэй хуваалцаарай! 😊  \n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  }
+]
+
+--- Request 2026-03-16T17:04:18.527Z ---
+[
+  {
+    "role": "user",
+    "content": "Сайн байна уу"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! Юугаар туслах вэ?"
+  },
+  {
+    "role": "user",
+    "content": "Танай дэлгүүрт юу юу зардаг вэ?"
+  }
+]
+
+--- Request 2026-03-16T17:04:39.925Z ---
+[
+  {
+    "role": "user",
+    "content": "ymr baraanuud baiga ym bol"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу? Та Soyol Video Shop-ын үнэнч туслагч оператортой холбогдлоо. Танд ямар нэгэн тусламж хэрэгтэй байна уу? 😊  \n\n\"Танд өөр туслах зүйл байна уу? 😊\" гэж асуухаас өмнө таны хүсэлтийг ойлгож, шаардлагатай үйлдлүүдийг гүйцэтгэнэ.  \n\nТа видео техник, камер, гэрэл, дрон, аудио тоног төхөөрөмж зэрэгтэй холбоотой асуудал асууж болно. Эсвэл тодорхой бүтээгдэхүүний талаар мэдээлэл авахыг хүсвэл бидэнтэй хуваалцаарай! 😊  \n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera"
+  },
+  {
+    "role": "user",
+    "content": "camera haij bn"
+  }
+]
+
+--- Request 2026-03-16T17:06:21.885Z ---
+[
+  {
+    "role": "user",
+    "content": "Сайн байна уу"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! Юугаар туслах вэ?"
+  },
+  {
+    "role": "user",
+    "content": "Танай дэлгүүрт юу юу зардаг вэ?"
+  }
+]
+
+--- Request 2026-03-16T17:07:25.167Z ---
+[
+  {
+    "role": "user",
+    "content": "Сайн байна уу"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! Юугаар туслах вэ?"
+  },
+  {
+    "role": "user",
+    "content": "Танай дэлгүүрт юу юу зардаг вэ?"
+  }
+]
+
+--- Request 2026-03-16T17:07:55.959Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": "hi"
+  }
+]
+
+--- Request 2026-03-16T17:08:05.369Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! 😊 Та Soyol Video Shop-ын үнэнч туслах ажилтантай холбогдлоо. Танд ямар нэгэн тусламж хэрэгтэй байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "camera baigaa yu"
+  }
+]
+
+--- Request 2026-03-16T17:08:26.720Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! 😊 Та Soyol Video Shop-ын үнэнч туслах ажилтантай холбогдлоо. Танд ямар нэгэн тусламж хэрэгтэй байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "camera baigaa yu"
+  },
+  {
+    "role": "user",
+    "content": "do you have a camera"
+  }
+]
+
+--- Request 2026-03-16T17:09:08.742Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! 😊 Та Soyol Video Shop-ын үнэнч туслах ажилтантай холбогдлоо. Танд ямар нэгэн тусламж хэрэгтэй байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "camera baigaa yu"
+  },
+  {
+    "role": "user",
+    "content": "do you have a camera"
+  },
+  {
+    "role": "user",
+    "content": "camera baidag bol uu"
+  }
+]
+
+--- Request 2026-03-16T17:11:23.550Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  }
+]
+
+--- Request 2026-03-16T17:11:41.549Z ---
+[
+  {
+    "role": "user",
+    "content": "hi"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! Soyol Video Shop-д тавтай морилно уу. Та видео техник, камер, гэрэл, дрон эсвэл аудио төхөөрөмж хайж байна уу? Танд ямар туслах хэрэгтэй байна? 😊  \n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "ymr camera baigaa ym bol"
+  }
+]
+
+--- Request 2026-03-16T17:14:38.199Z ---
+[
+  {
+    "role": "user",
+    "content": "Сайн байна уу"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! Юугаар туслах вэ?"
+  },
+  {
+    "role": "user",
+    "content": "Танай дэлгүүрт юу юу зардаг вэ?"
+  }
+]
+
+--- Request 2026-03-16T17:16:02.636Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  }
+]
+
+--- Request 2026-03-16T17:16:19.548Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": "macbook baigaa yu"
+  }
+]
+
+--- Request 2026-03-16T17:18:43.447Z ---
+[
+  {
+    "role": "user",
+    "content": "snu"
+  }
+]
+
+--- Request 2026-03-16T17:18:52.421Z ---
+[
+  {
+    "role": "user",
+    "content": "snu"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! Би Soyol Video Shop-ын туслагч оператор. Та видео техник, камер, гэрэл, дрон эсвэл дууны тоног төхөөрөмжийн талаар асуух зүйл байна уу? Танд ямар туслах хэрэгтэй байна? 😊  \n\n\"Танд өөр туслах зүйл байна уу? 😊\""
+  },
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  }
+]
+
+--- Request 2026-03-16T17:20:46.136Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  }
+]
+
+--- Request 2026-03-16T17:22:59.854Z ---
+[
+  {
+    "role": "user",
+    "content": "Сайн байна уу"
+  },
+  {
+    "role": "assistant",
+    "content": "Сайн байна уу! Юугаар туслах вэ?"
+  },
+  {
+    "role": "user",
+    "content": "Танай дэлгүүрт юу юу зардаг вэ?"
+  }
+]
+
+--- Request 2026-03-16T17:23:18.129Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  }
+]
+
+--- Request 2026-03-16T17:42:21.068Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "what is this?"
+      },
+      {
+        "type": "image",
+        "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+      }
+    ]
+  }
+]
+
+--- Request 2026-03-16T17:42:41.239Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "what is this?"
+      },
+      {
+        "type": "image",
+        "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+      }
+    ]
+  }
+]
+
+--- Request 2026-03-16T17:44:34.996Z ---
+[
+  {
+    "role": "user",
+    "content": "macbook baigaa yu"
+  }
+]
+
+--- Request 2026-03-16T17:44:43.476Z ---
+[
+  {
+    "role": "user",
+    "content": "macbook baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Таны хайсан MacBook бүтээгдэхүүнийг олохын тулд, бидэнд илүү тодорхой мэдээлэл хэрэгтэй байна. Та ямар загвар, эсвэл ямар нэгэн тодорхой үзүүлэлттэй MacBook хайж байгаагаа хэлж өгөхгүй юу? Жишээлбэл, \"MacBook Air M2\" эсвэл \"MacBook Pro 16 inch\" гэх мэт. 😊"
+  },
+  {
+    "role": "user",
+    "content": "n2"
+  }
+]
+
+--- Request 2026-03-16T17:44:49.133Z ---
+[
+  {
+    "role": "user",
+    "content": "macbook baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Таны хайсан MacBook бүтээгдэхүүнийг олохын тулд, бидэнд илүү тодорхой мэдээлэл хэрэгтэй байна. Та ямар загвар, эсвэл ямар нэгэн тодорхой үзүүлэлттэй MacBook хайж байгаагаа хэлж өгөхгүй юу? Жишээлбэл, \"MacBook Air M2\" эсвэл \"MacBook Pro 16 inch\" гэх мэт. 😊"
+  },
+  {
+    "role": "user",
+    "content": "n2"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, би таныг юу хайж байгааг бүрэн ойлгосонгүй. \"n2\" гэдэг нь бүтээгдэхүүний нэр, загвар, эсвэл өөр ямар нэгэн зүйл үү? Та илүү тодорхой хэлж өгнө үү? 😊"
+  },
+  {
+    "role": "user",
+    "content": "m2"
+  }
+]
+
+--- Request 2026-03-16T17:47:44.064Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  }
+]
+
+--- Request 2026-03-16T17:47:58.058Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  }
+]
+
+--- Request 2026-03-16T17:48:40.792Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  },
+  {
+    "role": "assistant",
+    "content": "Танд дараах бараануудыг санал болгож байна ✨\n[PRODUCT_CARD: {\"id\":\"36146\",\"name\":\"Canon EOS R Body\",\"price\":2000000,\"image\":\"/images/36146.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36147\",\"name\":\"Canon EOS R5 Body\",\"price\":3500000,\"image\":\"/images/36147.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36148\",\"name\":\"Sony Alpha a7 III Body\",\"price\":2800000,\"image\":\"/images/36148.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36149\",\"name\":\"Sony Alpha a7S III Body\",\"price\":4000000,\"image\":\"/images/36149.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36150\",\"name\":\"Nikon Z6 II Body\",\"price\":2400000,\"image\":\"/images/36150.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36151\",\"name\":\"Fujifilm X-T4 Body\",\"price\":2200000,\"image\":\"/images/36151.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36152\",\"name\":\"Panasonic Lumix GH5M2 Body\",\"price\":1800000,\"image\":\"/images/36152.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36153\",\"name\":\"Blackmagic Pocket Cinema Camera 6K Pro\",\"price\":4200000,\"image\":\"/images/36153.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36154\",\"name\":\"GoPro HERO10 Black\",\"price\":1200000,\"image\":\"/images/36154.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36155\",\"name\":\"Insta360 ONE X2\",\"price\":1000000,\"image\":\"/images/36155.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36156\",\"name\":\"DJI Osmo Pocket 2\",\"price\":800000,\"image\":\"/images/36156.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36158\",\"name\":\"Logitech C920 Webcam\",\"price\":150000,\"image\":\"/images/36158.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36159\",\"name\":\"Elgato Facecam\",\"price\":250000,\"image\":\"/images/36159.jpg\"}]\nТа сонирхсон камерынхаа дэлгэрэнгүй мэдээллийг авахыг хүсвэл, нэрийг нь хэлж өгч болно шүү. Танд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  }
+]
+
+--- Request 2026-03-16T17:49:08.565Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  },
+  {
+    "role": "assistant",
+    "content": "Танд дараах бараануудыг санал болгож байна ✨\n[PRODUCT_CARD: {\"id\":\"36146\",\"name\":\"Canon EOS R Body\",\"price\":2000000,\"image\":\"/images/36146.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36147\",\"name\":\"Canon EOS R5 Body\",\"price\":3500000,\"image\":\"/images/36147.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36148\",\"name\":\"Sony Alpha a7 III Body\",\"price\":2800000,\"image\":\"/images/36148.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36149\",\"name\":\"Sony Alpha a7S III Body\",\"price\":4000000,\"image\":\"/images/36149.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36150\",\"name\":\"Nikon Z6 II Body\",\"price\":2400000,\"image\":\"/images/36150.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36151\",\"name\":\"Fujifilm X-T4 Body\",\"price\":2200000,\"image\":\"/images/36151.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36152\",\"name\":\"Panasonic Lumix GH5M2 Body\",\"price\":1800000,\"image\":\"/images/36152.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36153\",\"name\":\"Blackmagic Pocket Cinema Camera 6K Pro\",\"price\":4200000,\"image\":\"/images/36153.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36154\",\"name\":\"GoPro HERO10 Black\",\"price\":1200000,\"image\":\"/images/36154.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36155\",\"name\":\"Insta360 ONE X2\",\"price\":1000000,\"image\":\"/images/36155.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36156\",\"name\":\"DJI Osmo Pocket 2\",\"price\":800000,\"image\":\"/images/36156.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36158\",\"name\":\"Logitech C920 Webcam\",\"price\":150000,\"image\":\"/images/36158.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36159\",\"name\":\"Elgato Facecam\",\"price\":250000,\"image\":\"/images/36159.jpg\"}]\nТа сонирхсон камерынхаа дэлгэрэнгүй мэдээллийг авахыг хүсвэл, нэрийг нь хэлж өгч болно шүү. Танд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  }
+]
+
+--- Request 2026-03-16T17:49:36.723Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  },
+  {
+    "role": "assistant",
+    "content": "Танд дараах бараануудыг санал болгож байна ✨\n[PRODUCT_CARD: {\"id\":\"36146\",\"name\":\"Canon EOS R Body\",\"price\":2000000,\"image\":\"/images/36146.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36147\",\"name\":\"Canon EOS R5 Body\",\"price\":3500000,\"image\":\"/images/36147.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36148\",\"name\":\"Sony Alpha a7 III Body\",\"price\":2800000,\"image\":\"/images/36148.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36149\",\"name\":\"Sony Alpha a7S III Body\",\"price\":4000000,\"image\":\"/images/36149.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36150\",\"name\":\"Nikon Z6 II Body\",\"price\":2400000,\"image\":\"/images/36150.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36151\",\"name\":\"Fujifilm X-T4 Body\",\"price\":2200000,\"image\":\"/images/36151.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36152\",\"name\":\"Panasonic Lumix GH5M2 Body\",\"price\":1800000,\"image\":\"/images/36152.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36153\",\"name\":\"Blackmagic Pocket Cinema Camera 6K Pro\",\"price\":4200000,\"image\":\"/images/36153.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36154\",\"name\":\"GoPro HERO10 Black\",\"price\":1200000,\"image\":\"/images/36154.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36155\",\"name\":\"Insta360 ONE X2\",\"price\":1000000,\"image\":\"/images/36155.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36156\",\"name\":\"DJI Osmo Pocket 2\",\"price\":800000,\"image\":\"/images/36156.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36158\",\"name\":\"Logitech C920 Webcam\",\"price\":150000,\"image\":\"/images/36158.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36159\",\"name\":\"Elgato Facecam\",\"price\":250000,\"image\":\"/images/36159.jpg\"}]\nТа сонирхсон камерынхаа дэлгэрэнгүй мэдээллийг авахыг хүсвэл, нэрийг нь хэлж өгч болно шүү. Танд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүр видео тоног төхөөрөмж дээр голчлон ажилладаг тул одоогоор зөөврийн компьютер худалдаалж чадахгүй нь. Та камерыг сонирхож магадгүй юм.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "utas baigaa yu"
+  }
+]
+
+--- Request 2026-03-16T17:49:44.667Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  },
+  {
+    "role": "assistant",
+    "content": "Танд дараах бараануудыг санал болгож байна ✨\n[PRODUCT_CARD: {\"id\":\"36146\",\"name\":\"Canon EOS R Body\",\"price\":2000000,\"image\":\"/images/36146.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36147\",\"name\":\"Canon EOS R5 Body\",\"price\":3500000,\"image\":\"/images/36147.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36148\",\"name\":\"Sony Alpha a7 III Body\",\"price\":2800000,\"image\":\"/images/36148.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36149\",\"name\":\"Sony Alpha a7S III Body\",\"price\":4000000,\"image\":\"/images/36149.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36150\",\"name\":\"Nikon Z6 II Body\",\"price\":2400000,\"image\":\"/images/36150.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36151\",\"name\":\"Fujifilm X-T4 Body\",\"price\":2200000,\"image\":\"/images/36151.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36152\",\"name\":\"Panasonic Lumix GH5M2 Body\",\"price\":1800000,\"image\":\"/images/36152.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36153\",\"name\":\"Blackmagic Pocket Cinema Camera 6K Pro\",\"price\":4200000,\"image\":\"/images/36153.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36154\",\"name\":\"GoPro HERO10 Black\",\"price\":1200000,\"image\":\"/images/36154.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36155\",\"name\":\"Insta360 ONE X2\",\"price\":1000000,\"image\":\"/images/36155.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36156\",\"name\":\"DJI Osmo Pocket 2\",\"price\":800000,\"image\":\"/images/36156.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36158\",\"name\":\"Logitech C920 Webcam\",\"price\":150000,\"image\":\"/images/36158.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36159\",\"name\":\"Elgato Facecam\",\"price\":250000,\"image\":\"/images/36159.jpg\"}]\nТа сонирхсон камерынхаа дэлгэрэнгүй мэдээллийг авахыг хүсвэл, нэрийг нь хэлж өгч болно шүү. Танд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүр видео тоног төхөөрөмж дээр голчлон ажилладаг тул одоогоор зөөврийн компьютер худалдаалж чадахгүй нь. Та камерыг сонирхож магадгүй юм.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "utas baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүрт одоогоор утас худалдаалагдахгүй байна. Бид видео тоног төхөөрөмж, тухайлбал камер, гэрэл, дрон болон аудио хэрэгсэлд илүү төвлөрдөг.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "iphone bii yu"
+  }
+]
+
+--- Request 2026-03-16T17:50:04.661Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  },
+  {
+    "role": "assistant",
+    "content": "Танд дараах бараануудыг санал болгож байна ✨\n[PRODUCT_CARD: {\"id\":\"36146\",\"name\":\"Canon EOS R Body\",\"price\":2000000,\"image\":\"/images/36146.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36147\",\"name\":\"Canon EOS R5 Body\",\"price\":3500000,\"image\":\"/images/36147.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36148\",\"name\":\"Sony Alpha a7 III Body\",\"price\":2800000,\"image\":\"/images/36148.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36149\",\"name\":\"Sony Alpha a7S III Body\",\"price\":4000000,\"image\":\"/images/36149.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36150\",\"name\":\"Nikon Z6 II Body\",\"price\":2400000,\"image\":\"/images/36150.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36151\",\"name\":\"Fujifilm X-T4 Body\",\"price\":2200000,\"image\":\"/images/36151.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36152\",\"name\":\"Panasonic Lumix GH5M2 Body\",\"price\":1800000,\"image\":\"/images/36152.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36153\",\"name\":\"Blackmagic Pocket Cinema Camera 6K Pro\",\"price\":4200000,\"image\":\"/images/36153.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36154\",\"name\":\"GoPro HERO10 Black\",\"price\":1200000,\"image\":\"/images/36154.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36155\",\"name\":\"Insta360 ONE X2\",\"price\":1000000,\"image\":\"/images/36155.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36156\",\"name\":\"DJI Osmo Pocket 2\",\"price\":800000,\"image\":\"/images/36156.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36158\",\"name\":\"Logitech C920 Webcam\",\"price\":150000,\"image\":\"/images/36158.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36159\",\"name\":\"Elgato Facecam\",\"price\":250000,\"image\":\"/images/36159.jpg\"}]\nТа сонирхсон камерынхаа дэлгэрэнгүй мэдээллийг авахыг хүсвэл, нэрийг нь хэлж өгч болно шүү. Танд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүр видео тоног төхөөрөмж дээр голчлон ажилладаг тул одоогоор зөөврийн компьютер худалдаалж чадахгүй нь. Та камерыг сонирхож магадгүй юм.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "utas baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүрт одоогоор утас худалдаалагдахгүй байна. Бид видео тоног төхөөрөмж, тухайлбал камер, гэрэл, дрон болон аудио хэрэгсэлд илүү төвлөрдөг.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "iphone bii yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүрт одоогоор iPhone худалдаалагдахгүй байна. Бид видео тоног төхөөрөмж, тухайлбал камер, гэрэл, дрон болон аудио хэрэгсэлд илүү төвлөрдөг.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "ymr gerel baigaa ve"
+  }
+]
+
+--- Request 2026-03-16T17:50:12.337Z ---
+[
+  {
+    "role": "user",
+    "content": "camera baigaa bol uu"
+  },
+  {
+    "role": "assistant",
+    "content": "Танд дараах бараануудыг санал болгож байна ✨\n[PRODUCT_CARD: {\"id\":\"36146\",\"name\":\"Canon EOS R Body\",\"price\":2000000,\"image\":\"/images/36146.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36147\",\"name\":\"Canon EOS R5 Body\",\"price\":3500000,\"image\":\"/images/36147.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36148\",\"name\":\"Sony Alpha a7 III Body\",\"price\":2800000,\"image\":\"/images/36148.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36149\",\"name\":\"Sony Alpha a7S III Body\",\"price\":4000000,\"image\":\"/images/36149.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36150\",\"name\":\"Nikon Z6 II Body\",\"price\":2400000,\"image\":\"/images/36150.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36151\",\"name\":\"Fujifilm X-T4 Body\",\"price\":2200000,\"image\":\"/images/36151.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36152\",\"name\":\"Panasonic Lumix GH5M2 Body\",\"price\":1800000,\"image\":\"/images/36152.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36153\",\"name\":\"Blackmagic Pocket Cinema Camera 6K Pro\",\"price\":4200000,\"image\":\"/images/36153.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36154\",\"name\":\"GoPro HERO10 Black\",\"price\":1200000,\"image\":\"/images/36154.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36155\",\"name\":\"Insta360 ONE X2\",\"price\":1000000,\"image\":\"/images/36155.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36156\",\"name\":\"DJI Osmo Pocket 2\",\"price\":800000,\"image\":\"/images/36156.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36158\",\"name\":\"Logitech C920 Webcam\",\"price\":150000,\"image\":\"/images/36158.jpg\"}]\n[PRODUCT_CARD: {\"id\":\"36159\",\"name\":\"Elgato Facecam\",\"price\":250000,\"image\":\"/images/36159.jpg\"}]\nТа сонирхсон камерынхаа дэлгэрэнгүй мэдээллийг авахыг хүсвэл, нэрийг нь хэлж өгч болно шүү. Танд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "user",
+    "content": "laptop baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүр видео тоног төхөөрөмж дээр голчлон ажилладаг тул одоогоор зөөврийн компьютер худалдаалж чадахгүй нь. Та камерыг сонирхож магадгүй юм.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "utas baigaa yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүрт одоогоор утас худалдаалагдахгүй байна. Бид видео тоног төхөөрөмж, тухайлбал камер, гэрэл, дрон болон аудио хэрэгсэлд илүү төвлөрдөг.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "iphone bii yu"
+  },
+  {
+    "role": "assistant",
+    "content": "Уучлаарай, манай дэлгүүрт одоогоор iPhone худалдаалагдахгүй байна. Бид видео тоног төхөөрөмж, тухайлбал камер, гэрэл, дрон болон аудио хэрэгсэлд илүү төвлөрдөг.\n\nТанд өөр туслах зүйл байна уу? 😊"
+  },
+  {
+    "role": "user",
+    "content": "ymr gerel baigaa ve"
+  },
+  {
+    "role": "assistant",
+    "content": ""
+  },
+  {
+    "role": "user",
+    "content": "ymr gerel baigaa ve"
+  }
+]
+
+--- Request 2026-03-16T18:41:06.255Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "macbook baigaayu"
+      }
+    ]
+  }
+]

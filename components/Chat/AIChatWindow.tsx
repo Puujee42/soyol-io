@@ -20,13 +20,48 @@ interface AIChatWindowProps {
 interface ExtendedMessage {
     id?: string;
     role: 'user' | 'assistant' | 'system' | 'data' | 'tool';
-    content: string;
+    content?: string;
+    parts?: Array<{ type: string; text?: string; [key: string]: any }>;
     experimental_attachments?: Array<{
         name?: string;
         contentType?: string;
         url: string;
     } | string>;
     createdAt?: Date;
+}
+
+// Helper: extract text content from a v3 UIMessage safely
+function getMessageText(msg: ExtendedMessage): string {
+    // Priority: useChat still streams into msg.content directly
+    if (typeof msg.content === 'string' && msg.content.length > 0) {
+        return msg.content;
+    }
+    // Fallback: parts array
+    if (msg.parts && Array.isArray(msg.parts)) {
+        return msg.parts
+            .filter((p) => p.type === 'text' && p.text)
+            .map((p) => p.text)
+            .join('');
+    }
+    return msg.content || '';
+}
+
+// Helper: extract file attachments from v3 UIMessage (parts-based) with v2 fallback
+function getMessageFiles(msg: ExtendedMessage): Array<{ url: string; contentType?: string }> {
+    // v3: read from parts array
+    if (msg.parts && Array.isArray(msg.parts)) {
+        return msg.parts
+            .filter((p) => p.type === 'file' && p.url)
+            .map((p) => ({ url: p.url, contentType: p.mediaType }));
+    }
+    // v2 fallback
+    if (msg.experimental_attachments && Array.isArray(msg.experimental_attachments)) {
+        return msg.experimental_attachments.map((att: any) => {
+            if (typeof att === 'string') return { url: att };
+            return { url: att.url, contentType: att.contentType };
+        });
+    }
+    return [];
 }
 
 export default function AIChatWindow({ onBack }: AIChatWindowProps) {
@@ -48,7 +83,6 @@ export default function AIChatWindow({ onBack }: AIChatWindowProps) {
         onError: (error: any) => {
             console.error('Chat error:', error);
             const msg = typeof error?.message === 'string' ? error.message : JSON.stringify(error);
-            alert(`Google Gemini API Error:\n${msg}`);
             if (msg.includes('429') || msg.toLowerCase().includes('quota')) {
                 toast.error('Систем ачаалалтай байна. Дараа дахин оролдоно уу.');
             } else if (msg.toLowerCase().includes('api key')) {
@@ -70,17 +104,8 @@ export default function AIChatWindow({ onBack }: AIChatWindowProps) {
     const append = sendMessage; // Alias for compatibility if needed, or just use sendMessage
     const reload = regenerate;
 
-    // Check API Key availability in Browser Console as requested
+    // Debug useChat return values
     useEffect(() => {
-        const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-        if (apiKey) {
-            console.log('%c[DEBUG] Gemini API Key is LOADED:', 'color: green; font-weight: bold;', apiKey);
-            console.log('Key length:', apiKey.length);
-        } else {
-            console.error('%c[DEBUG] Gemini API Key is MISSING in Client Environment!', 'color: red; font-weight: bold;');
-        }
-
-        // Debug useChat return values
         console.log('useChat debug:', {
             status,
             isLoading: status === 'streaming' || status === 'submitted',
@@ -105,10 +130,12 @@ export default function AIChatWindow({ onBack }: AIChatWindowProps) {
     // Action parsing effect
     useEffect(() => {
         const lastMessage = messages[messages.length - 1];
-        if (lastMessage?.role === 'assistant' && lastMessage.content) {
+        if (lastMessage?.role === 'assistant') {
+            const textContent = getMessageText(lastMessage);
+            if (!textContent) return;
             const actionRegex = /\[ACTION:([A-Z_]+):(.*?):END_ACTION\]/g;
             let match;
-            while ((match = actionRegex.exec(lastMessage.content)) !== null) {
+            while ((match = actionRegex.exec(textContent)) !== null) {
                 const fullMatch = match[0];
                 const actionType = match[1];
                 const actionContent = match[2];
@@ -167,31 +194,27 @@ export default function AIChatWindow({ onBack }: AIChatWindowProps) {
         }
 
         const currentAttachment = attachment;
+        const currentAttachmentType = attachmentType;
 
         try {
-            const contentParts: any[] = [];
-            if (safeInput.trim()) {
-                contentParts.push({ type: 'text', text: safeInput.trim() });
-            }
+            // Build files array for attachments (FileUIPart format)
+            const files: Array<{ type: 'file'; url: string; mediaType: string }> = [];
             if (currentAttachment) {
-                contentParts.push({ type: 'image', image: currentAttachment });
+                // Extract media type from data URL, e.g. "data:image/png;base64,..."
+                const mediaTypeMatch = currentAttachment.match(/^data:([^;]+);/);
+                const mediaType = mediaTypeMatch?.[1] || (currentAttachmentType === 'video' ? 'video/mp4' : 'image/png');
+                files.push({ type: 'file', url: currentAttachment, mediaType });
             }
 
-            // Construct the message object
-            // Use simple string if no attachment, otherwise content parts
-            const content = currentAttachment ? contentParts : safeInput.trim();
-            const messagePayload = {
-                role: 'user',
-                content: content
-            };
-
-            // Use sendMessage
+            // Use sendMessage with v3 API: { text, files? }
             if (typeof sendMessage === 'function') {
-                // @ts-ignore
-                await sendMessage(messagePayload);
+                await sendMessage({
+                    text: safeInput.trim() || (currentAttachment ? 'Энэ зургийг шинжилнэ үү' : ''),
+                    ...(files.length > 0 ? { files } : {}),
+                });
             } else {
                 console.error('sendMessage function is missing from useChat');
-                alert('System Error: Chat function "sendMessage" is missing. Please refresh the page.');
+                toast.error('Системийн алдаа. Хуудсыг дахин ачааллана уу.');
             }
 
             setInput('');
@@ -327,10 +350,10 @@ export default function AIChatWindow({ onBack }: AIChatWindowProps) {
                             ? 'bg-[#FF5000] text-white rounded-tr-none'
                             : 'bg-slate-800 text-slate-200 rounded-tl-none border border-white/5'
                             }`}>
-                            {msg.experimental_attachments && msg.experimental_attachments.length > 0 && (
+                            {getMessageFiles(msg).length > 0 && (
                                 <div className="mb-2">
-                                    {msg.experimental_attachments.map((att: any, i: number) => {
-                                        const src = typeof att === 'string' ? att : att.url;
+                                    {getMessageFiles(msg).map((att, i: number) => {
+                                        const src = att.url;
                                         const isVideo = src?.startsWith('data:video') || src?.endsWith('.mp4');
                                         return (
                                             <div key={i}>
@@ -345,7 +368,7 @@ export default function AIChatWindow({ onBack }: AIChatWindowProps) {
                                 </div>
                             )}
                             <div className="leading-relaxed">
-                                {renderMessageContent(msg.content)}
+                                {renderMessageContent(getMessageText(msg))}
                             </div>
                         </div>
                     </motion.div>

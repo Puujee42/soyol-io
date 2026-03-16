@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     const newReview = {
       productId: new ObjectId(productId),
       userId: session.userId,
-      userName: userName || session.user?.name || 'Anonymous',
+      userName: userName || 'Anonymous',
       rating: Number(rating),
       comment,
       likes: 0,
