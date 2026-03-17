@@ -311,6 +311,10 @@ export default function LuxuryNavbar() {
                               )}
                             </div>
                             <div className="py-1">
+                              <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors border-b border-gray-50">
+                                <User className="w-4 h-4 text-gray-500" strokeWidth={1.2} />
+                                Миний профайл
+                              </Link>
                               <Link href="/orders" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors">
                                 <Package className="w-4 h-4 text-gray-500" strokeWidth={1.2} />
                                 {t('nav', 'myOrders')}
@@ -503,7 +507,11 @@ export default function LuxuryNavbar() {
 
               <div className="px-5 py-6">
                 {isLoggedIn ? (
-                  <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 active:bg-orange-50 active:border-orange-200 transition-colors"
+                  >
                     <div className="w-12 h-12 rounded-full bg-[#FF5000]/10 flex items-center justify-center shrink-0 border border-[#FF5000]/20">
                       {user?.imageUrl ? (
                         <img src={user.imageUrl} alt="" className="w-12 h-12 rounded-full object-cover" />
@@ -511,11 +519,12 @@ export default function LuxuryNavbar() {
                         <span className="text-[#FF5000] font-bold text-lg">{(user?.name?.[0] || user?.phone?.[0] || 'U').toUpperCase()}</span>
                       )}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="font-bold text-slate-900 truncate">{user?.name || 'Хэрэглэгч'}</p>
                       <p className="text-sm font-medium text-slate-500 truncate">{user?.phone || user?.email || '—'}</p>
+                      <p className="text-xs text-[#FF5000] font-semibold mt-0.5">Профайл харах →</p>
                     </div>
-                  </div>
+                  </Link>
                 ) : (
                   <Link
                     href="/sign-in"
