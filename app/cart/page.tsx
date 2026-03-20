@@ -70,7 +70,7 @@ export default function CartPage() {
                     <div className="w-[100vw] px-4 overflow-x-hidden md:w-full md:px-0 text-left mt-10">
                         <div className="flex items-center gap-4 mb-8 w-full">
                             <div className="h-[1px] flex-1 bg-gray-100" />
-                            <span className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em]">Танд санал болгох</span>
+                            <span className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em]">Танд санал болгох бараа</span>
                             <div className="h-[1px] flex-1 bg-gray-100" />
                         </div>
 
@@ -211,7 +211,7 @@ export default function CartPage() {
                 {/* Recommendation Guide */}
                 <div className="mt-16">
                     <div className="flex items-center justify-between mb-6 px-2">
-                        <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest">Танд таалагдаж магадгүй</h3>
+                        <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest">Танд санал болгох бараа</h3>
                         <ChevronRight className="w-4 h-4 text-slate-300" />
                     </div>
                     <div className="grid grid-cols-2 gap-3 pb-10">

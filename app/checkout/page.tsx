@@ -526,7 +526,7 @@ export default function CheckoutPage() {
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 overflow-hidden">
                 <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
                   <div className="p-2.5 bg-orange-50 rounded-xl"><MapPin className="w-5 h-5 text-orange-600" /></div>
-                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">Бэлэн бараа авах цэг</h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">[Бэлэн] бараа авах цэг</h2>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                   <div className="flex items-start gap-3">
@@ -586,10 +586,10 @@ export default function CheckoutPage() {
                 <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-orange-600">✈️</span>
-                    <span className="font-bold text-orange-700 text-sm">Захиалгын бараа</span>
+                    <span className="font-bold text-orange-700 text-sm">[Захиалгаар] ирэх бараа</span>
                   </div>
                   <p className="text-xs text-orange-600 pl-6">Хүргэлт: 7-14 хоног</p>
-                  <p className="text-xs text-orange-600 pl-6 mt-1">Бараа ирмэгц таньд мэдэгдэнэ</p>
+                  <p className="text-xs text-orange-600 pl-6 mt-1">Бараа ирмэгц танд мэдэгдэнэ</p>
                 </div>
               ) : (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">

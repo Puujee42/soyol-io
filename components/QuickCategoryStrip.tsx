@@ -200,7 +200,7 @@ export default function QuickCategoryStrip({ onStockFilterChange }: QuickCategor
               }`}
           >
             <span className="text-base">📦</span>
-            Бэлэн бараа
+            [Бэлэн]
           </motion.button>
 
           <motion.button
@@ -212,7 +212,7 @@ export default function QuickCategoryStrip({ onStockFilterChange }: QuickCategor
               }`}
           >
             <span className="text-base">✈️</span>
-            Захиалгаар
+            [Захиалгаар]
           </motion.button>
         </div>
 

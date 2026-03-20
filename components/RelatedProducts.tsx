@@ -30,11 +30,11 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-1 bg-orange-500 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.5)]" />
                     <h2 className="text-3xl font-black text-slate-900 tracking-tight">
-                        Төстэй бараанууд
+                        Танд санал болгох бараа
                     </h2>
                 </div>
                 <p className="text-slate-500 text-sm font-medium ml-4">
-                    Танд таалагдаж магадгүй бусад сонголтууд
+                    Таны магадгүй сонирхох бусад бүтээгдэхүүнүүд
                 </p>
             </motion.div>
 
