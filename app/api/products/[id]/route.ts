@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
@@ -98,6 +99,11 @@ export async function PATCH(
       { _id: objectId },
       { $set: updateData }
     );
+
+    // Revalidate
+    revalidatePath(`/product/${id}`);
+    revalidatePath('/');
+    revalidatePath('/admin/products');
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });

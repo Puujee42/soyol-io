@@ -75,8 +75,16 @@ export async function DELETE(
   try {
     const { slug } = await params;
     const categories = await getCollection('categories');
+    const { ObjectId } = await import('mongodb');
     
-    const result = await categories.deleteOne({ id: slug });
+    let query;
+    try {
+        query = { _id: new ObjectId(slug) };
+    } catch (e) {
+        query = { $or: [{ id: slug }, { slug: slug }] };
+    }
+    
+    const result = await categories.deleteOne(query);
 
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: 'Category not found' }, { status: 404 });

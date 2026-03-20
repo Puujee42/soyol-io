@@ -180,8 +180,8 @@ export default function Footer() {
               <h3 className="text-sm font-bold text-white uppercase tracking-wider">{t('footer', 'followUs')}</h3>
               <div className="flex gap-3">
                 {[
-                  { icon: Facebook, href: 'https://facebook.com', color: 'hover:bg-[#1877F2]' },
-                  { icon: Instagram, href: 'https://instagram.com', color: 'hover:bg-[#E4405F]' },
+                  { icon: Facebook, href: 'https://www.facebook.com/SoyolVideoShop', color: 'hover:bg-[#1877F2]' },
+                  { icon: Instagram, href: 'https://www.instagram.com/soyol_video_shop_77181818?fbclid=IwY2xjawQp1StleHRuA2FlbQIxMABicmlkETFpTVQ3UFNjSnRHS1AwM2hRc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHrapwSQbsGwv4dnai3_DWxT19gEY_qrPvaLw5XLyzLLWsGed40Iv4OBa8dPR_aem_3zR16bzS5qD0MkQDnyBecw', color: 'hover:bg-[#E4405F]' },
                   { icon: MessageCircle, href: 'https://whatsapp.com', color: 'hover:bg-[#25D366]' },
                 ].map((social, i) => (
                   <a 

@@ -44,6 +44,7 @@ export async function createProduct(data: ProductFormData) {
     revalidatePath('/admin');
     revalidatePath('/ready-to-ship');
     revalidatePath('/pre-order');
+    revalidatePath('/admin/products');
 
     return { success: true, productId: result.insertedId.toString() };
   } catch (error) {
@@ -66,6 +67,7 @@ export async function deleteProduct(productId: string) {
     revalidatePath('/admin');
     revalidatePath('/ready-to-ship');
     revalidatePath('/pre-order');
+    revalidatePath('/admin/products');
 
     return { success: true };
   } catch (error) {
@@ -109,6 +111,8 @@ export async function updateProduct(productId: string, data: Partial<ProductForm
     revalidatePath('/admin');
     revalidatePath('/ready-to-ship');
     revalidatePath('/pre-order');
+    revalidatePath(`/product/${productId}`);
+    revalidatePath('/admin/products');
 
     return { success: true };
   } catch (error) {
