@@ -3,7 +3,6 @@ import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
-import { clerkMiddleware } from '@clerk/nextjs/server';
 
 // Rate limiter setup with safety checks
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
@@ -43,7 +42,7 @@ const adminRoutes = [
   '/admin'
 ];
 
-export default clerkMiddleware(async (auth, req: NextRequest) => {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const forwarded = req.headers.get('x-forwarded-for');
   const ip = forwarded ? forwarded.split(',')[0] : '127.0.0.1';
@@ -101,7 +100,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
