@@ -264,9 +264,7 @@ export default function LuxuryNavbar() {
                 transition={{ duration: 0.3 }}
                 className="flex items-center gap-1.5 flex-shrink-0"
               >
-                <div className="hidden lg:block">
-                  <LanguageCurrencySelector />
-                </div>
+
 
                 {/* User menu */}
                 <div className="relative" ref={userMenuRef}>
@@ -576,25 +574,7 @@ export default function LuxuryNavbar() {
                 )}
               </div>
 
-              <div className="mt-auto px-5 py-6 border-t border-slate-100 bg-slate-50/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-4 h-4 text-[#FF5000]" strokeWidth={1.5} />
-                    <span className="font-bold text-slate-700 text-sm">{t('nav', 'language')}</span>
-                  </div>
-                  <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 gap-1 shadow-sm">
-                    {(['MN', 'EN'] as const).map(lang => (
-                      <button
-                        key={lang}
-                        onClick={() => setLanguage(lang)}
-                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${language === lang ? 'bg-[#FF5000] text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
-                      >
-                        {lang}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+
             </motion.div>
           </>
         )}
