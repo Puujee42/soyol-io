@@ -103,7 +103,7 @@ function SignInContent() {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="77181818"
+                    placeholder="85552229"
                     className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-[#F57E20]/20 focus:border-[#F57E20] outline-none transition-all font-medium text-slate-900 placeholder:text-slate-400 text-base"
                     autoFocus
                   />
@@ -156,7 +156,7 @@ function SignInContent() {
                     type="tel"
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
-                    placeholder="77181818"
+                    placeholder="85552229"
                     className="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-base font-medium outline-none focus:border-[#F57E20] focus:ring-2 focus:ring-[#F57E20]/20"
                   />
                 </div>

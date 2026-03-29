@@ -32,8 +32,7 @@ function FacebookIcon() {
   );
 }
 
-export default function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
-  const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | null>(null);
+function GoogleLoginButton({ mode, onLoading }: { mode: 'signIn' | 'signUp', onLoading: (loading: boolean) => void }) {
   const { login } = useAuth();
   const router = useRouter();
 
@@ -58,27 +57,34 @@ export default function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
         console.error('Google auth error:', error);
         toast.error('Сервертэй холбогдож чадсангүй');
       } finally {
-        setLoadingProvider(null);
+        onLoading(false);
       }
     },
     onError: (error) => {
       console.error('Google login failed:', error);
       toast.error('Google-ээр нэвтрэхэд алдаа гарлаа');
-      setLoadingProvider(null);
+      onLoading(false);
     },
   });
 
-  const handleSocialAuth = async (strategy: 'oauth_google' | 'oauth_facebook') => {
-    const providerKey = strategy === 'oauth_google' ? 'google' : 'facebook';
-    setLoadingProvider(providerKey);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onLoading(true);
+        googleLogin();
+      }}
+      className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-2xl transition-all font-bold text-sm text-slate-700 shadow-sm"
+    >
+      <GoogleIcon />
+      Google-ээр {mode === 'signIn' ? 'нэвтрэх' : 'бүртгүүлэх'}
+    </button>
+  );
+}
 
-    if (strategy === 'oauth_google') {
-      googleLogin();
-    } else {
-      toast.error('Удахгүй нэмэгдэх болно');
-      setLoadingProvider(null);
-    }
-  };
+export default function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
+  const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | null>(null);
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   return (
     <div className="space-y-3">
@@ -89,25 +95,28 @@ export default function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
         <div className="flex-1 h-px bg-slate-200" />
       </div>
 
-      {/* Google button */}
-      <button
-        type="button"
-        onClick={() => handleSocialAuth('oauth_google')}
-        disabled={!!loadingProvider}
-        className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-2xl transition-all disabled:opacity-60 disabled:cursor-not-allowed font-bold text-sm text-slate-700 shadow-sm"
-      >
-        {loadingProvider === 'google' ? (
-          <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
-        ) : (
-          <GoogleIcon />
-        )}
-        Google-ээр {mode === 'signIn' ? 'нэвтрэх' : 'бүртгүүлэх'}
-      </button>
+      {/* Google button (Only if Client ID is configured) */}
+      {googleClientId ? (
+        <GoogleLoginButton 
+          mode={mode} 
+          onLoading={(loading) => setLoadingProvider(loading ? 'google' : null)} 
+        />
+      ) : (
+        <div className="p-3 bg-orange-50 rounded-xl border border-orange-100">
+          <p className="text-[10px] text-orange-600 font-medium text-center">
+            Google Login тохируулаагүй байна.
+          </p>
+        </div>
+      )}
 
       {/* Facebook button */}
       <button
         type="button"
-        onClick={() => handleSocialAuth('oauth_facebook')}
+        onClick={() => {
+          setLoadingProvider('facebook');
+          toast.error('Удахгүй нэмэгдэх болно');
+          setLoadingProvider(null);
+        }}
         disabled={!!loadingProvider}
         className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-[#1877F2] hover:bg-[#166FE5] rounded-2xl transition-all disabled:opacity-60 disabled:cursor-not-allowed font-bold text-sm text-white shadow-sm"
       >

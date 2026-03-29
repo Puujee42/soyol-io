@@ -33,18 +33,17 @@ interface LinkedAccounts {
   facebook: { linked: boolean; email?: string };
 }
 
-function ConnectedAccountsSection() {
-  const { user } = useAuth();
-  const [linked, setLinked] = useState<LinkedAccounts | null>(null);
-  const [linkingProvider, setLinkingProvider] = useState<'google' | 'facebook' | null>(null);
-
-  useEffect(() => {
-    fetch('/api/user/link-social')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => data && setLinked(data))
-      .catch(() => {});
-  }, []);
-
+function GoogleLinkButton({ 
+  isLinked, 
+  email, 
+  isBusy, 
+  onConnect 
+}: { 
+  isLinked: boolean; 
+  email?: string; 
+  isBusy: boolean; 
+  onConnect: () => void;
+}) {
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
@@ -56,30 +55,49 @@ function ConnectedAccountsSection() {
 
         const data = await res.json();
         if (res.ok) {
-          setLinked(prev => prev ? { ...prev, google: { linked: true, email: data.email } } : null);
           toast.success('Амжилттай холбогдлоо!');
+          window.location.reload();
         } else {
           toast.error(data.error || 'Холбоход алдаа гарлаа');
         }
       } catch (error) {
         toast.error('Сервертэй холбогдож чадсангүй');
-      } finally {
-        setLinkingProvider(null);
       }
     },
     onError: () => {
       toast.error('Google-ээр холбоход алдаа гарлаа');
-      setLinkingProvider(null);
     },
   });
 
+  if (isBusy) return <Loader2 className="w-3.5 h-3.5 animate-spin" />;
+
+  return (
+    <button
+      onClick={() => googleLogin()}
+      className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-[12px] font-bold text-[#1A1A1A] transition-colors disabled:opacity-60"
+    >
+      <Link2 className="w-3.5 h-3.5" />
+      Холбох
+    </button>
+  );
+}
+
+function ConnectedAccountsSection() {
+  const { user } = useAuth();
+  const [linked, setLinked] = useState<LinkedAccounts | null>(null);
+  const [linkingProvider, setLinkingProvider] = useState<'google' | 'facebook' | null>(null);
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    fetch('/api/user/link-social')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => data && setLinked(data))
+      .catch(() => {});
+  }, []);
+
   const handleLink = async (provider: 'google' | 'facebook') => {
-    setLinkingProvider(provider);
-    if (provider === 'google') {
-      googleLogin();
-    } else {
+    if (provider === 'facebook') {
       toast.error('Удахгүй нэмэгдэх болно');
-      setLinkingProvider(null);
     }
   };
 
@@ -92,14 +110,16 @@ function ConnectedAccountsSection() {
       <div className="bg-white rounded-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
 
         {/* Google */}
-        <div className="flex items-center justify-between px-4 h-[64px] border-b border-[#F5F5F5]">
+        <div className={`flex items-center justify-between px-4 h-[64px] border-b border-[#F5F5F5] ${!googleClientId && !linked?.google.linked ? 'opacity-60' : ''}`}>
           <div className="flex items-center gap-3">
             <GoogleIcon />
             <div>
               <p className="text-[15px] font-bold text-[#1A1A1A]">Google</p>
-              {linked?.google.linked && (
+              {linked?.google.linked ? (
                 <p className="text-[11px] text-[#999] mt-0.5">{linked.google.email}</p>
-              )}
+              ) : !googleClientId ? (
+                <p className="text-[11px] text-[#BBBBBB] mt-0.5">Тохируулаагүй байна</p>
+              ) : null}
             </div>
           </div>
           {linked?.google.linked ? (
@@ -107,16 +127,13 @@ function ConnectedAccountsSection() {
               <CheckCircle2 className="w-4 h-4" />
               <span className="text-[12px] font-bold">Холбогдсон</span>
             </div>
-          ) : (
-            <button
-              onClick={() => handleLink('google')}
-              disabled={!!linkingProvider}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-[12px] font-bold text-[#1A1A1A] transition-colors disabled:opacity-60"
-            >
-              {linkingProvider === 'google' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Link2 className="w-3.5 h-3.5" />}
-              Холбох
-            </button>
-          )}
+          ) : googleClientId ? (
+            <GoogleLinkButton 
+              isLinked={false} 
+              isBusy={linkingProvider === 'google'} 
+              onConnect={() => {}} 
+            />
+          ) : null}
         </div>
 
         {/* Facebook */}

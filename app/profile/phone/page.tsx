@@ -72,7 +72,7 @@ export default function PhonePage() {
                                 type="tel"
                                 value={phone}
                                 onChange={e => setPhone(e.target.value)}
-                                placeholder="77181818"
+                                placeholder="85552229"
                                 required
                                 className="flex-1 text-[15px] text-[#1A1A1A] placeholder-[#CCCCCC] bg-transparent outline-none"
                             />

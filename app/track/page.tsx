@@ -9,6 +9,7 @@ import { formatPrice } from '@/lib/utils';
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   pending: { label: 'Хүлээгдэж буй', color: 'text-orange-600', bg: 'bg-orange-50', icon: Clock },
   confirmed: { label: 'Баталгаажсан', color: 'text-blue-600', bg: 'bg-blue-50', icon: Package },
+  processing: { label: 'Боловсруулж байна', color: 'text-blue-600', bg: 'bg-blue-50', icon: Package },
   shipped: { label: 'Хүргэлтэнд', color: 'text-purple-600', bg: 'bg-purple-50', icon: Truck },
   delivered: { label: 'Хүргэгдсэн', color: 'text-green-600', bg: 'bg-green-50', icon: CheckCircle2 },
   cancelled: { label: 'Цуцлагдсан', color: 'text-red-600', bg: 'bg-red-50', icon: XCircle },
@@ -63,7 +64,7 @@ export default function TrackOrderPage() {
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                placeholder="77181818"
+                placeholder="85552229"
                 className="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#FF5000] focus:ring-2 focus:ring-[#FF5000]/10 transition-all"
               />
             </div>

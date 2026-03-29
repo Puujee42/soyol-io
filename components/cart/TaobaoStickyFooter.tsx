@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { ShoppingBag, ChevronRight, Check } from 'lucide-react';
+import { ShoppingBag, ChevronRight, Check, ArrowRight } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice, formatCurrency } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -32,75 +32,75 @@ export default function TaobaoStickyFooter() {
     }, [selectedTotalPrice, motionPrice]);
 
     return (
-        <div className="fixed bottom-[calc(56px+env(safe-area-inset-bottom)+12px)] inset-x-0 z-[60] px-4 lg:bottom-10 lg:px-0">
+        <div className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px)+8px)] inset-x-0 z-[60] px-4 lg:bottom-8 lg:px-0">
             <div className="max-w-2xl mx-auto">
                 <motion.div
-                    initial={{ y: 100, opacity: 0 }}
+                    initial={{ y: 80, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ type: 'spring', damping: 25, stiffness: 200, delay: 0.2 }}
-                    className="bg-white/95 backdrop-blur-2xl border border-white/40 rounded-[32px] shadow-[0_24px_50px_rgba(0,0,0,0.15)] overflow-hidden"
+                    transition={{ type: 'spring', damping: 28, stiffness: 220, delay: 0.15 }}
+                    className="bg-white rounded-[20px] border border-black/[0.05] overflow-hidden"
+                    style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.10)' }}
                 >
-                    <div className="px-6 py-4 flex flex-col gap-4">
-                        {/* Top Row: Select All & Subtotals */}
-                        <div className="flex items-center justify-between border-b border-gray-50 pb-3">
+                    <div className="px-4 py-3.5 flex flex-col gap-3">
+
+                        {/* Select all + subtotal pills */}
+                        <div className="flex items-center justify-between">
                             <button
                                 onClick={() => toggleAllSelection(!allSelected)}
-                                className="flex items-center gap-2 group px-2 py-1 -ml-2 rounded-full hover:bg-gray-50 transition-colors"
+                                className="flex items-center gap-2"
                             >
-                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${allSelected
-                                    ? 'bg-[#FF5000] border-[#FF5000] shadow-sm'
-                                    : 'border-gray-200 bg-white'
+                                <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all ${allSelected ? 'bg-[#FF5000] border-[#FF5000]' : 'border-black/[0.15] bg-white'
                                     }`}>
-                                    {allSelected && <Check className="w-3 h-3 text-white" strokeWidth={4} />}
+                                    {allSelected && <Check className="w-2.5 h-2.5 text-white" strokeWidth={4} />}
                                 </div>
-                                <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors">Бүгдийг сонгох</span>
+                                <span className="text-[13px] font-medium text-black/60">Бүгдийг сонгох</span>
                             </button>
 
-                            {(selectedInStockPrice > 0 || selectedPreOrderPrice > 0) && (
-                                <div className="flex gap-3">
-                                    {selectedInStockPrice > 0 && (
-                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-50 rounded-lg">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                            <span className="text-[10px] font-bold text-emerald-600">Бэлэн: {formatCurrency(selectedInStockPrice)}₮</span>
-                                        </div>
-                                    )}
-                                    {selectedPreOrderPrice > 0 && (
-                                        <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 rounded-lg">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                                            <span className="text-[10px] font-bold text-blue-600">Захиалга: {formatCurrency(selectedPreOrderPrice)}₮</span>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                            <div className="flex gap-1.5">
+                                {selectedInStockPrice > 0 && (
+                                    <div className="flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                        <span className="text-[10px] font-semibold text-emerald-700">
+                                            Бэлэн: {formatCurrency(selectedInStockPrice)}₮
+                                        </span>
+                                    </div>
+                                )}
+                                {selectedPreOrderPrice > 0 && (
+                                    <div className="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                        <span className="text-[10px] font-semibold text-amber-700">
+                                            Захиалга: {formatCurrency(selectedPreOrderPrice)}₮
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Bottom Row: Total & Checkout */}
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="flex flex-col">
-                                <span className="text-[11px] font-medium text-gray-500 leading-none mb-1.5">Нийт дүнгээр ({selectedTotalItems})</span>
-                                <div className="flex items-baseline gap-1">
-                                    <motion.span className="text-2xl font-bold text-gray-900 tracking-tight">
+                        {/* Total + checkout */}
+                        <div className="flex items-center justify-between gap-3">
+                            <div>
+                                <p className="text-[11px] text-black/30 font-medium mb-1">
+                                    Нийт дүн ({selectedTotalItems})
+                                </p>
+                                <div className="flex items-baseline gap-0.5">
+                                    <motion.span className="text-[22px] font-bold text-black tracking-tight leading-none">
                                         {displayPrice}
                                     </motion.span>
-                                    <span className="text-base font-bold text-[#FF5000]">₮</span>
+                                    <span className="text-[14px] font-bold text-[#FF5000] ml-0.5">₮</span>
                                 </div>
                             </div>
 
                             <motion.button
-                                onClick={() => {
-                                    if (selectedTotalItems === 0) return;
-                                    router.push('/checkout');
-                                }}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                                whileTap={{ scale: 0.97 }}
+                                onClick={() => { if (selectedTotalItems === 0) return; router.push('/checkout'); }}
                                 disabled={selectedTotalItems === 0}
-                                className={`h-12 px-10 rounded-xl flex items-center justify-center gap-3 font-bold text-[16px] transition-all shadow-lg ${selectedTotalItems > 0
-                                    ? 'bg-gray-950 text-white active:scale-95 shadow-black/10'
-                                    : 'bg-gray-100 text-gray-400 shadow-none grayscale cursor-not-allowed'
+                                className={`h-12 px-7 rounded-[14px] flex items-center gap-2 font-bold text-[14px] transition-all ${selectedTotalItems > 0
+                                    ? 'bg-black text-white'
+                                    : 'bg-black/[0.06] text-black/25 cursor-not-allowed'
                                     }`}
                             >
                                 Захиалах
-                                <ChevronRight className="w-5 h-5 text-orange-500" strokeWidth={3} />
+                                <ArrowRight className="w-4 h-4 text-[#FF5000]" strokeWidth={2.5} />
                             </motion.button>
                         </div>
                     </div>
@@ -109,3 +109,4 @@ export default function TaobaoStickyFooter() {
         </div>
     );
 }
+

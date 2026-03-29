@@ -23,6 +23,44 @@ export async function GET(request: Request) {
         }
 
         const orders = await ordersCollection.find(query).sort({ createdAt: -1 }).toArray();
+        
+        // Populate missing product details (Legacy support)
+        const productIds = new Set<string>();
+        orders.forEach(order => {
+            order.items?.forEach((item: any) => {
+                if (item.productId && (!item.name || !item.image || item.name === '' || item.image === '')) {
+                    productIds.add(item.productId);
+                }
+            });
+        });
+
+        if (productIds.size > 0) {
+            const productsCollection = await getCollection('products');
+            const validObjectIds = Array.from(productIds)
+                .map(id => {
+                    try { return new ObjectId(id); } catch { return null; }
+                })
+                .filter((id): id is ObjectId => id !== null);
+
+            const products = await productsCollection.find({
+                _id: { $in: validObjectIds }
+            }).toArray();
+
+            const productMap = new Map(products.map(p => [p._id.toString(), p]));
+
+            orders.forEach(order => {
+                order.items?.forEach((item: any) => {
+                    if (item.productId && (!item.name || !item.image || item.name === '' || item.image === '')) {
+                        const product = productMap.get(item.productId.toString());
+                        if (product) {
+                            if (!item.name || item.name === '') item.name = product.name;
+                            if (!item.image || item.image === '') item.image = product.images?.[0] || product.image;
+                            if (!item.price && product.price) item.price = product.price;
+                        }
+                    }
+                });
+            });
+        }
 
         return NextResponse.json({ orders });
     } catch (error) {

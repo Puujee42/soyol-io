@@ -7,7 +7,7 @@ import { Filter, ShoppingCart, Eye, ChevronDown, Sparkles, LayoutGrid, List } fr
 import { formatPrice, getStarRating, formatCurrency } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
-import DiscoveryProductCard from '@/components/DiscoveryProductCard';
+import UniversalProductCard from '@/components/UniversalProductCard';
 import type { Product } from '@/models/Product';
 import type { Category } from '@/models/Category';
 
@@ -459,15 +459,15 @@ export default function CategoriesPage() {
                       : "flex flex-col gap-4 px-4 lg:px-0"
                   }
                 >
-                  {sortedProducts.map((product, index) => (
-                    <motion.div key={product.id} variants={itemVariants}>
-                      <DiscoveryProductCard
-                        product={product}
-                        index={index}
-                        disableInitialAnimation={true}
-                      />
-                    </motion.div>
-                  ))}
+                    {sortedProducts.map((product, index) => (
+                      <motion.div key={product.id} variants={itemVariants}>
+                        <UniversalProductCard
+                          product={product}
+                          index={index}
+                          disableInitialAnimation={true}
+                        />
+                      </motion.div>
+                    ))}
                 </motion.div>
               )}
             </AnimatePresence>

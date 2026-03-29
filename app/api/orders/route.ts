@@ -87,10 +87,32 @@ export async function POST(req: NextRequest) {
 
     const totalToSave = serverTotal > 0 ? serverTotal : (body.total || 0);
 
+    // Enrich items with product details (name, image, price) before saving
+    const enrichedItems = await Promise.all(
+      (body.items || []).map(async (item: any) => {
+        const productId = item.productId || item.id;
+        if (!productId) return item;
+        // Only look up if any field is missing
+        if (item.name && item.image && item.price) return item;
+        try {
+          const product = await productsCollection.findOne({ _id: new ObjectId(productId) });
+          if (product) {
+            return {
+              ...item,
+              name: item.name || product.name,
+              image: item.image || product.images?.[0] || product.image || '',
+              price: item.price || product.price || 0,
+            };
+          }
+        } catch { /* invalid objectId, skip */ }
+        return item;
+      })
+    );
+
     const result = await orders.insertOne({
       userId,
       phone, // Store phone at top level for easy querying
-      items: body.items || [],
+      items: enrichedItems,
       total: totalToSave,
       status: body.status || 'pending',
       deliveryMethod: body.deliveryMethod || 'delivery',
@@ -171,11 +193,15 @@ export async function POST(req: NextRequest) {
           id: new ObjectId().toString(),
           city: body.shipping.city || '',
           district: body.shipping.district || '',
-          label: body.shipping.label || 'Home', // Default label if not provided
-          khoroo: '1', // Default, as form doesn't have it explicitly yet
-          street: body.shipping.address || '',
+          label: body.shipping.label || 'Гэр', 
+          khoroo: body.shipping.khoroo || '',
+          street: body.shipping.street || '',
+          apartment: body.shipping.apartment || '',
+          entrance: body.shipping.entrance || '',
+          floor: body.shipping.floor || '',
+          door: body.shipping.door || '',
           note: body.shipping.notes || '',
-          isDefault: true, // User requested "Save as primary"
+          isDefault: true,
         };
 
         // Unset previous default if exists

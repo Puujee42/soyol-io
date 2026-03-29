@@ -1,7 +1,7 @@
 'use client';
 
 import { type Product } from '@/models/Product';
-import MobileProductCard from './MobileProductCard';
+import UniversalProductCard from './UniversalProductCard';
 
 interface MobileProductGridProps {
     products: Product[];
@@ -10,8 +10,8 @@ interface MobileProductGridProps {
 export default function MobileProductGrid({ products }: MobileProductGridProps) {
     return (
         <div className="grid grid-cols-2 gap-3 px-3 pb-32">
-            {products.map((product) => (
-                <MobileProductCard key={product.id} product={product} />
+            {products.map((product, index) => (
+                <UniversalProductCard key={product.id} product={product} index={index} />
             ))}
         </div>
     );

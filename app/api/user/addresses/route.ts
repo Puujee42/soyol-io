@@ -33,7 +33,49 @@ export async function GET(req: Request) {
 
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-    return NextResponse.json(user.addresses || []);
+    const savedAddresses = user.addresses || [];
+    
+    try {
+        const ordersCollection = await getCollection('orders');
+        const userOrders = await ordersCollection.find({ userId: userId }).toArray();
+        
+        // Extract shipping addresses from orders
+        const orderAddresses: Address[] = userOrders
+            .filter(o => o.shipping && o.shipping.address)
+            .map(o => ({
+                id: `order-${o._id.toString()}`,
+                label: 'Өмнөх захиалга',
+                city: o.shipping.city || '',
+                district: o.shipping.district || '',
+                khoroo: '1',
+                street: o.shipping.address || '',
+                isDefault: false,
+                note: 'Захиалгын түүхээс'
+            }));
+
+        // Deduplicate: remove order addresses that are very similar to saved ones
+        const uniqueOrderAddresses = orderAddresses.filter(oa => {
+            const isDuplicate = savedAddresses.some(sa => 
+                sa.street.toLowerCase() === oa.street.toLowerCase() && 
+                sa.city.toLowerCase() === oa.city.toLowerCase()
+            );
+            return !isDuplicate;
+        });
+
+        // Further deduplicate between order addresses themselves
+        const finalOrderAddresses: Address[] = [];
+        uniqueOrderAddresses.forEach(oa => {
+            const isDuplicate = finalOrderAddresses.some(foa => 
+                foa.street.toLowerCase() === oa.street.toLowerCase()
+            );
+            if (!isDuplicate) finalOrderAddresses.push(oa);
+        });
+
+        return NextResponse.json({ addresses: [...savedAddresses, ...finalOrderAddresses] });
+    } catch (err) {
+        console.error('Error fetching order addresses:', err);
+        return NextResponse.json({ addresses: savedAddresses });
+    }
 }
 
 export async function POST(req: Request) {

@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { 
-  Phone, MapPin, Facebook, Instagram, MessageCircle, 
-  ShieldCheck, Truck, Headphones, CreditCard, 
-  Smartphone, Mail, ArrowRight, Globe, ChevronDown, 
+import {
+  Phone, MapPin, Facebook, Instagram, MessageCircle,
+  ShieldCheck, Truck, Headphones, CreditCard,
+  Smartphone, Mail, ArrowRight, Globe, ChevronDown,
   QrCode, Apple, Play
 } from 'lucide-react';
 import Link from 'next/link';
@@ -38,7 +38,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {trustBadges.map((badge, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -62,15 +62,15 @@ export default function Footer() {
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
-          
+
           {/* Column 1: Brand & App (Large) */}
           <div className="lg:col-span-4 space-y-8">
             <div className="space-y-4">
               <Link href="/" className="inline-block">
                 <div className="relative w-40 h-12">
-                  <Image 
-                    src="/soyol-footer-logo.png" 
-                    alt="Soyol Video Shop" 
+                  <Image
+                    src="/soyol-footer-logo.png"
+                    alt="Soyol Video Shop"
                     fill
                     className="object-contain"
                   />
@@ -160,14 +160,14 @@ export default function Footer() {
               </p>
               <form onSubmit={handleSubscribe} className="relative">
                 <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-500" />
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('footer', 'emailPlaceholder')}
                   className="w-full pl-10 pr-12 py-3 bg-gray-900 border border-gray-800 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
                 />
-                <button 
+                <button
                   type="submit"
                   className="absolute right-2 top-2 p-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
                 >
@@ -181,10 +181,10 @@ export default function Footer() {
               <div className="flex gap-3">
                 {[
                   { icon: Facebook, href: 'https://www.facebook.com/SoyolVideoShop', color: 'hover:bg-[#1877F2]' },
-                  { icon: Instagram, href: 'https://www.instagram.com/soyol_video_shop_77181818?fbclid=IwY2xjawQp1StleHRuA2FlbQIxMABicmlkETFpTVQ3UFNjSnRHS1AwM2hRc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHrapwSQbsGwv4dnai3_DWxT19gEY_qrPvaLw5XLyzLLWsGed40Iv4OBa8dPR_aem_3zR16bzS5qD0MkQDnyBecw', color: 'hover:bg-[#E4405F]' },
+                  { icon: Instagram, href: 'https://www.instagram.com/soyol_video_shop_85552229?fbclid=IwY2xjawQp1StleHRuA2FlbQIxMABicmlkETFpTVQ3UFNjSnRHS1AwM2hRc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHrapwSQbsGwv4dnai3_DWxT19gEY_qrPvaLw5XLyzLLWsGed40Iv4OBa8dPR_aem_3zR16bzS5qD0MkQDnyBecw', color: 'hover:bg-[#E4405F]' },
                   { icon: MessageCircle, href: 'https://whatsapp.com', color: 'hover:bg-[#25D366]' },
                 ].map((social, i) => (
-                  <a 
+                  <a
                     key={i}
                     href={social.href}
                     target="_blank"
@@ -204,7 +204,7 @@ export default function Footer() {
       <div className="border-t border-gray-900 bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            
+
             {/* Copyright */}
             <p className="text-xs text-gray-600 text-center md:text-left">
               {t('footer', 'copyright')}
@@ -235,7 +235,7 @@ export default function Footer() {
             <div className="flex items-center gap-2 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
               {['visa', 'mastercard', 'amex', 'paypal'].map((card) => (
                 <div key={card} className="h-6 w-10 bg-gray-800 rounded flex items-center justify-center border border-gray-700">
-                   <span className="text-[10px] uppercase font-bold">{card}</span>
+                  <span className="text-[10px] uppercase font-bold">{card}</span>
                 </div>
               ))}
             </div>

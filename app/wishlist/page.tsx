@@ -8,6 +8,7 @@ import { useWishlistStore } from '@/store/wishlistStore';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import UniversalProductCard from '@/components/UniversalProductCard';
 
 export default function SavedItemsPage() {
   const { items, removeItem } = useWishlistStore();
@@ -40,43 +41,15 @@ export default function SavedItemsPage() {
 
       <div className="p-4">
         {items.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
-            {items.map((item) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 p-1">
+            {items.map((item, index) => (
               <motion.div
                 key={item.id}
-                whileTap={{ scale: 0.98 }}
-                className="bg-white rounded-[14px] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06)] border border-gray-100 flex flex-col"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
               >
-                <Link href={`/product/${item.id}`} className="relative aspect-square bg-gray-50 block">
-                  <Image
-                    src={item.image || '/placeholder-product.png'}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                  />
-                  <button
-                    onClick={(e) => { e.preventDefault(); handleRemove(item.id); }}
-                    className="absolute top-2 right-2 z-10 p-1.5 bg-white/80 backdrop-blur-md rounded-full text-[#FF6B00] active:scale-90 transition-transform"
-                  >
-                    <Heart className="w-4 h-4 fill-[#FF6B00]" strokeWidth={2} />
-                  </button>
-                </Link>
-                <div className="p-3 flex flex-col flex-1">
-                  <h3 className="text-[13px] font-bold text-[#1A1A1A] line-clamp-2 leading-snug mb-2 flex-1">
-                    {item.name}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[15px] font-black text-[#FF6B00]">
-                      {formatPrice(item.price)}
-                    </span>
-                    <button
-                      onClick={() => handleAddToCart(item)}
-                      className="w-8 h-8 rounded-full bg-[#FF6B00] flex items-center justify-center text-white shadow-md active:scale-95 transition-transform"
-                    >
-                      <ShoppingCart className="w-4 h-4" strokeWidth={2.5} />
-                    </button>
-                  </div>
-                </div>
+                <UniversalProductCard product={item as any} index={index} disableInitialAnimation={true} />
               </motion.div>
             ))}
           </div>

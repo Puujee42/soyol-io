@@ -10,6 +10,7 @@ import { formatPrice } from '@/lib/utils';
 import { useTranslation } from '@/hooks/useTranslation';
 import AntiGravityCartItem from '@/components/cart/AntiGravityCartItem';
 import TaobaoStickyFooter from '@/components/cart/TaobaoStickyFooter';
+import UniversalProductCard from '@/components/UniversalProductCard';
 
 export default function CartPage() {
     const { items, getTotalItems } = useCartStore();
@@ -22,56 +23,78 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-screen bg-[#FAFAFA] pt-24 pb-16 flex flex-col items-center justify-center px-8 relative overflow-hidden">
+            <div className="min-h-screen bg-[#F8F9FA] pt-20 pb-16 flex flex-col items-center justify-center relative overflow-hidden">
+                {/* Decorative Background Elements */}
+                <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-white to-transparent mix-blend-overlay pointer-events-none" />
+                <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-orange-100/30 blur-[80px] pointer-events-none" />
+                
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ type: 'spring', damping: 22, stiffness: 100 }}
-                    className="text-center w-full max-w-[320px] flex flex-col items-center"
+                    transition={{ type: 'spring', damping: 25, stiffness: 120 }}
+                    className="text-center w-full max-w-[400px] flex flex-col items-center px-6 relative z-10"
                 >
-                    {/* Illustration Area */}
-                    <motion.div
-                        animate={{ y: [0, -12, 0] }}
-                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        className="relative w-48 h-48 mb-12 flex items-center justify-center p-4"
-                    >
-                        <div className="absolute inset-0 bg-orange-500/5 blur-[60px] rounded-full scale-150" />
-                        <Image
-                            src="/images/empty-cart-3d.png"
-                            alt="Empty Cart"
-                            width={240}
-                            height={240}
-                            className="object-contain relative z-10 drop-shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
-                        />
-                    </motion.div>
+                    {/* Premium Illustration Area */}
+                    <div className="relative mb-10">
+                        {/* Glow Behind */}
+                        <div className="absolute inset-0 bg-orange-500/10 blur-[40px] rounded-full scale-150" />
+                        
+                        <motion.div
+                            animate={{ y: [0, -8, 0] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            className="relative w-28 h-28 sm:w-40 sm:h-40 flex items-center justify-center rounded-[2rem] bg-white border border-white/60 shadow-[0_20px_40px_rgba(0,0,0,0.04)] mx-auto overflow-hidden ring-1 ring-black/[0.02]"
+                        >
+                            {/* Inner gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-transparent" />
+                            <ShoppingBag className="w-12 h-12 sm:hidden text-orange-400 stroke-[1.5] relative z-10" />
+                            
+                            {/* Desktop image fallback */}
+                            <Image
+                                src="/images/empty-cart-3d.png"
+                                alt="Empty Cart"
+                                width={180}
+                                height={180}
+                                className="hidden sm:block object-contain relative z-10 drop-shadow-xl"
+                            />
+                        </motion.div>
+                        
+                        {/* Floating elements */}
+                        <motion.div 
+                            animate={{ y: [0, -10, 0], opacity: [0.5, 1, 0.5] }}
+                            transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                            className="absolute -top-4 -right-4 w-8 h-8 rounded-full bg-white shadow-sm border border-gray-50 flex items-center justify-center"
+                        >
+                            <span className="w-2 h-2 rounded-full bg-orange-400" />
+                        </motion.div>
+                    </div>
 
                     {/* Text Content */}
-                    <div className="flex flex-col gap-3 mb-10 w-full text-center px-6">
-                        <h2 className="text-[26px] md:text-3xl font-black text-gray-950 tracking-tight leading-tight">
+                    <div className="flex flex-col mb-10 w-full text-center">
+                        <h2 className="text-[24px] sm:text-3xl font-black text-gray-900 tracking-tight mb-3">
                             Таны сагс хоосон байна
                         </h2>
-                        <p className="text-[15px] text-[#717171] font-medium leading-relaxed max-w-[280px] mx-auto">
+                        <p className="text-[15px] sm:text-[16px] text-gray-400 font-medium leading-relaxed max-w-[260px] mx-auto">
                             Сонирхсон бараагаа сагсандаа нэмж эхлээрэй
                         </p>
                     </div>
 
-                    <Link href="/" className="w-full mb-20 block">
+                    <Link href="/" className="w-full mb-14 block">
                         <motion.button
-                            whileHover={{ scale: 1.02, y: -2 }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className="w-full h-[60px] bg-gradient-to-br from-[#FF5000] to-[#E64500] text-white rounded-[18px] font-black text-[16px] uppercase tracking-[0.1em] shadow-xl shadow-orange-500/25 flex items-center justify-center gap-3 active:shadow-none transition-all"
+                            className="flex w-full px-6 py-4 bg-gradient-to-r from-[#FF6B00] to-[#FF5000] text-white rounded-2xl font-black text-[15px] uppercase tracking-wide shadow-[0_8px_20px_rgba(255,80,0,0.25)] items-center justify-center gap-2.5 transition-all group"
                         >
                             {t('cart', 'continueShopping')}
-                            <ArrowRight className="w-5 h-5" strokeWidth={3} />
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2.5} />
                         </motion.button>
                     </Link>
 
                     {/* Recommended Products Section */}
-                    <div className="w-[100vw] px-4 overflow-x-hidden md:w-full md:px-0 text-left mt-10">
-                        <div className="flex items-center gap-4 mb-8 w-full">
-                            <div className="h-[1px] flex-1 bg-gray-100" />
-                            <span className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em]">Танд санал болгох бараа</span>
-                            <div className="h-[1px] flex-1 bg-gray-100" />
+                    <div className="w-[100vw] px-4 overflow-x-hidden md:w-full md:px-0 text-left mt-8">
+                        <div className="flex items-center gap-4 mb-6 w-full">
+                            <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent to-gray-100" />
+                            <span className="text-[12px] font-black text-gray-800 uppercase tracking-widest">Танд санал болгох</span>
+                            <div className="h-[2px] flex-1 bg-gradient-to-l from-transparent to-gray-100" />
                         </div>
 
                         <motion.div
@@ -87,7 +110,7 @@ export default function CartPage() {
                                     }
                                 }
                             }}
-                            className="grid grid-cols-2 gap-4 pb-20"
+                            className="flex sm:grid sm:grid-cols-2 gap-4 pb-20 overflow-x-auto sm:overflow-visible snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0"
                         >
                             {suggested.length > 0
                                 ? suggested.slice(0, 4).map((p: any, idx: number) => (
@@ -98,27 +121,13 @@ export default function CartPage() {
                                             show: { opacity: 1, y: 0 }
                                         }}
                                         transition={{ duration: 0.5 }}
+                                        className="w-[160px] sm:w-auto shrink-0 snap-start"
                                     >
-                                        <Link href={`/product/${p.id}`} className="block h-full">
-                                            <motion.div
-                                                whileHover={{ y: -4, scale: 1.02 }}
-                                                className="bg-white rounded-[28px] p-4 border border-slate-100 shadow-sm flex flex-col gap-3 h-full cursor-pointer hover:shadow-xl hover:shadow-black/5 transition-all"
-                                            >
-                                                <div className="w-full aspect-square bg-slate-50 rounded-2xl relative overflow-hidden">
-                                                    <Image src={p.image || '/soyol-logo.png'} alt={p.name} fill className="object-contain p-3" />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <p className="text-[13px] font-bold text-slate-800 line-clamp-1">{p.name}</p>
-                                                    <p className="text-sm font-black text-[#FF5000]">
-                                                        {p.price.toLocaleString()}₮
-                                                    </p>
-                                                </div>
-                                            </motion.div>
-                                        </Link>
+                                        <UniversalProductCard product={p} index={idx} disableInitialAnimation />
                                     </motion.div>
                                 ))
                                 : [1, 2, 3, 4].map((i) => (
-                                    <div key={i} className="aspect-square bg-white rounded-[28px] p-4 border border-gray-100 shadow-sm animate-pulse flex flex-col gap-3">
+                                    <div key={i} className="w-[160px] sm:w-auto shrink-0 snap-start aspect-square bg-white rounded-[28px] p-4 border border-gray-100 shadow-sm animate-pulse flex flex-col gap-3">
                                         <div className="flex-1 bg-gray-50 rounded-2xl" />
                                         <div className="h-4 w-3/4 bg-gray-100 rounded-full" />
                                         <div className="h-5 w-1/2 bg-gray-200 rounded-full" />
@@ -136,7 +145,7 @@ export default function CartPage() {
     const preOrderItems = items.filter(i => i.stockStatus === 'pre-order');
 
     return (
-        <div className="min-h-screen bg-[#FDFEFE] pt-16 pb-[calc(env(safe-area-inset-bottom)+150px)] lg:pb-32">
+        <div className="min-h-screen bg-[#F5F5F3] pt-16 pb-[calc(env(safe-area-inset-bottom)+260px)] lg:pb-[260px]">
             <div className="max-w-2xl mx-auto px-4">
                 {/* Header with Glassmorphism */}
                 <motion.div
@@ -170,12 +179,12 @@ export default function CartPage() {
                     {/* Ready to Ship Section */}
                     {readyItems.length > 0 && (
                         <section>
-                            <div className="flex items-center gap-2 mb-4 px-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
-                                <h2 className="text-[13px] font-bold text-slate-900">Бэлэн байгаа бараанууд</h2>
-                                <span className="text-[10px] bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full font-bold border border-emerald-100/50 ml-auto flex items-center gap-1">
-                                    <Check className="w-3 h-3" strokeWidth={3} /> Маргааш хүргэгдэнэ
-                                </span>
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" style={{ boxShadow: '0 0 6px rgba(34,197,94,0.7)' }} />
+                                <span className="text-[12px] font-semibold text-black">Бэлэн бараанууд</span>
+                                <div className="ml-auto text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                    <Check className="w-2.5 h-2.5" strokeWidth={3} /> Маргааш хүргэнэ
+                                </div>
                             </div>
                             <div className="space-y-3">
                                 <AnimatePresence mode="popLayout">
@@ -190,12 +199,12 @@ export default function CartPage() {
                     {/* Pre-order Section */}
                     {preOrderItems.length > 0 && (
                         <section>
-                            <div className="flex items-center gap-2 mb-4 px-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)] animate-pulse" />
-                                <h2 className="text-[13px] font-bold text-slate-900">Захиалгын бараанууд</h2>
-                                <span className="text-[10px] bg-blue-50 text-blue-500 px-3 py-1 rounded-full font-bold border border-blue-100/50 ml-auto flex items-center gap-1">
-                                    <Clock className="w-3 h-3" strokeWidth={3} /> 14 хоногт ирнэ
-                                </span>
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" style={{ boxShadow: '0 0 6px rgba(245,158,11,0.7)' }} />
+                                <span className="text-[12px] font-semibold text-black">Захиалгын бараанууд</span>
+                                <div className="ml-auto text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                    <Clock className="w-2.5 h-2.5" strokeWidth={2.5} /> 14 хоногт ирнэ
+                                </div>
                             </div>
                             <div className="space-y-3">
                                 <AnimatePresence mode="popLayout">
@@ -216,21 +225,8 @@ export default function CartPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-3 pb-10">
                         {suggested.length > 0
-                            ? suggested.slice(0, 4).map((p: any) => (
-                                <Link key={p.id} href={`/product/${p.id}`}>
-                                    <motion.div
-                                        whileHover={{ y: -4, scale: 1.02 }}
-                                        className="aspect-[3/4] bg-white rounded-[32px] border border-slate-100/50 shadow-sm flex flex-col p-4 gap-3 cursor-pointer h-full"
-                                    >
-                                        <div className="flex-1 relative rounded-2xl overflow-hidden bg-slate-50">
-                                            <Image src={p.image || '/soyol-logo.png'} alt={p.name} fill className="object-contain p-2" />
-                                        </div>
-                                        <p className="text-xs font-bold text-slate-800 truncate">{p.name}</p>
-                                        <p className="text-sm font-black text-[#FF5000]">
-                                            {p.price.toLocaleString()}₮
-                                        </p>
-                                    </motion.div>
-                                </Link>
+                            ? suggested.slice(0, 4).map((p: any, index: number) => (
+                                <UniversalProductCard key={p.id} product={p} index={index} />
                             ))
                             : [1, 2, 3, 4].map((i) => (
                                 <div

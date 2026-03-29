@@ -2,27 +2,9 @@
 
 import { memo } from 'react';
 import { motion, Variants } from 'framer-motion';
-import PremiumProductCard from './PremiumProductCard';
+import UniversalProductCard from './UniversalProductCard';
 
-interface Product {
-  id: string;
-  name: string;
-  description?: string | null;
-  price: number;
-  originalPrice?: number;
-  discountPercent?: number;
-  sections?: string[];
-  image?: string | null;
-  images?: string[];
-  category: string;
-  stockStatus?: string;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
-  discount?: number;
-  inventory?: number;
-  rating?: number;
-  featured?: boolean;
-}
+import { type Product } from '@/models/Product';
 
 interface PremiumProductGridProps {
   products: Product[];
@@ -56,11 +38,11 @@ function PremiumProductGrid({ products, featuredProducts }: PremiumProductGridPr
           viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 p-2 sm:p-4 mb-8"
         >
-          {featured.map((product) => (
-            <PremiumProductCard
+          {featured.map((product, index) => (
+            <UniversalProductCard
               key={product.id}
               product={product}
-              isFeatured={true}
+              index={index}
             />
           ))}
         </motion.div>
@@ -85,11 +67,11 @@ function PremiumProductGrid({ products, featuredProducts }: PremiumProductGridPr
           viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 p-2 sm:p-4"
         >
-          {regular.map((product) => (
-            <PremiumProductCard
+          {regular.map((product, index) => (
+            <UniversalProductCard
               key={product.id}
               product={product}
-              isFeatured={false}
+              index={index + featured.length}
             />
           ))}
         </motion.div>

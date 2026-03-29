@@ -16,7 +16,7 @@ export default function AdminDashboardPage() {
 
   // Fetch dashboard data
   const { data: ordersData, error: ordersError } = useSWR('/api/admin/orders?limit=5', fetcher, { refreshInterval: 15000 });
-  const { data: productsData, error: productsError } = useSWR('/api/products', fetcher, { refreshInterval: 60000 });
+  const { data: productsData, error: productsError } = useSWR('/api/products?admin=true', fetcher, { refreshInterval: 60000 });
 
   const orders = ordersData?.orders || [];
   const products = productsData?.products || [];

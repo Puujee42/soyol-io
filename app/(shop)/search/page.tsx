@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import {
-  Search, ShoppingCart, Eye, Sparkles, TrendingUp,
+  Search, ShoppingCart, Eye, Sparkles,
   Zap, Tag, Globe, Truck, LayoutGrid, Award, Flame,
   Camera, Mic, ChevronRight, Clock, Star, X,
   Phone, Laptop, Watch, Headphones, Gamepad, Heart, Gift, MoreHorizontal
@@ -14,7 +14,7 @@ import {
 import { formatPrice, getStarRating } from '@lib/utils';
 import { useCartStore } from '@store/cartStore';
 import toast from 'react-hot-toast';
-import DiscoveryProductCard from '@/components/DiscoveryProductCard';
+import UniversalProductCard from '@/components/UniversalProductCard';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface ProductItem {
@@ -37,7 +37,6 @@ function SearchContent() {
   const q = searchParams.get('q') ?? '';
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [recommended, setRecommended] = useState<ProductItem[]>([]);
-  const [featuredProducts, setFeaturedProducts] = useState<ProductItem[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -67,11 +66,6 @@ function SearchContent() {
       .then(data => setRecommended(data.products || []))
       .catch(() => { });
 
-    // Fetch featured products for trending tags
-    fetch('/api/products?featured=true&limit=4')
-      .then(res => res.json())
-      .then(data => setFeaturedProducts(data.products || []))
-      .catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -117,16 +111,6 @@ function SearchContent() {
     router.push(`/search?q=${encodeURIComponent(text)}`);
   };
 
-  // Generate trending tags from featured products or fallback
-  const trendingTags = featuredProducts.length > 0 
-    ? featuredProducts.map(p => ({ text: p.name, status: 'HOT' }))
-    : [
-        { text: 'iPhone 15 Pro', status: 'HOT' },
-        { text: 'AirPods Max', status: 'NEW' },
-        { text: 'Gaming Setup', status: 'HOT' },
-        { text: 'Skin Care', status: 'TREND' },
-        { text: 'Winter Sale', status: 'HOT' },
-      ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -168,49 +152,39 @@ function SearchContent() {
             </div>
           </div>
 
-          <form 
-            onSubmit={(e) => { 
-              e.preventDefault(); 
-              const val = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value.trim(); 
-              if (val) router.push(`/search?q=${encodeURIComponent(val)}`); 
-            }} 
-            className="relative mb-5" 
-          > 
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" /> 
-            <input 
-              name="q" 
-              type="search" 
-              autoFocus 
-              defaultValue={q} 
-              placeholder="Бараа хайх..." 
-              className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#FF5000] focus:ring-2 focus:ring-[#FF5000]/10 transition-all" 
-            /> 
-          </form> 
-
-          {/* Trending Horizontal Scroll */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-2"
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const val = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value.trim();
+              if (val) router.push(`/search?q=${encodeURIComponent(val)}`);
+            }}
+            className="relative mb-5"
           >
-            <motion.div variants={itemVariants} className="flex items-center gap-1.5 shrink-0 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-              <TrendingUp className="w-3.5 h-3.5 text-orange-500" />
-              <span className="text-xs font-bold text-gray-700">Эрэлттэй</span>
-            </motion.div>
-            {trendingTags.map((tag, idx) => (
-              <motion.div
-                key={idx}
-                variants={itemVariants}
-                onClick={() => handleTagClick(tag.text)}
-                className="flex items-center gap-2 shrink-0 bg-white/70 backdrop-blur-md px-4 py-1.5 rounded-full border border-gray-100/50 shadow-sm transition-all active:scale-95 cursor-pointer hover:bg-white"
-              >
-                <span className="text-xs font-medium text-gray-600">{tag.text}</span>
-                {tag.status === 'HOT' && <Flame className="w-3 h-3 text-red-500 fill-red-500" />}
-                {tag.status === 'NEW' && <Sparkles className="w-3 h-3 text-blue-500 fill-blue-500" />}
-              </motion.div>
-            ))}
-          </motion.div>
+            <Search 
+               onClick={() => {
+                  const input = document.querySelector('input[name="q"]') as HTMLInputElement;
+                  if (input && input.value) router.push(`/search?q=${encodeURIComponent(input.value.trim())}`);
+               }}
+               className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 cursor-pointer" 
+            />
+            <input
+              name="q"
+              type="search"
+              autoFocus
+              defaultValue={q}
+              onChange={(e) => {
+                clearTimeout((window as any).mobileSearchTimeout);
+                (window as any).mobileSearchTimeout = setTimeout(() => {
+                  const val = e.target.value.trim();
+                  if (val) router.replace(`/search?q=${encodeURIComponent(val)}`);
+                  else router.replace(`/search`);
+                }, 500);
+              }}
+              placeholder="Бараа хайх..."
+              className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#FF5000] focus:ring-2 focus:ring-[#FF5000]/10 transition-all"
+            />
+          </form>
+
         </div>
 
         {/* Discovery Sections */}
@@ -258,24 +232,6 @@ function SearchContent() {
             )}
           </section>
 
-          {/* Trending Items Search Pills */}
-          <section className="bg-orange-50/50 p-5 rounded-[32px] border border-orange-100/50">
-            <h3 className="text-xs font-black text-orange-600 uppercase tracking-widest flex items-center gap-2 mb-4">
-              <Flame className="w-4 h-4" /> {t('nav', 'trending')}
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {trendingTags.map((tag, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleTagClick(tag.text)}
-                  className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-orange-100 shadow-sm active:scale-95 transition-all hover:bg-orange-50"
-                >
-                  <span className="text-xs font-bold text-gray-700">{tag.text}</span>
-                  {tag.status === 'HOT' && <Flame className="w-3 h-3 text-red-500 fill-red-500" />}
-                </button>
-              ))}
-            </div>
-          </section>
 
           {/* Recommended Section (Temu Style Masonry) */}
           <section>
@@ -292,11 +248,9 @@ function SearchContent() {
             >
               {recommended.map((product, index) => (
                 <motion.div key={product.id} variants={itemVariants}>
-                  <DiscoveryProductCard
+                  <UniversalProductCard
                     product={product as any}
                     index={index}
-                    showTrendingBadge={index < 2}
-                    disableInitialAnimation={true}
                   />
                 </motion.div>
               ))}
@@ -353,22 +307,36 @@ function SearchContent() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pt-4 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <form 
-          onSubmit={(e) => { 
-            e.preventDefault(); 
-            const val = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value.trim(); 
-            if (val) router.push(`/search?q=${encodeURIComponent(val)}`); 
-          }} 
-          className="relative mb-6 lg:hidden" 
-        > 
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" /> 
-          <input 
-            name="q" 
-            type="search" 
-            defaultValue={q} 
-            placeholder="Бараа хайх..." 
-            className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#FF5000] focus:ring-2 focus:ring-[#FF5000]/10 transition-all shadow-sm" 
-          /> 
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const val = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value.trim();
+            if (val) router.push(`/search?q=${encodeURIComponent(val)}`);
+          }}
+          className="relative mb-6 lg:hidden"
+        >
+          <Search 
+             onClick={() => {
+                const input = document.querySelector('input[name="q"]') as HTMLInputElement;
+                if (input && input.value) router.push(`/search?q=${encodeURIComponent(input.value.trim())}`);
+             }}
+             className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 cursor-pointer" 
+          />
+          <input
+            name="q"
+            type="search"
+            defaultValue={q}
+            onChange={(e) => {
+              clearTimeout((window as any).mobileSearchTimeoutResults);
+              (window as any).mobileSearchTimeoutResults = setTimeout(() => {
+                const val = e.target.value.trim();
+                if (val) router.replace(`/search?q=${encodeURIComponent(val)}`);
+                else router.replace(`/search`);
+              }, 500);
+            }}
+            placeholder="Бараа хайх..."
+            className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl text-sm font-medium outline-none focus:border-[#FF5000] focus:ring-2 focus:ring-[#FF5000]/10 transition-all shadow-sm"
+          />
         </form>
 
         <motion.div
@@ -414,10 +382,9 @@ function SearchContent() {
           >
             {products.map((product, index) => (
               <motion.div key={product.id} variants={itemVariants}>
-                <DiscoveryProductCard
+                <UniversalProductCard
                   product={product as any}
                   index={index}
-                  disableInitialAnimation={true}
                 />
               </motion.div>
             ))}

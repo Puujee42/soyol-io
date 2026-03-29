@@ -8,7 +8,7 @@ import {
   Package, Heart, MapPin, Bell, ShieldCheck,
   ChevronRight, LogOut, Camera, KeyRound, Eye,
   EyeOff, CheckCircle, User, Clock, XCircle,
-  TrendingUp, Lock, Link2, Loader2
+  TrendingUp, Lock, Link2, Loader2, Truck
 } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '@/context/AuthContext';
@@ -20,7 +20,8 @@ type Tab = 'overview' | 'orders' | 'password';
 
 interface Order {
   _id: string;
-  totalPrice: number;
+  total?: number;
+  totalPrice?: number;
   status: string;
   createdAt: string;
   items?: any[];
@@ -110,8 +111,11 @@ export default function ProfilePage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="w-4 h-4 text-emerald-500" />;
+      case 'completed':
+      case 'delivered': return <CheckCircle className="w-4 h-4 text-emerald-500" />;
       case 'cancelled': return <XCircle className="w-4 h-4 text-red-500" />;
+      case 'shipped': return <Truck className="w-4 h-4 text-blue-500" />;
+      case 'confirmed': return <Package className="w-4 h-4 text-blue-500" />;
       default: return <Clock className="w-4 h-4 text-amber-500" />;
     }
   };
@@ -119,9 +123,11 @@ export default function ProfilePage() {
   const getStatusText = (status: string) => {
     const map: Record<string, string> = {
       pending: 'Хүлээгдэж байна',
+      confirmed: 'Баталгаажсан',
       processing: 'Боловсруулж байна',
       shipped: 'Илгээгдсэн',
       completed: 'Хүргэгдсэн',
+      delivered: 'Хүргэгдсэн',
       cancelled: 'Цуцлагдсан',
     };
     return map[status] || status;
@@ -129,8 +135,12 @@ export default function ProfilePage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      case 'completed':
+      case 'delivered': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'cancelled': return 'bg-red-50 text-red-700 border-red-200';
+      case 'shipped':
+      case 'processing':
+      case 'confirmed': return 'bg-blue-50 text-blue-700 border-blue-200';
       default: return 'bg-amber-50 text-amber-700 border-amber-200';
     }
   };
@@ -154,6 +164,10 @@ export default function ProfilePage() {
     { id: 'orders', label: 'Захиалгууд', icon: Package },
     { id: 'password', label: 'Нууц үг', icon: KeyRound },
   ];
+
+  const totalPaid = orders
+    .filter(o => o.status === 'completed' || o.status === 'delivered')
+    .reduce((sum, o) => sum + (Number(o.total || o.totalPrice) || 0), 0);
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] pb-[120px] font-sans">
@@ -260,14 +274,12 @@ export default function ProfilePage() {
                 <p className="text-[24px] font-bold text-[#1A1A1A]">{dataLoading ? '—' : addressCount}</p>
                 <p className="text-[12px] text-[#999] font-medium mt-0.5">Хадгалсан хаяг</p>
               </div>
-              <div className="bg-white rounded-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-4">
-                <div className="w-9 h-9 bg-[#F0FDF4] rounded-[10px] flex items-center justify-center mb-3">
-                  <CheckCircle className="w-5 h-5 text-[#22C55E]" strokeWidth={2} />
+              <div className="bg-white rounded-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-4 col-span-2">
+                <div className="w-9 h-9 bg-[#FFF7ED] rounded-[10px] flex items-center justify-center mb-3">
+                  <TrendingUp className="w-5 h-5 text-[#F97316]" strokeWidth={2} />
                 </div>
-                <p className="text-[24px] font-bold text-[#1A1A1A]">
-                  {dataLoading ? '—' : orders.filter(o => o.status === 'completed').length}
-                </p>
-                <p className="text-[12px] text-[#999] font-medium mt-0.5">Хүргэгдсэн</p>
+                <p className="text-[24px] font-bold text-[#1A1A1A]">{formatPrice(totalPaid)}</p>
+                <p className="text-[12px] text-[#999] font-medium mt-0.5">Нийт төлсөн төлбөр</p>
               </div>
             </div>
 
@@ -290,11 +302,13 @@ export default function ProfilePage() {
                         {getStatusIcon(order.status)}
                         <div>
                           <p className="text-[13px] font-bold text-[#1A1A1A]">#{order._id.slice(-6).toUpperCase()}</p>
-                          <p className="text-[11px] text-[#999]">{new Date(order.createdAt).toLocaleDateString('mn-MN')}</p>
+                          <p className="text-[11px] text-[#999]">
+                            {new Date(order.createdAt).toLocaleDateString('mn-MN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.')}
+                          </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-[13px] font-bold text-[#1A1A1A]">{formatPrice(order.totalPrice)}</p>
+                        <p className="text-[13px] font-bold text-[#1A1A1A]">{formatPrice(Number(order.total || order.totalPrice))}</p>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${getStatusColor(order.status)}`}>
                           {getStatusText(order.status)}
                         </span>
@@ -370,9 +384,9 @@ export default function ProfilePage() {
                   </div>
                   <div className="px-4 py-3 flex items-center justify-between">
                     <p className="text-[12px] text-[#999]">
-                      {new Date(order.createdAt).toLocaleDateString('mn-MN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {new Date(order.createdAt).toLocaleDateString('mn-MN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.')}
                     </p>
-                    <p className="text-[15px] font-bold text-[#FF6B00]">{formatPrice(order.totalPrice)}</p>
+                    <p className="text-[15px] font-bold text-[#FF6B00]">{formatPrice(Number(order.total || order.totalPrice))}</p>
                   </div>
                 </div>
               ))
@@ -516,19 +530,19 @@ interface LinkedAccounts {
   facebook: { linked: boolean; email?: string };
 }
 
-function ConnectedAccounts() {
-  const { user } = useAuth();
-  const [linked, setLinked] = useState<LinkedAccounts | null>(null);
-  const [busy, setBusy] = useState<'google' | 'facebook' | null>(null);
-  const [confirmUnlink, setConfirmUnlink] = useState<'google' | 'facebook' | null>(null);
-
-  useEffect(() => {
-    fetch('/api/user/link-social')
-      .then(r => r.ok ? r.json() : null)
-      .then(data => data && setLinked(data))
-      .catch(() => {});
-  }, []);
-
+function GoogleLinkButton({ 
+  isLinked, 
+  email, 
+  isBusy, 
+  onConnect, 
+  onUnlink 
+}: { 
+  isLinked: boolean; 
+  email?: string; 
+  isBusy: boolean; 
+  onConnect: () => void; 
+  onUnlink: () => void; 
+}) {
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
@@ -540,34 +554,65 @@ function ConnectedAccounts() {
 
         const data = await res.json();
         if (res.ok) {
-          setLinked(prev => prev ? { ...prev, google: { linked: true, email: data.email } } : null);
           toast.success('Амжилттай холбогдлоо!');
+          window.location.reload(); // Simplest way to refresh linked state
         } else {
           toast.error(data.error || 'Холбоход алдаа гарлаа');
         }
       } catch (error) {
         toast.error('Сервертэй холбогдож чадсангүй');
-      } finally {
-        setBusy(null);
       }
     },
     onError: () => {
       toast.error('Google-ээр холбоход алдаа гарлаа');
-      setBusy(null);
     },
   });
 
+  if (isBusy) return <Loader2 className="w-5 h-5 text-[#999] animate-spin shrink-0" />;
+
+  if (isLinked) {
+    return (
+      <button
+        onClick={onUnlink}
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 rounded-[10px] text-[12px] font-bold text-red-600 transition-colors shrink-0"
+      >
+        <XCircle className="w-3.5 h-3.5" />
+        Салгах
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => googleLogin()}
+      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F5F5F5] hover:bg-[#EBEBEB] rounded-[10px] text-[12px] font-bold text-[#1A1A1A] transition-colors shrink-0"
+    >
+      <Link2 className="w-3.5 h-3.5" />
+      Холбох
+    </button>
+  );
+}
+
+function ConnectedAccounts() {
+  const { user } = useAuth();
+  const [linked, setLinked] = useState<LinkedAccounts | null>(null);
+  const [busy, setBusy] = useState<'google' | 'facebook' | null>(null);
+  const [confirmUnlink, setConfirmUnlink] = useState<'google' | 'facebook' | null>(null);
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    fetch('/api/user/link-social')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => data && setLinked(data))
+      .catch(() => {});
+  }, []);
+
   const handleConnect = async (provider: 'google' | 'facebook') => {
-    setBusy(provider);
-    if (provider === 'google') {
-      googleLogin();
-    } else {
+    if (provider === 'facebook') {
       toast.error('Удахгүй нэмэгдэх болно');
-      setBusy(null);
     }
   };
 
-  // ── Disconnect ───────────────────────────────────────────────────────────
   const handleDisconnect = async (provider: 'google' | 'facebook') => {
     setConfirmUnlink(null);
     setBusy(provider);
@@ -579,11 +624,7 @@ function ConnectedAccounts() {
       });
       const data = await res.json();
       if (res.ok) {
-        // Update local state immediately — no reload needed
-        setLinked(prev => prev ? {
-          ...prev,
-          [provider]: { linked: false },
-        } : null);
+        setLinked(prev => prev ? { ...prev, [provider]: { linked: false } } : null);
         toast.success(data.message || 'Холболт салгагдлаа');
       } else {
         toast.error(data.error || 'Алдаа гарлаа');
@@ -606,8 +647,6 @@ function ConnectedAccounts() {
         Холбогдсон данс
       </h2>
       <div className="bg-white rounded-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden">
-
-        {/* Confirm unlink overlay */}
         {confirmUnlink && (
           <div className="px-4 py-4 bg-red-50 border-b border-red-100 flex flex-col gap-3">
             <p className="text-[13px] font-bold text-red-700">
@@ -634,12 +673,29 @@ function ConnectedAccounts() {
           const isLinked = linked?.[p.key]?.linked;
           const email = linked?.[p.key]?.email;
           const isBusy = busy === p.key;
+
+          // Skip rendering Google link if Client ID is missing
+          if (p.key === 'google' && !googleClientId) {
+            return (
+              <div key={p.key} className={`flex items-center justify-between px-4 h-[72px] ${i < providers.length - 1 ? 'border-b border-[#F5F5F5]' : ''} opacity-60`}>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-[10px] bg-[#F5F5F5] flex items-center justify-center shrink-0">
+                    {p.icon}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[15px] font-bold text-[#1A1A1A]">{p.label}</p>
+                    <p className="text-[11px] text-[#BBBBBB] mt-0.5">Тохируулаагүй байна</p>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
           return (
             <div
               key={p.key}
               className={`flex items-center justify-between px-4 h-[72px] ${i < providers.length - 1 ? 'border-b border-[#F5F5F5]' : ''}`}
             >
-              {/* Left: icon + label + status */}
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-9 h-9 rounded-[10px] bg-[#F5F5F5] flex items-center justify-center shrink-0">
                   {p.icon}
@@ -653,8 +709,15 @@ function ConnectedAccounts() {
                 </div>
               </div>
 
-              {/* Right: action button */}
-              {isBusy ? (
+              {p.key === 'google' ? (
+                <GoogleLinkButton 
+                  isLinked={!!isLinked} 
+                  email={email} 
+                  isBusy={isBusy} 
+                  onConnect={() => {}} 
+                  onUnlink={() => setConfirmUnlink('google')} 
+                />
+              ) : isBusy ? (
                 <Loader2 className="w-5 h-5 text-[#999] animate-spin shrink-0" />
               ) : isLinked ? (
                 <button

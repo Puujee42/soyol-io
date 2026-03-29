@@ -347,7 +347,7 @@ export default function LuxuryNavbar() {
                     whileHover={{ scale: 1.2, y: -2 }}
                     whileTap={{ scale: 0.9 }}
                     animate={wishlistBump ? { x: [0, -4, 4, -4, 4, 0] } : {}}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
                     className="relative p-2 hover:bg-gray-50 rounded-2xl transition-all group cursor-pointer border border-transparent hover:border-gray-100"
                   >
                     <Heart

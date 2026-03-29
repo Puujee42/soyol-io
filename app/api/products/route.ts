@@ -98,13 +98,17 @@ export async function GET(request: NextRequest) {
       id: product._id.toString(),
     }));
 
+    // Cache Control Logic
+    const isAdmin = searchParams.get('admin') === 'true';
+    const headers: Record<string, string> = {
+      'Cache-Control': isAdmin 
+        ? 'no-store, max-age=0' 
+        : 'public, s-maxage=60, stale-while-revalidate=120',
+    };
+
     return NextResponse.json(
       { products: mappedResults, nextCursor, hasMore },
-      {
-        headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
-        },
-      }
+      { headers }
     );
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));

@@ -13,6 +13,8 @@ const fetcher = (url: string) => fetch(url).then(r => r.json());
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any; step: number }> = {
     pending: { label: 'Хүлээгдэж буй', color: 'text-orange-600', bg: 'bg-orange-50', icon: Clock, step: 1 },
     confirmed: { label: 'Баталгаажсан', color: 'text-blue-600', bg: 'bg-blue-50', icon: Package, step: 2 },
+    processing: { label: 'Боловсруулж байна', color: 'text-blue-600', bg: 'bg-blue-50', icon: Package, step: 2 },
+    shipped: { label: 'Хүргэлтэнд', color: 'text-blue-600', bg: 'bg-blue-50', icon: Truck, step: 2 },
     delivered: { label: 'Хүргэгдсэн', color: 'text-green-600', bg: 'bg-green-50', icon: CheckCircle2, step: 3 },
     cancelled: { label: 'Цуцлагдсан', color: 'text-red-600', bg: 'bg-red-50', icon: XCircle, step: 0 },
 };

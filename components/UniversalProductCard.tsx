@@ -1,0 +1,271 @@
+'use client';
+
+import { useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Heart, ShoppingCart, Clock } from 'lucide-react';
+import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { useAuth } from '@/context/AuthContext';
+import { formatPrice } from '@/lib/utils';
+import toast from 'react-hot-toast';
+import type { Product } from '@/models/Product';
+import ProductBadge from '@/components/ProductBadge';
+
+interface UniversalProductCardProps {
+  product: Product;
+  index?: number;
+  disableInitialAnimation?: boolean;
+}
+
+export default function UniversalProductCard({
+  product: originalProduct,
+  index = 0,
+  disableInitialAnimation = false,
+}: UniversalProductCardProps) {
+  const product = originalProduct;
+
+  const { isAuthenticated } = useAuth();
+  const addItem = useCartStore((state) => state.addItem);
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const isWishlisted = isInWishlist(product.id);
+
+  const [activeIdx, setActiveIdx] = useState(0);
+  const isDragging = useRef(false);
+
+  const allImages: string[] = (() => {
+    const combined: string[] = [];
+    if (product.image) combined.push(product.image);
+    if (product.images?.length) {
+      product.images.forEach((img) => {
+        if (!combined.includes(img)) combined.push(img);
+      });
+    }
+    return combined.length > 0 ? combined : ['/soyol-logo.png'];
+  })();
+
+  const hasMultiple = allImages.length > 1;
+
+  const discount =
+    product.originalPrice && product.originalPrice > product.price
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : (product.discountPercent ?? 0);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product);
+    toast.success('Сагсанд нэмлээ', {
+      style: { borderRadius: '10px', background: '#FF5000', color: '#fff', fontWeight: '600' },
+      duration: 1500,
+    });
+  };
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      toast.error('Нэвтрэх шаардлагатай', { style: { borderRadius: '10px' } });
+      return;
+    }
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+      toast.success('Хүслээс хассан', { style: { borderRadius: '10px' } });
+    } else {
+      addToWishlist({ ...product } as any);
+      toast.success('Хүсэлд нэмсэн', { style: { borderRadius: '10px' } });
+    }
+  };
+
+  return (
+    <motion.div
+      initial={disableInitialAnimation ? undefined : { opacity: 0, y: 16 }}
+      whileInView={disableInitialAnimation ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={disableInitialAnimation ? undefined : { duration: 0.4, delay: index * 0.04, ease: [0.25, 0.1, 0.25, 1] }}
+      whileTap={{ scale: 0.97 }}
+      className="group relative"
+      style={{ touchAction: 'manipulation' }}
+    >
+      <Link
+        href={`/product/${product.id}`}
+        className="block"
+        onClick={(e) => { if (isDragging.current) e.preventDefault(); }}
+      >
+        <div className="bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden border border-black/[0.05] shadow-[0_2px_12px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1">
+          {/* ── Image area ─────────────────────────────── */}
+          <div className="relative aspect-square bg-[#F7F7F5] overflow-hidden rounded-t-2xl sm:rounded-t-[2rem]">
+            {/* Swipeable image slider */}
+            {hasMultiple ? (
+              <motion.div
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.08}
+                onDragStart={() => { isDragging.current = true; }}
+                onDragEnd={(_, info) => {
+                  if (Math.abs(info.offset.x) > 50) {
+                    if (info.offset.x < 0 && activeIdx < allImages.length - 1) setActiveIdx((p) => p + 1);
+                    else if (info.offset.x > 0 && activeIdx > 0) setActiveIdx((p) => p - 1);
+                  }
+                  setTimeout(() => { isDragging.current = false; }, 10);
+                }}
+                animate={{ x: `-${activeIdx * 100}%` }}
+                transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+                className="flex w-full h-full"
+              >
+                {allImages.map((img, i) => (
+                  <div key={i} className="w-full h-full shrink-0 relative">
+                    <Image
+                      src={img}
+                      alt={product.name}
+                      fill
+                      className="object-cover sm:object-contain sm:p-6 pointer-events-none transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      priority={i === 0 && index < 4}
+                    />
+                  </div>
+                ))}
+              </motion.div>
+            ) : (
+              <Image
+                src={allImages[0]}
+                alt={product.name}
+                fill
+                className="object-cover sm:object-contain sm:p-6 transition-transform duration-500 group-hover:scale-105"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                priority={index < 4}
+              />
+            )}
+
+
+            {/* ── Top-left badges ───────────────────────── */}
+            <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start">
+              {/* Discount */}
+
+              {/* Stock status */}
+              {product.stockStatus === 'in-stock' && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-lg border border-black/[0.04] shadow-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[9px] sm:text-[10px] font-black text-emerald-700 uppercase tracking-widest">Бэлэн</span>
+                </div>
+              )}
+              {product.stockStatus === 'pre-order' && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-lg border border-black/[0.04] shadow-sm">
+                  <Clock className="w-2.5 h-2.5 text-amber-500" />
+                  <span className="text-[9px] sm:text-[10px] font-black text-amber-700 uppercase tracking-widest">Захиалга</span>
+                </div>
+              )}
+
+              {/* Featured */}
+              <ProductBadge
+                isFeatured={product.featured || product.sections?.includes('Онцгой') || product.sections?.includes('Онцлох')}
+              />
+            </div>
+
+            {/* ── Wishlist button ───────────────────────── */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handleWishlist}
+              className={`absolute top-3 right-3 z-10 flex items-center justify-center transition-all w-6 h-6 sm:w-9 sm:h-9 sm:rounded-full sm:border ${isWishlisted
+                ? 'text-[#FF5722] sm:bg-red-50 sm:border-red-100 sm:text-red-500'
+                : 'text-[#AAAAAA] sm:bg-white/90 sm:backdrop-blur-sm sm:border-black/[0.04] sm:text-black/30 hover:text-[#FF5722] sm:hover:text-red-500 sm:shadow-sm'
+                }`}
+            >
+              {/* Mobile Heart */}
+              <Heart
+                className={`sm:hidden w-5 h-5 ${isWishlisted ? 'fill-[#FF5722] stroke-[#FF5722]' : 'fill-transparent stroke-[#AAAAAA]'}`}
+                strokeWidth={1}
+              />
+              {/* Desktop Heart */}
+              <Heart
+                className={`hidden sm:block w-4 h-4 ${isWishlisted ? 'fill-red-500' : ''}`}
+                strokeWidth={2.5}
+              />
+            </motion.button>
+          </div>
+
+          {/* ── Info area ──────────────────────────────── */}
+          <div className="px-3 pt-2.5 pb-3 sm:px-5 sm:pt-5 sm:pb-5 flex flex-col gap-2.5 sm:gap-4">
+            {/* Product name */}
+            <h3 className="text-[14px] sm:text-lg font-medium sm:font-black text-gray-900 leading-snug sm:leading-tight line-clamp-2 min-h-[40px] sm:min-h-[48px] tracking-tight group-hover:text-[#FF5000] transition-colors">
+              {product.name}
+            </h3>
+
+            {/* Footer Container (Pushed to bottom) */}
+            <div className="mt-auto flex flex-col gap-2.5 sm:gap-4">
+              {/* Inventory Level (Visible only for low stock <= 10) */}
+              {product.inventory !== undefined && product.inventory <= 10 && product.inventory > 0 && (
+                <div className="flex flex-col gap-1.5 pt-1">
+                  <span className="text-[10px] sm:text-[11px] font-medium text-gray-500 leading-none">
+                    Сүүлийн {product.inventory} ширхэг
+                  </span>
+                  <div className="w-full h-1 bg-[#EEEEEE] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#FF5722] rounded-full"
+                      style={{ width: `${(product.inventory / 10) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Desktop: Price section separate */}
+              <div className="hidden sm:flex flex-col gap-1">
+                {product.originalPrice && product.originalPrice > product.price && (
+                  <span className="text-[11px] sm:text-xs text-black/25 line-through font-medium leading-none">
+                    {formatPrice(product.originalPrice)}
+                  </span>
+                )}
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[18px] sm:text-2xl font-black text-[#FF5000] leading-none tracking-tight">
+                    {formatPrice(product.price)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Desktop: Footer buttons row */}
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="hidden lg:flex flex-1 items-center justify-center py-2.5 rounded-xl bg-gray-50 border border-gray-100 text-gray-900 font-bold text-xs uppercase tracking-wider group-hover:bg-gray-900 group-hover:text-white group-hover:shadow-lg transition-all duration-300">
+                  Дэлгэрэнгүй
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleAddToCart}
+                  className="lg:w-11 lg:h-11 w-10 h-10 flex items-center justify-center bg-[#FF5000] text-white rounded-xl shadow-[0_2px_8px_rgba(255,80,0,0.3)] active:bg-[#E64800] transition-all shrink-0"
+                >
+                  <ShoppingCart className="w-5 h-5" strokeWidth={2.5} />
+                </motion.button>
+              </div>
+
+              {/* Mobile: Footer row (Price & Cart Button merged) */}
+              <div className="flex sm:hidden items-center justify-between gap-2">
+                <div className="flex flex-col">
+                  {product.originalPrice && product.originalPrice > product.price && (
+                    <span className="text-[10px] sm:text-xs text-black/25 line-through font-medium leading-none mb-0.5">
+                      {formatPrice(product.originalPrice)}
+                    </span>
+                  )}
+                  <span className="text-[16px] sm:text-2xl font-black text-[#FF5000] leading-none tracking-tight">
+                    {formatPrice(product.price)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleAddToCart}
+                    className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center bg-[#FF5000] text-white rounded-xl shadow-[0_2px_8px_rgba(255,80,0,0.3)] active:bg-[#E64800] transition-all shrink-0"
+                  >
+                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.5} />
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}

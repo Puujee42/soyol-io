@@ -10,6 +10,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import toast from 'react-hot-toast';
 import { useEffect, useState, useRef, useMemo } from 'react';
 import ProductBadge from '@/components/ProductBadge';
+import UniversalProductCard from './UniversalProductCard';
 interface Product {
     id: string;
     _id?: string;
@@ -191,73 +192,13 @@ export default function MobileFeaturedCarousel({ products }: MobileFeaturedCarou
                 return (
                     <div
                         key={uniqueKey}
-                        className="flex-shrink-0 w-[160px] xs:w-[180px]" // Fixed width for better marquee behavior
+                        className="flex-shrink-0 w-[160px] xs:w-[180px]"
                     >
-                        <div className="group relative bg-white rounded-2xl overflow-hidden border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full flex flex-col">
-                            <Link href={`/product/${product.id || product._id}`} draggable={false} className="relative block">
-                                <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50">
-                                    <Image
-                                        src={product.image || '/soyol-logo.png'}
-                                        alt={product.name}
-                                        fill
-                                        className="object-contain group-hover:scale-105 transition-transform duration-500 p-4"
-                                        sizes="200px"
-                                        draggable={false}
-                                    />
-
-                                    <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start">
-                                        <ProductBadge
-                                            isFeatured={product.featured || product.sections?.includes('Онцгой') || product.sections?.includes('Онцлох')}
-                                            className="scale-90 origin-top-left shadow-sm"
-                                        />
-
-                                        {/* Stock Badge */}
-                                        <div className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest backdrop-blur-md shadow-md border ${product.stockStatus === 'pre-order'
-                                            ? 'bg-amber-500/90 text-white border-amber-400/50 shadow-amber-500/10'
-                                            : 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-emerald-500/10'
-                                            }`}>
-                                            <div className="flex items-center gap-1">
-                                                <div className={`w-1 h-1 rounded-full bg-white ${product.stockStatus === 'in-stock' ? 'animate-pulse' : ''}`} />
-                                                {product.stockStatus === 'pre-order' ? 'Захиалга' : 'Бэлэн'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-
-                            {/* Product Info */}
-                            <div className="p-3 flex-1 flex flex-col justify-between">
-                                <div className="space-y-1">
-                                    <Link href={`/product/${product.id || product._id}`} draggable={false}>
-                                        <h3 className="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-orange-600 transition-colors h-10 overflow-hidden leading-snug">
-                                            {product.name}
-                                        </h3>
-                                    </Link>
-
-                                </div>
-
-                                <div className="flex items-end justify-between pt-2">
-                                    <div className="flex flex-col">
-                                        <span className="text-base font-black text-slate-900">
-                                            {formatPrice(product.price)}
-                                        </span>
-                                        {product.category && (
-                                            <span className="text-[9px] font-bold text-orange-500 uppercase tracking-widest bg-orange-50 px-2 py-0.5 rounded-md self-start mt-1">
-                                                {product.category}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Quick Add Button */}
-                                    <button
-                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(product); }}
-                                        className="w-8 h-8 bg-[#FF5000] text-white rounded-full flex items-center justify-center shadow-lg shadow-orange-500/20 hover:bg-[#E64500] active:scale-95 transition-all shrink-0"
-                                    >
-                                        <ShoppingCart className="w-4 h-4" strokeWidth={2.5} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <UniversalProductCard
+                            product={product as any}
+                            disableInitialAnimation={true}
+                            index={i}
+                        />
                     </div>
                 );
             })}

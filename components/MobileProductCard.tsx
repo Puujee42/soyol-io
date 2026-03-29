@@ -21,9 +21,10 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
     const addItem = useCartStore((state) => state.addItem);
     const price = convertPrice(product.price);
     const [activeIdx, setActiveIdx] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
     const isDragging = useRef(false);
 
-    // Build images array: combine main image + additional images, deduplicate
+    // Build images array
     const allImages: string[] = (() => {
         const combined: string[] = [];
         if (product.image) combined.push(product.image);
@@ -37,141 +38,158 @@ export default function MobileProductCard({ product }: MobileProductCardProps) {
 
     const hasMultiple = allImages.length > 1;
 
-    // Format price
-    const formattedPrice = currency === 'USD'
-        ? `$${price.toLocaleString()}`
-        : `${formatCurrency(price)}`;
+    // Prices
+    const formattedPrice = price.toLocaleString();
 
     return (
         <motion.div
-            whileTap={{ scale: 0.97 }} 
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }} 
-            className="group relative bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-gray-100/50 will-change-transform"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            whileTap={{ scale: 0.98 }}
+            className="group relative bg-white rounded-[20px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 flex flex-col h-full transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)]"
         >
-            <Link href={`/product/${product.id}`} className="block" onClick={(e) => { if (isDragging.current) e.preventDefault(); }}>
-                <div className="relative aspect-square overflow-hidden bg-gray-50 rounded-t-2xl">
-                    {/* Image Slider */}
-                    {hasMultiple ? (
-                        <motion.div
-                            drag="x"
-                            dragConstraints={{ left: 0, right: 0 }}
-                            dragElastic={0.1}
-                            onDragStart={() => { isDragging.current = true; }}
-                            onDragEnd={(_, info) => {
-                                if (Math.abs(info.offset.x) > 50) {
-                                    if (info.offset.x < 0 && activeIdx < allImages.length - 1) setActiveIdx(p => p + 1);
-                                    else if (info.offset.x > 0 && activeIdx > 0) setActiveIdx(p => p - 1);
-                                }
-                                setTimeout(() => { isDragging.current = false; }, 10);
-                            }}
-                            animate={{ x: `-${activeIdx * 100}%` }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="flex w-full h-full"
-                        >
-                            {allImages.map((img, i) => (
-                                <div key={i} className="w-full h-full shrink-0 relative">
-                                    <Image
-                                        src={img}
-                                        alt={product.name}
-                                        fill
-                                        sizes="(max-width: 768px) 50vw"
-                                        className="object-cover"
-                                    />
-                                </div>
-                            ))}
-                        </motion.div>
-                    ) : (
-                        <Image
-                            src={allImages[0]}
-                            alt={product.name}
-                            fill
-                            sizes="(max-width: 768px) 50vw"
-                            className="object-cover"
-                        />
-                    )}
+            <Link
+                href={`/product/${product.id}`}
+                className="flex flex-col h-full"
+                onClick={(e) => { if (isDragging.current) e.preventDefault(); }}
+            >
+                {/* Image Section */}
+                <div className="relative aspect-square overflow-hidden bg-[#F9F9F9] m-2 rounded-[18px]">
+                    <motion.div
+                        animate={{ scale: isHovered ? 1.05 : 1 }}
+                        transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+                        className="w-full h-full relative"
+                    >
+                        {hasMultiple ? (
+                            <motion.div
+                                drag="x"
+                                dragConstraints={{ left: 0, right: 0 }}
+                                dragElastic={0.1}
+                                onDragStart={() => { isDragging.current = true; }}
+                                onDragEnd={(_, info) => {
+                                    if (Math.abs(info.offset.x) > 50) {
+                                        if (info.offset.x < 0 && activeIdx < allImages.length - 1) setActiveIdx(p => p + 1);
+                                        else if (info.offset.x > 0 && activeIdx > 0) setActiveIdx(p => p - 1);
+                                    }
+                                    setTimeout(() => { isDragging.current = false; }, 10);
+                                }}
+                                animate={{ x: `-${activeIdx * 100}%` }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                className="flex w-full h-full"
+                            >
+                                {allImages.map((img, i) => (
+                                    <div key={i} className="w-full h-full shrink-0 relative">
+                                        <Image
+                                            src={img}
+                                            alt={product.name}
+                                            fill
+                                            sizes="(max-width: 768px) 50vw"
+                                            className="object-cover"
+                                            priority={i === 0}
+                                        />
+                                    </div>
+                                ))}
+                            </motion.div>
+                        ) : (
+                            <Image
+                                src={allImages[0]}
+                                alt={product.name}
+                                fill
+                                sizes="(max-width: 768px) 50vw"
+                                className="object-cover"
+                            />
+                        )}
+                    </motion.div>
+
+                    {/* Glassmorphism Badges */}
+                    <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+                        {product.stockStatus === 'in-stock' && (
+                            <div className="px-3 py-1.5 bg-white/70 backdrop-blur-md rounded-full border border-white/40 shadow-sm transition-opacity duration-300">
+                                <span className="text-[10px] font-medium text-gray-800 tracking-wider">БЭЛЭН</span>
+                            </div>
+                        )}
+                        {product.stockStatus === 'pre-order' && (
+                            <div className="px-3 py-1.5 bg-white/70 backdrop-blur-md rounded-full border border-white/40 shadow-sm transition-opacity duration-300">
+                                <span className="text-[10px] font-medium text-blue-600 tracking-wider">ЗАХИАЛГА</span>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Dot Indicators */}
                     {hasMultiple && (
-                        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1 z-10">
+                        <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
                             {allImages.map((_, i) => (
-                                <button
+                                <div
                                     key={i}
-                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveIdx(i); }}
-                                    className={`rounded-full transition-all duration-300 ${activeIdx === i ? 'w-4 h-1.5 bg-[#FF5000]' : 'w-1.5 h-1.5 bg-white/70'}`}
+                                    className={`h-1 rounded-full transition-all duration-300 ${activeIdx === i ? 'w-4 bg-white shadow-sm' : 'w-1 bg-white/40'}`}
                                 />
                             ))}
                         </div>
                     )}
-
-                    {/* Premium Status & Discount Badges */}
-                    <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5 items-start">
-                        <ProductBadge
-                            sections={product.sections}
-                            isFeatured={product.featured}
-                            className="z-10 scale-90 origin-top-left"
-                        />
-                        {product.discountPercent && product.discountPercent > 0 && (
-                            <div className="px-2 py-1 bg-[#FF3B30] rounded-lg shadow-lg shadow-red-500/20">
-                                <span className="text-[10px] font-black text-white">-{product.discountPercent}%</span>
-                            </div>
-                        )}
-                        {product.stockStatus === 'in-stock' && (
-                            <div className="px-2 py-1 bg-white/60 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
-                                <span className="text-[10px] font-bold text-gray-900 uppercase tracking-wide">БЭЛЭН</span>
-                            </div>
-                        )}
-                        {product.stockStatus === 'pre-order' && (
-                            <div className="px-2 py-1 bg-white/60 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
-                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">ЗАХИАЛГА</span>
-                            </div>
-                        )}
-                    </div>
                 </div>
 
-                <div className="p-3 flex flex-col gap-1">
-                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-relaxed min-h-[44px]">
-                        {product.name}
-                    </h3>
+                {/* Info Section */}
+                <div className="p-4 pt-2 flex flex-col flex-1 justify-between gap-3">
+                    <div className="space-y-1.5">
+                        <h3 className="text-[15px] font-medium text-gray-800 line-clamp-2 leading-snug tracking-tight">
+                            {product.name}
+                        </h3>
+                    </div>
 
-                    <div className="flex flex-col gap-0.5 mt-1">
-                        {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="text-[10px] font-medium text-[#AAA] line-through">
-                                {Math.round(product.originalPrice).toLocaleString()}₮
-                            </span>
-                        )}
-                        <div className="flex items-end justify-between">
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-lg font-black text-[#FF6B00]">
+                    <div className="flex items-end justify-between">
+                        {/* Price Section */}
+                        <div className="flex flex-col">
+                            {product.originalPrice && product.originalPrice > product.price && (
+                                <span className="text-[11px] font-medium text-gray-400 line-through mb-0.5">
+                                    {(product.originalPrice || 0).toLocaleString()}₮
+                                </span>
+                            )}
+                            <div className="flex items-baseline gap-0.5">
+                                <span className="text-xl font-bold text-gray-900">
                                     {formattedPrice}
                                 </span>
-                                <span className="text-xs font-bold text-[#FF6B00] mb-0.5"> ₮</span>
+                                <span className="text-lg font-bold text-[#FF5722]">₮</span>
                             </div>
-
-                            {/* Minimalist Cart Button */}
-                            <motion.button
-                                whileTap={{ scale: 0.9 }}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    addItem({
-                                        id: product.id,
-                                        name: product.name,
-                                        price: product.price,
-                                        image: product.image || '',
-                                        stockStatus: (product.stockStatus as any) || 'in-stock',
-                                        category: product.category || '',
-                                        description: product.description || undefined,
-                                    });
-                                    toast.success('Сагсанд нэмлээ', {
-                                        style: { borderRadius: '14px', background: '#FF5000', color: '#fff' },
-                                        duration: 1500,
-                                    });
-                                }}
-                                className="w-10 h-10 flex items-center justify-center bg-[#FF5000] text-white rounded-2xl shadow-lg shadow-orange-500/20 active:scale-95 transition-transform"
-                            >
-                                <ShoppingCart className="w-5 h-5" strokeWidth={1.2} />
-                            </motion.button>
                         </div>
+
+                        {/* Animated Cart Button */}
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                addItem({
+                                    id: product.id,
+                                    name: product.name,
+                                    price: product.price,
+                                    image: product.image || '',
+                                    stockStatus: (product.stockStatus as any) || 'in-stock',
+                                    category: product.category || '',
+                                    description: product.description || undefined,
+                                });
+                                toast.success('Сагсанд нэмлээ', {
+                                    style: { borderRadius: '14px', background: '#333', color: '#fff', fontSize: '13px' },
+                                    duration: 1500,
+                                });
+                            }}
+                            className="relative h-10 flex items-center bg-[#FF5722] text-white rounded-full transition-all duration-300 overflow-hidden px-3 hover:px-4"
+                        >
+                            <div className="flex items-center gap-2">
+                                <ShoppingCart className="w-5 h-5" strokeWidth={2} />
+                                <motion.span
+                                    initial={{ width: 0, opacity: 0 }}
+                                    animate={{
+                                        width: isHovered ? 'auto' : 0,
+                                        opacity: isHovered ? 1 : 0
+                                    }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="whitespace-now8 text-[13px] font-bold overflow-hidden"
+                                >
+                                    Сагслах
+                                </motion.span>
+                            </div>
+                        </motion.button>
                     </div>
                 </div>
             </Link>

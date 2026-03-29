@@ -35,14 +35,14 @@ export default function DiscoveryProductCard({
 
   // Build images array: combine main image + additional images, deduplicate
   const allImages: string[] = (() => {
-      const combined: string[] = [];
-      if (product.image) combined.push(product.image);
-      if (product.images?.length) {
-          product.images.forEach(img => {
-              if (!combined.includes(img)) combined.push(img);
-          });
-      }
-      return combined.length > 0 ? combined : ['/soyol-logo.png'];
+    const combined: string[] = [];
+    if (product.image) combined.push(product.image);
+    if (product.images?.length) {
+      product.images.forEach(img => {
+        if (!combined.includes(img)) combined.push(img);
+      });
+    }
+    return combined.length > 0 ? combined : ['/soyol-logo.png'];
   })();
 
   const hasMultiple = allImages.length > 1;

@@ -75,22 +75,30 @@ export default function RootLayout({
 }) {
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
 
+  const content = (
+    <html lang="mn" className={inter.variable}>
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content={SITE_CONFIG.name} />
+      </head>
+      <body className={`${inter.className} min-h-screen bg-white antialiased`}>
+        <ClientLayout>
+          <LuxuryNavbar />
+          <main className="min-h-screen pb-16 md:pb-0 relative z-0">{children}</main>
+          <Footer />
+        </ClientLayout>
+      </body>
+    </html>
+  );
+
+  if (!googleClientId) {
+    return content;
+  }
+
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
-      <html lang="mn" className={inter.variable}>
-        <head>
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          <meta name="apple-mobile-web-app-title" content={SITE_CONFIG.name} />
-        </head>
-        <body className={`${inter.className} min-h-screen bg-white antialiased`}>
-          <ClientLayout>
-            <LuxuryNavbar />
-            <main className="min-h-screen pb-16 md:pb-0 relative z-0">{children}</main>
-            <Footer />
-          </ClientLayout>
-        </body>
-      </html>
+      {content}
     </GoogleOAuthProvider>
   );
 }

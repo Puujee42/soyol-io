@@ -62,140 +62,120 @@ export default function AntiGravityCartItem({ item }: AntiGravityCartItemProps) 
     return (
         <motion.div
             layout
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={removing ? { opacity: 0, x: -100, scale: 0.8 } : { opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, x: -50 }}
-            className={`relative mb-3 overflow-hidden rounded-[24px] border transition-all duration-500 ${item.selected
-                ? 'bg-white border-orange-200 shadow-[0_12px_30px_rgba(255,80,0,0.06)]'
-                : 'bg-white border-gray-100 shadow-sm'
-                }`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={isRemoving ? { opacity: 0, x: -60, scale: 0.95 } : { opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: -40, scale: 0.97 }}
+            className="relative overflow-hidden rounded-2xl border border-black/[0.05] bg-white mb-3"
+            style={{ boxShadow: item.selected ? '0 2px 12px rgba(255,80,0,0.06)' : '0 1px 4px rgba(0,0,0,0.04)' }}
         >
-            {/* Баруун талд улаан trash icon (mobile only) */}
-            <motion.div
-                style={{ background }}
-                className="absolute inset-0 z-0 md:hidden pointer-events-none"
-            />
-            <motion.div
-                style={{ opacity: trashOpacity }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 z-0 md:hidden"
-            >
-                <Trash2 className="w-6 h-6" />
-            </motion.div>
-
             <motion.div
                 drag="x"
                 dragConstraints={{ left: -80, right: 0 }}
-                dragElastic={0.1}
+                dragElastic={0.08}
                 style={{ x: dragX }}
                 onDragEnd={(_, info) => {
-                    if (info.offset.x < -60) {
-                        handleRemove();
-                    } else {
-                        dragX.set(0); // буцах
-                    }
+                    if (info.offset.x < -60) handleRemove();
+                    else dragX.set(0);
                 }}
-                className="relative z-10 flex items-center p-4 gap-4 bg-transparent border-transparent"
+                className="relative z-10 flex items-center gap-3 p-3.5"
             >
-                {/* Selection Checkbox */}
-                <motion.div
-                    className="shrink-0 pt-0.5 relative z-10"
-                    whileTap={{ scale: 0.9 }}
+                {/* Checkbox (Strictly Sized) */}
+                <button
+                    onClick={() => toggleItemSelection(item.cartItemId)}
+                    className="p-2 -ml-2 shrink-0 flex-none outline-none cursor-pointer"
+                    style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
-                    <button
-                        onClick={() => toggleItemSelection(item.cartItemId)}
-                        className={`w-5 h-5 rounded flex items-center justify-center transition-all ${item.selected
-                            ? 'bg-[#FF5000] border-[#FF5000] text-white shadow-sm'
-                            : 'border-gray-200 bg-white'
+                    <motion.div
+                        whileTap={{ scale: 0.88 }}
+                        style={{ width: 22, height: 22, minWidth: 22, minHeight: 22 }}
+                        className={`rounded-[6px] flex items-center justify-center transition-all ${item.selected
+                            ? 'bg-gradient-to-br from-[#FF6B00] to-[#FF5000] shadow-[0_2px_8px_rgba(255,80,0,0.3)]'
+                            : 'bg-white border-2 border-slate-200 hover:border-slate-300'
                             }`}
                     >
-                        {item.selected && <Check className="w-3.5 h-3.5 text-white" strokeWidth={4} />}
-                    </button>
-                </motion.div>
+                        {item.selected && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3.5} />}
+                    </motion.div>
+                </button>
 
-                {/* Product Image */}
-                <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-50 px-1">
+                {/* Image */}
+                <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#F7F7F5] shrink-0 flex items-center justify-center">
                     <Image
                         src={imgError ? '/soyol-logo.png' : (item.image || '/soyol-logo.png')}
                         onError={() => setImgError(true)}
                         alt={item.name}
-                        fill
+                        width={64}
+                        height={64}
                         className="object-contain p-1.5"
                     />
                 </div>
 
-                {/* Product Info - Linear Layout */}
-                <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
-                    <div className="flex justify-between items-start gap-2">
-                        <div className="min-w-0 flex-1">
-                            <Link href={`/product/${item.id}`} className="hover:text-[#FF5000] transition-colors">
-                                <h3 className="font-bold text-slate-900 text-[15px] leading-tight truncate">{item.name}</h3>
-                            </Link>
-
-                            {item.selectedOptions && Object.keys(item.selectedOptions).length > 0 && (
-                                <p className="text-xs font-medium text-slate-500 mt-1 flex items-center gap-1.5 opacity-90">
-                                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                    {Object.values(item.selectedOptions).join(' / ')}
-                                </p>
-                            )}
-
-                            <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-gray-50 text-gray-400 border border-gray-100/50 uppercase tracking-tighter">
-                                {item.category}
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                    <Link href={`/product/${item.id}`}>
+                        <h3 className="text-[13px] font-semibold text-black leading-tight truncate mb-1">
+                            {item.name}
+                        </h3>
+                    </Link>
+                    <p className="text-[10px] text-black/30 font-medium uppercase tracking-wider mb-2">
+                        {item.category}
+                        {item.selectedOptions && Object.keys(item.selectedOptions).length > 0 && (
+                            <span className="ml-1 text-black/40 normal-case tracking-normal">
+                                · {Object.values(item.selectedOptions).join(' / ')}
                             </span>
-                        </div>
-                        <div className="text-right shrink-0 flex flex-col items-end">
-                            <p className="text-[16px] font-bold text-gray-900 tracking-tight leading-none">
-                                {formatPrice(item.price * item.quantity)}
-                            </p>
-                            {item.quantity > 1 && (
-                                <p className="text-[10px] text-gray-400 mt-1 font-medium">
-                                    {formatPrice(item.price)} / ш
-                                </p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-auto">
-                        <div className="flex items-center gap-2">
-                            {isPreOrder ? (
-                                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100/50 uppercase">Захиалга</span>
-                            ) : (
-                                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100/50 uppercase">Бэлэн</span>
-                            )}
-                        </div>
-
-                        {/* Quantity Controls - Premium 12px Rounded */}
-                        <div className="flex items-center bg-[#F4F4F5] rounded-[12px] p-0.5 border border-gray-100 shadow-sm">
+                        )}
+                    </p>
+                    <div className="flex items-center justify-between">
+                        {isPreOrder ? (
+                            <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md uppercase tracking-wide">
+                                Захиалга
+                            </span>
+                        ) : (
+                            <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md uppercase tracking-wide">
+                                Бэлэн
+                            </span>
+                        )}
+                        {/* Qty controls */}
+                        <div
+                            className="flex items-center bg-[#F5F5F3] rounded-[10px] overflow-hidden flex-shrink-0"
+                            style={{ height: 28, width: 'fit-content' }}
+                        >
                             <button
                                 onClick={() => handleUpdateQuantity(item.quantity - 1)}
-                                className={`w-8 h-8 flex items-center justify-center rounded-[10px] transition-all ${item.quantity <= 1 ? 'text-gray-300' : 'text-gray-600 active:bg-white active:shadow-sm'}`}
                                 disabled={item.quantity <= 1}
+                                style={{ width: 28, height: 28, minWidth: 28, flexShrink: 0 }}
+                                className={`flex items-center justify-center transition-colors ${item.quantity <= 1 ? 'text-black/20' : 'text-black/60 active:bg-black/[0.06]'
+                                    }`}
                             >
-                                <Minus className="w-3.5 h-3.5" strokeWidth={3} />
+                                <Minus className="w-3 h-3" strokeWidth={3} />
                             </button>
-                            <span className="w-8 text-center text-sm font-medium text-gray-900">{item.quantity}</span>
+                            <span style={{ width: 24, flexShrink: 0 }} className="text-center text-[12px] font-semibold text-black select-none">
+                                {item.quantity}
+                            </span>
                             <button
                                 onClick={() => handleUpdateQuantity(item.quantity + 1)}
-                                className="w-8 h-8 flex items-center justify-center rounded-[10px] text-gray-600 active:bg-white active:shadow-sm transition-all"
+                                style={{ width: 28, height: 28, minWidth: 28, flexShrink: 0 }}
+                                className="flex items-center justify-center text-black/60 active:bg-black/[0.06] transition-colors"
                             >
-                                <Plus className="w-3.5 h-3.5" strokeWidth={3} />
+                                <Plus className="w-3 h-3" strokeWidth={3} />
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Remove Button - Desktop only since it is handled by swipe on mobile */}
-                <button
-                    onClick={handleRemove}
-                    className="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition-colors p-1 hidden md:block"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
+                {/* Price + delete */}
+                <div className="flex flex-col items-end justify-between self-stretch shrink-0 ml-1 py-0.5">
+                    <p className="text-[14px] font-black text-slate-800 tracking-tight leading-none bg-slate-50 px-2 py-1 rounded-md">
+                        {formatPrice(item.price * item.quantity)}
+                    </p>
+                    <button
+                        onClick={handleRemove}
+                        className="text-slate-300 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors p-1.5"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
+                </div>
             </motion.div>
-
-            {/* Decorative Glow */}
-            {item.selected && (
-                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 blur-[40px] rounded-full -mr-16 -mt-16 pointer-events-none" />
-            )}
         </motion.div>
     );
 }
+

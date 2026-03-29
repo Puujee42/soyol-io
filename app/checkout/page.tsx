@@ -92,6 +92,12 @@ export default function CheckoutPage() {
     address: '',
     city: 'Улаанбаатар',
     district: '',
+    khoroo: '',
+    street: '',
+    apartment: '',
+    entrance: '',
+    floor: '',
+    door: '',
     notes: '',
   });
 
@@ -150,7 +156,12 @@ export default function CheckoutPage() {
       ...prev,
       city: addr.city,
       district: addr.district,
-      address: `${addr.khoroo}-р хороо, ${addr.street}, ${addr.entrance ? `Орц: ${addr.entrance}, ` : ''}${addr.floor ? `Давхар: ${addr.floor}, ` : ''}${addr.door ? `Хаалга: ${addr.door}` : ''}`,
+      khoroo: addr.khoroo || '',
+      street: addr.street || '',
+      entrance: addr.entrance || '',
+      floor: addr.floor || '',
+      door: addr.door || '',
+      address: `${addr.khoroo || ''}-${addr.city === 'Улаанбаатар' ? 'р хороо' : 'р баг'}, ${addr.street || ''}, ${addr.entrance ? `Орц: ${addr.entrance}, ` : ''}${addr.floor ? `Давхар: ${addr.floor}, ` : ''}${addr.door ? `Хаалга: ${addr.door}` : ''}`,
       notes: addr.note || '',
     }));
   };
@@ -168,7 +179,14 @@ export default function CheckoutPage() {
     if (name === 'city') {
       setFormData(prev => ({ ...prev, city: value, district: '' }));
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData(prev => {
+        const next = { ...prev, [name]: value };
+        // Auto-generate composite address string if it's a granular field change
+        if (['khoroo', 'street', 'apartment', 'entrance', 'floor', 'door'].includes(name)) {
+          next.address = `${next.khoroo || ''}-${next.city === 'Улаанбаатар' ? 'р хороо' : 'р баг'}, ${next.street || ''}, ${next.entrance ? `Орц: ${next.entrance}, ` : ''}${next.floor ? `Давхар: ${next.floor}, ` : ''}${next.door ? `Хаалга: ${next.door}` : ''}`;
+        }
+        return next;
+      });
     }
   };
 
@@ -195,6 +213,10 @@ export default function CheckoutPage() {
     try {
       const cartItems = selectedItems.map(item => ({
         id: item.id,
+        productId: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
         quantity: item.quantity,
         variantId: item.variantId,
         selectedOptions: item.selectedOptions
@@ -485,16 +507,65 @@ export default function CheckoutPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs uppercase font-bold text-gray-500 ml-1">Дэлгэрэнгүй хаяг</label>
-                      <textarea
-                        name="address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        placeholder="Хороо, гудамж, байр, орц, давхар, тоот..."
-                        rows={2}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-medium resize-none text-base"
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs uppercase font-bold text-gray-500 ml-1">{formData.city === 'Улаанбаатар' ? 'Хороо' : 'Баг'}</label>
+                        <input
+                          type="text"
+                          name="khoroo"
+                          value={formData.khoroo}
+                          onChange={handleInputChange}
+                          placeholder="Жишээ: 1"
+                          className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-medium text-base"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs uppercase font-bold text-gray-500 ml-1">Гудамж/Байр</label>
+                        <input
+                          type="text"
+                          name="street"
+                          value={formData.street}
+                          onChange={handleInputChange}
+                          placeholder="Жишээ: 12-р байр"
+                          className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-medium text-base"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="text-xs uppercase font-bold text-gray-500 ml-1">Орц</label>
+                        <input
+                          type="text"
+                          name="entrance"
+                          value={formData.entrance}
+                          onChange={handleInputChange}
+                          placeholder="1"
+                          className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-medium text-base text-center"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs uppercase font-bold text-gray-500 ml-1">Давхар</label>
+                        <input
+                          type="text"
+                          name="floor"
+                          value={formData.floor}
+                          onChange={handleInputChange}
+                          placeholder="5"
+                          className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-medium text-base text-center"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs uppercase font-bold text-gray-500 ml-1">Хаалга</label>
+                        <input
+                          type="text"
+                          name="door"
+                          value={formData.door}
+                          onChange={handleInputChange}
+                          placeholder="24"
+                          className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all outline-none font-medium text-base text-center"
+                        />
+                      </div>
                     </div>
 
                     <div className="space-y-1.5">

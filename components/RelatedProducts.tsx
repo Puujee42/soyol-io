@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import DiscoveryProductCard from './DiscoveryProductCard';
+import UniversalProductCard from './UniversalProductCard';
 import type { Product } from '@/models/Product';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -40,7 +40,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                 {uniqueProducts.slice(0, 4).map((product, index) => (
-                    <DiscoveryProductCard
+                    <UniversalProductCard
                         key={product.id}
                         product={product}
                         index={index}

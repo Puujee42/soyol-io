@@ -22,7 +22,7 @@ export default function AdminProductsPage() {
     const [togglingFeatured, setTogglingFeatured] = useState<string | null>(null);
     const [editingStock, setEditingStock] = useState<{ id: string, value: string } | null>(null);
 
-    const { data: productsData, mutate: mutateProducts } = useSWR('/api/products', fetcher);
+    const { data: productsData, mutate: mutateProducts } = useSWR('/api/products?admin=true', fetcher);
     const { data: categoriesData } = useSWR('/api/categories', fetcher);
 
     const products = productsData?.products || [];

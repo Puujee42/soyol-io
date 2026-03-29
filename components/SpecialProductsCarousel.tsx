@@ -11,6 +11,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import toast from 'react-hot-toast';
 
 import ProductBadge from '@/components/ProductBadge';
+import UniversalProductCard from './UniversalProductCard';
 
 interface Product {
     id: string;
@@ -203,77 +204,11 @@ export default function SpecialProductsCarousel({ products }: SpecialProductsCar
                         transition={{ delay: i * 0.06, duration: 0.5 }}
                         className="flex-shrink-0 w-[160px] sm:w-[200px] lg:w-[280px]"
                     >
-                        <div className="group relative bg-white rounded-3xl overflow-hidden border border-slate-100/80 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(249,115,22,0.12)] transition-all duration-500 hover:-translate-y-1">
-                            {/* Image Container */}
-                            <Link href={`/product/${product.id || product._id}`} draggable={false}>
-                                <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50">
-                                    <Image
-                                        src={product.image || '/soyol-logo.png'}
-                                        alt={product.name}
-                                        fill
-                                        draggable={false}
-                                        className="object-contain p-6 transition-transform duration-700 group-hover:scale-110"
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                        priority
-                                    />
-
-                                    {/* Dark gradient overlay on hover */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                                    {/* Stock Badge - Large & Prominent */}
-                                    <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest backdrop-blur-md shadow-lg border ${product.stockStatus === 'pre-order'
-                                        ? 'bg-amber-500/90 text-white border-amber-400/50 shadow-amber-500/20'
-                                        : 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-emerald-500/20'
-                                        }`}>
-                                        <div className="flex items-center gap-1.5">
-                                            <div className={`w-1.5 h-1.5 rounded-full bg-white ${product.stockStatus === 'in-stock' ? 'animate-pulse' : ''}`} />
-                                            {product.stockStatus === 'pre-order' ? 'Захиалга' : 'Бэлэн'}
-                                        </div>
-                                    </div>
-
-                                    <ProductBadge
-                                        isFeatured={product.featured || product.sections?.includes('Онцгой') || product.sections?.includes('Онцлох')}
-                                        className="absolute z-10 top-4 right-4"
-                                    />
-
-                                    {/* Quick Add Button - Bigger & Bolder */}
-                                    <button
-                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(product); }}
-                                        className="absolute bottom-4 right-4 p-3.5 bg-white rounded-2xl shadow-xl text-orange-600 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-400 hover:bg-orange-500 hover:text-white hover:scale-110 active:scale-95"
-                                    >
-                                        <ShoppingCart className="w-5 h-5" strokeWidth={2.5} />
-                                    </button>
-
-                                    {/* "View" text on hover */}
-                                    <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-400">
-                                        <span className="text-white text-sm font-bold bg-black/30 backdrop-blur-md px-4 py-2 rounded-xl">
-                                            Дэлгэрэнгүй →
-                                        </span>
-                                    </div>
-                                </div>
-                            </Link>
-
-                            {/* Product Info - Bigger Text */}
-                            <div className="p-5 space-y-3">
-                                <Link href={`/product/${product.id || product._id}`} draggable={false}>
-                                    <h3 className="text-base lg:text-lg font-bold text-slate-900 line-clamp-1 group-hover:text-orange-600 transition-colors duration-300">
-                                        {product.name}
-                                    </h3>
-                                </Link>
-
-                                {/* Category */}
-                                <div className="flex items-end justify-between pt-1">
-                                    <span className="text-xl lg:text-2xl font-black text-slate-900">
-                                        {formatPrice(product.price)}
-                                    </span>
-                                    {product.category && (
-                                        <span className="text-[11px] font-bold text-orange-500 uppercase tracking-widest bg-orange-50 px-2.5 py-1 rounded-lg">
-                                            {product.category}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                        <UniversalProductCard
+                            product={product as any}
+                            disableInitialAnimation={true}
+                            index={i}
+                        />
                     </motion.div>
                 ))}
             </div>

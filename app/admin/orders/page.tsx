@@ -18,10 +18,13 @@ const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 interface OrderItem {
     id: string;
+    productId?: string;
     name: string;
     price: number;
     quantity: number;
     image: string;
+    variantId?: string;
+    selectedOptions?: Record<string, string>;
 }
 
 interface Order {
@@ -31,6 +34,12 @@ interface Order {
     address: string;
     city: string;
     district: string;
+    khoroo?: string;
+    street?: string;
+    apartment?: string;
+    entrance?: string;
+    floor?: string;
+    door?: string;
     notes?: string;
     items: OrderItem[];
     total?: number;
@@ -41,6 +50,15 @@ interface Order {
     shipping?: {
         fullName: string;
         phone: string;
+        city?: string;
+        district?: string;
+        khoroo?: string;
+        street?: string;
+        apartment?: string;
+        entrance?: string;
+        floor?: string;
+        door?: string;
+        address?: string;
     };
 }
 
@@ -550,25 +568,130 @@ export default function AdminOrdersPage() {
                                 <div className="space-y-4">
                                     <h4 className="text-[10px] font-black text-amber-500 uppercase tracking-widest pl-1">Хүргэлтийн мэдээлэл</h4>
                                     <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 divide-y divide-slate-800">
-                                        <div className="pb-3 flex gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0">
-                                                <span className="text-amber-500 font-bold">{(selectedOrder.fullName || 'З').charAt(0)}</span>
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-white">{selectedOrder.fullName || 'Зочин'}</p>
-                                                <p className="text-sm font-mono text-slate-400 mt-0.5">{selectedOrder.phone}</p>
+                                        <div className="pb-3 flex items-start justify-between gap-4">
+                                            <div className="flex gap-4">
+                                                <div className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0">
+                                                    <span className="text-amber-500 font-bold">{(selectedOrder.fullName || 'З').charAt(0).toUpperCase()}</span>
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-white">{selectedOrder.fullName || 'Зочин'}</p>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        <p className="text-sm font-mono text-slate-400">{selectedOrder.phone}</p>
+                                                        <button 
+                                                            onClick={() => {
+                                                                navigator.clipboard.writeText(selectedOrder.phone);
+                                                                toast.success('Утас хуулагдлаа');
+                                                            }}
+                                                            className="p-1 hover:bg-slate-800 rounded transition-colors"
+                                                            title="Хуулах"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="pt-3">
-                                            <div className="flex gap-3 text-sm text-slate-300">
-                                                <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                                                <p className="leading-relaxed">
-                                                    <span className="font-bold text-white block mb-0.5">{selectedOrder.city}, {selectedOrder.district}</span>
-                                                    {selectedOrder.address}
-                                                </p>
+                                            <div className="flex gap-4 text-sm text-slate-300 relative group/addr">
+                                                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                                                    <MapPin className="w-4 h-4 text-amber-500" />
+                                                </div>
+                                                <div className="leading-relaxed flex-1">
+                                                    <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                                                        <div className="p-3 rounded-xl bg-slate-900/50 border border-slate-800/50">
+                                                            <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-1">Хот / Аймаг</span>
+                                                            <span className="text-white font-bold">{selectedOrder.shipping?.city || selectedOrder.city}</span>
+                                                        </div>
+                                                        <div className="p-3 rounded-xl bg-slate-900/50 border border-slate-800/50">
+                                                            <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-1">Дүүрэг / Сум</span>
+                                                            <span className="text-white font-bold">{selectedOrder.shipping?.district || selectedOrder.district}</span>
+                                                        </div>
+                                                        
+                                                        {(selectedOrder.shipping?.khoroo || selectedOrder.khoroo) && (
+                                                            <div className="col-span-1 p-3 rounded-xl bg-slate-900/50 border border-slate-800/50">
+                                                                <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-1">Хороо / Баг</span>
+                                                                <span className="text-white font-bold">{selectedOrder.shipping?.khoroo || selectedOrder.khoroo}-р хороо</span>
+                                                            </div>
+                                                        )}
+
+                                                        {(selectedOrder.shipping?.street || selectedOrder.street) && (
+                                                            <div className="col-span-1 p-3 rounded-xl bg-slate-900/50 border border-slate-800/50">
+                                                                <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-1">Гудамж / Ойролцоох</span>
+                                                                <span className="text-white font-bold">{selectedOrder.shipping?.street || selectedOrder.street}</span>
+                                                            </div>
+                                                        )}
+
+                                                        {(selectedOrder.shipping?.apartment || selectedOrder.apartment || selectedOrder.shipping?.entrance || selectedOrder.entrance || selectedOrder.shipping?.floor || selectedOrder.floor || selectedOrder.shipping?.door || selectedOrder.door) && (
+                                                            <div className="col-span-2 p-3 rounded-xl bg-slate-900/50 border border-slate-800/50">
+                                                                <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-1">Байр, Орц, Давхар, Хаалга</span>
+                                                                <div className="flex flex-wrap gap-4 mt-1">
+                                                                    {(selectedOrder.shipping?.apartment || selectedOrder.apartment) && (
+                                                                        <div className="flex flex-col">
+                                                                            <span className="text-[8px] text-slate-600 font-bold uppercase">Байр</span>
+                                                                            <span className="text-white font-bold">{selectedOrder.shipping?.apartment || selectedOrder.apartment}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {(selectedOrder.shipping?.entrance || selectedOrder.entrance) && (
+                                                                        <div className="flex flex-col">
+                                                                            <span className="text-[8px] text-slate-600 font-bold uppercase">Орц</span>
+                                                                            <span className="text-white font-bold">{selectedOrder.shipping?.entrance || selectedOrder.entrance}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {(selectedOrder.shipping?.floor || selectedOrder.floor) && (
+                                                                        <div className="flex flex-col">
+                                                                            <span className="text-[8px] text-slate-600 font-bold uppercase">Давхар</span>
+                                                                            <span className="text-white font-bold">{selectedOrder.shipping?.floor || selectedOrder.floor}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {(selectedOrder.shipping?.door || selectedOrder.door) && (
+                                                                        <div className="flex flex-col">
+                                                                            <span className="text-[8px] text-slate-600 font-bold uppercase">Хаалга</span>
+                                                                            <span className="text-white font-bold">{selectedOrder.shipping?.door || selectedOrder.door}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {(!selectedOrder.khoroo && !selectedOrder.shipping?.khoroo && !selectedOrder.street && !selectedOrder.shipping?.street) && (
+                                                            <div className="col-span-2 p-3 rounded-xl bg-slate-900/50 border border-slate-800/50">
+                                                                <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest block mb-1">Захиалгын хаяг (Дэлгэрэнгүй)</span>
+                                                                <span className="text-white font-bold leading-snug">{selectedOrder.shipping?.address || selectedOrder.address}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-col gap-2 opacity-0 group-hover/addr:opacity-100 transition-opacity absolute -right-2 top-0">
+                                                    <button 
+                                                        onClick={() => {
+                                                            const addr = `${selectedOrder.shipping?.city || selectedOrder.city}, ${selectedOrder.shipping?.district || selectedOrder.district}, ${selectedOrder.shipping?.khoroo || selectedOrder.khoroo || ''} ${selectedOrder.shipping?.street || selectedOrder.street || ''} ${selectedOrder.shipping?.apartment || selectedOrder.apartment || ''} ${selectedOrder.shipping?.entrance ? selectedOrder.shipping.entrance + '-р орц' : ''} ${selectedOrder.shipping?.door ? selectedOrder.shipping.door + '-р хаалга' : ''}`.replace(/\s+/g, ' ').trim();
+                                                            navigator.clipboard.writeText(addr);
+                                                            toast.success('Хаяг хуулагдлаа');
+                                                        }}
+                                                        className="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl shadow-lg border border-slate-700 transition-all active:scale-90"
+                                                        title="Бүтэн хаяг хуулах"
+                                                    >
+                                                        <Check className="w-4 h-4" />
+                                                    </button>
+                                                    
+                                                    <button 
+                                                        onClick={() => {
+                                                            const itemsText = selectedOrder.items.map(i => `- ${i.name || 'Бараа'}${i.selectedOptions ? ' (' + Object.values(i.selectedOptions).join(', ') + ')' : ''} x${i.quantity}`).join('\n');
+                                                            const addr = `${selectedOrder.shipping?.city || selectedOrder.city}, ${selectedOrder.shipping?.district || selectedOrder.district}, ${selectedOrder.shipping?.khoroo || selectedOrder.khoroo || ''} ${selectedOrder.shipping?.street || selectedOrder.street || ''} ${selectedOrder.shipping?.apartment || selectedOrder.apartment || ''} ${selectedOrder.shipping?.entrance ? selectedOrder.shipping.entrance + '-р орц' : ''} ${selectedOrder.shipping?.door ? selectedOrder.shipping.door + '-р хаалга' : ''}`.replace(/\s+/g, ' ').trim();
+                                                            const summary = `ЗАХИАЛГА #${selectedOrder._id.slice(-6).toUpperCase()}\n\nХҮЛЭЭН АВАГЧ: ${selectedOrder.fullName || 'Зочин'}\nУТАС: ${selectedOrder.phone}\nХАЯГ: ${addr}\n\nБАРАА:\n${itemsText}\n\nНИЙТ: ${selectedOrder.totalPrice || selectedOrder.total}₮`;
+                                                            navigator.clipboard.writeText(summary);
+                                                            toast.success('Захиалгын хураангуй хуулагдлаа');
+                                                        }}
+                                                        className="p-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl shadow-lg border border-amber-600 transition-all active:scale-90"
+                                                        title="Захиалгын мэдээлэл хуулах (Түгээгчид)"
+                                                    >
+                                                        <Truck className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             </div>
                                             {selectedOrder.notes && (
-                                                <div className="mt-4 p-3 bg-slate-800/50 border border-slate-700 rounded-xl text-sm italic text-slate-400">
+                                                <div className="mt-6 p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl text-sm italic text-slate-400 relative">
+                                                    <div className="absolute -top-2 left-4 px-2 bg-slate-900 text-[9px] font-black uppercase tracking-widest text-amber-500/50">Тэмдэглэл</div>
                                                     "{selectedOrder.notes}"
                                                 </div>
                                             )}
@@ -581,25 +704,57 @@ export default function AdminOrdersPage() {
                                     <h4 className="text-[10px] font-black text-amber-500 uppercase tracking-widest pl-1">
                                         Захиалгын бараанууд ({selectedOrder.items.length})
                                     </h4>
-                                    <div className="space-y-3">
-                                        {selectedOrder.items.map((item, idx) => (
-                                            <div key={idx} className="flex gap-4 p-3 rounded-xl bg-slate-950 border border-slate-800">
-                                                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-900 shrink-0">
-                                                    <Image src={item.image || '/soyol-logo.png'} alt={item.name || 'Бараа'} fill className="object-contain p-1" />
-                                                </div>
-                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                                    <p className="text-sm font-bold text-white line-clamp-1 mb-1">{item.name}</p>
-                                                    <div className="flex items-center justify-between">
-                                                        <p className="text-xs font-medium text-slate-500">
-                                                            {item.quantity}ш × {formatPrice(item.price)}
-                                                        </p>
-                                                        <p className="text-sm font-black text-amber-500">
-                                                            {formatPrice(item.price * item.quantity)}
-                                                        </p>
+                                    <div className="space-y-4">
+                                        {selectedOrder.items.map((item, idx) => {
+                                            const itemPrice = item.price || (idx === 0 && selectedOrder.items.length === 1 ? (selectedOrder.total || selectedOrder.totalPrice || 0) / item.quantity : 0);
+                                            return (
+                                                <div key={idx} className="flex gap-5 p-4 rounded-2xl bg-slate-950 border border-slate-800 group/item hover:border-slate-700 transition-all duration-300">
+                                                    <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-slate-900 shrink-0 shadow-inner group-hover/item:scale-105 transition-transform duration-500">
+                                                        <Image src={item.image || '/soyol-logo.png'} alt={item.name || 'Бараа'} fill className="object-contain p-2" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0 flex flex-col justify-between">
+                                                        <div>
+                                                            <div className="flex items-start justify-between gap-2">
+                                                                <p className="text-[15px] font-bold text-white line-clamp-2 leading-tight">
+                                                                    {item.name || 'Тодорхойгүй бараа'}
+                                                                </p>
+                                                            </div>
+                                                            
+                                                            {/* Variants / Options */}
+                                                            {item.selectedOptions && Object.keys(item.selectedOptions).length > 0 ? (
+                                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                                    {Object.entries(item.selectedOptions).map(([key, val]) => (
+                                                                        <div key={key} className="px-2 py-1 rounded bg-slate-800/80 border border-slate-700/50 flex flex-col">
+                                                                            <span className="text-[9px] text-slate-500 font-black uppercase tracking-wider leading-none mb-1">{key === 'color' ? 'Өнгө' : key === 'size' ? 'Хэмжээ' : key}</span>
+                                                                            <span className="text-[11px] text-amber-500 font-bold leading-none">{val}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-[10px] text-slate-600 mt-2 italic font-medium opacity-60">Сонголт байхгүй</p>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-800/50">
+                                                            <p className="text-xs font-bold text-slate-500">
+                                                                <span className="text-white">{item.quantity}</span> ш × {formatPrice(itemPrice)}
+                                                            </p>
+                                                            <div className="text-right">
+                                                                <p className="text-sm font-black text-amber-500 tracking-tight">
+                                                                    {formatPrice(itemPrice * item.quantity)}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        {itemPrice === 0 && (
+                                                            <p className="text-[9px] text-red-500 px-2 py-0.5 bg-red-500/10 rounded mt-2 flex items-center gap-1.5 w-fit font-bold">
+                                                                <AlertCircle className="w-3 h-3" /> Үнэ тодорхойгүй
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>

@@ -144,7 +144,7 @@ function SuccessContent() {
                 <div>
                   <h3 className="font-bold text-gray-900 mb-2">Холбоо барих</h3>
                   <p className="text-sm text-gray-600">
-                    Асуулт байвал 77-181818 дугаараар залгана уу
+                    Асуулт байвал 85552229 дугаараар залгана уу
                   </p>
                 </div>
               </div>
@@ -184,7 +184,7 @@ function SuccessContent() {
             )}
 
             <Link
-              href="tel:77181818"
+              href="tel:85552229"
               className="flex-1 py-4 bg-white border-2 border-soyol text-soyol font-bold rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:bg-soyol hover:text-white transition active:scale-95"
             >
               <Phone className="w-5 h-5" />

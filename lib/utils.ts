@@ -6,6 +6,9 @@
  * Format price with Mongolian Tugrik (₮)
  */
 export function formatPrice(price: number): string {
+  if (price === undefined || price === null || isNaN(price)) {
+    return '0 ₮';
+  }
   return new Intl.NumberFormat('en-US', {
     style: 'decimal',
     minimumFractionDigits: 0,

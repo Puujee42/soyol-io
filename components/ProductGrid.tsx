@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import DiscoveryProductCard from './DiscoveryProductCard';
+import UniversalProductCard from './UniversalProductCard';
 import type { Product } from '@/models/Product';
 
 interface ProductGridProps {
@@ -22,7 +22,7 @@ const ProductGrid = memo(function ProductGrid({ products, columns = 4 }: Product
     return (
         <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-${columns} gap-4 sm:gap-6 md:gap-8`}>
             {products.map((product, index) => (
-                <DiscoveryProductCard
+                <UniversalProductCard
                     key={product.id || index}
                     product={product}
                     index={index}
