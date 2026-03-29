@@ -25,10 +25,10 @@ type SortType = 'newest' | 'price-low' | 'price-high' | 'name-az';
 export default function PreOrderPage() {
   const { t } = useTranslation();
   const { currency, convertPrice } = useLanguage();
-  
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Filter & Sort States
   const [sortBy, setSortBy] = useState<SortType>('name-az');
   const [minPrice, setMinPrice] = useState<string>('');
@@ -60,7 +60,7 @@ export default function PreOrderPage() {
   // Apply price filter
   const minPriceNum = minPrice ? parseFloat(minPrice) : 0;
   const maxPriceNum = maxPrice ? parseFloat(maxPrice) : Infinity;
-  
+
   if (minPrice || maxPrice) {
     filteredProducts = filteredProducts.filter(p => {
       const convertedPrice = convertPrice(p.price);
@@ -143,11 +143,10 @@ export default function PreOrderPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowPriceFilter(!showPriceFilter)}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
-                  showPriceFilter || minPrice || maxPrice
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${showPriceFilter || minPrice || maxPrice
                     ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-500/30'
                     : 'bg-white text-gray-700 border border-gray-200 hover:border-orange-300'
-                }`}
+                  }`}
               >
                 <SlidersHorizontal className="w-4 h-4" strokeWidth={1.5} />
                 <span>{t('filters', 'price')}</span>
@@ -208,19 +207,19 @@ export default function PreOrderPage() {
                       <div>
                         <p className="text-xs font-medium text-gray-600 mb-2">{t('filters', 'quickSelect')}</p>
                         <div className="grid grid-cols-2 gap-2">
-                          {(currency === 'USD' 
+                          {(currency === 'USD'
                             ? [
-                                { label: '< $30', min: '', max: '100000' },
-                                { label: '$30 - $145', min: '100000', max: '500000' },
-                                { label: '$145 - $290', min: '500000', max: '1000000' },
-                                { label: '> $290', min: '1000000', max: '' },
-                              ]
+                              { label: '< $30', min: '', max: '100000' },
+                              { label: '$30 - $145', min: '100000', max: '500000' },
+                              { label: '$145 - $290', min: '500000', max: '1000000' },
+                              { label: '> $290', min: '1000000', max: '' },
+                            ]
                             : [
-                                { label: '< 100,000₮', min: '', max: '100000' },
-                                { label: '100k - 500k₮', min: '100000', max: '500000' },
-                                { label: '500k - 1M₮', min: '500000', max: '1000000' },
-                                { label: '> 1,000,000₮', min: '1000000', max: '' },
-                              ]
+                              { label: '< 100,000₮', min: '', max: '100000' },
+                              { label: '100k - 500k₮', min: '100000', max: '500000' },
+                              { label: '500k - 1M₮', min: '500000', max: '1000000' },
+                              { label: '> 1,000,000₮', min: '1000000', max: '' },
+                            ]
                           ).map((range) => (
                             <button
                               key={range.label}
@@ -274,7 +273,7 @@ export default function PreOrderPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <PremiumProductGrid products={sortedProducts} />
+            <PremiumProductGrid products={sortedProducts as any} />
           </motion.div>
         ) : (
           <div className="text-center py-20 text-gray-500">
