@@ -11,6 +11,29 @@ const nextConfig = {
   ],
   async headers() {
     return [
+      // CORS - Allow Vercel deployments and production domain to access API
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: 'https://soyol-io.vercel.app',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization, Cookie',
+          },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true',
+          },
+        ],
+      },
+      // Static image caching
       {
         source: '/:all*(svg|jpg|jpeg|png|gif|ico|webp)',
         headers: [
