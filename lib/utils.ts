@@ -82,24 +82,23 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 /**
- * Get absolute API URL for server or client components
+ * Get absolute API URL for server or client components.
+ * - Browser (client-side): always uses relative paths → same origin, no CORS
+ * - Server-side: uses NEXT_PUBLIC_BASE_URL for absolute URL
  */
 export function getApiUrl(path: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  
-  // In browser during development, prefer relative paths to avoid CORS issues
-  if (
-    typeof window !== 'undefined' && 
-    process.env.NODE_ENV === 'development'
-  ) {
-    return path.startsWith('/') ? path : `/${path}`;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+
+  // Always use relative paths in the browser — this avoids CORS entirely
+  // because the request goes to the same origin as the page
+  if (typeof window !== 'undefined') {
+    return cleanPath;
   }
 
-  if (!baseUrl) return path.startsWith('/') ? path : `/${path}`;
-  
-  // Ensure we don't double slash
+  // Server-side: need absolute URL for fetch() to work
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!baseUrl) return cleanPath;
+
   const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  
   return `${cleanBase}${cleanPath}`;
 }
