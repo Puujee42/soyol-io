@@ -298,7 +298,7 @@ export default function ProductDetailClient({
       />
 
       <div className="pd-root min-h-screen flex flex-col bg-[#F6F6F4] relative">
-        <div className="flex-1 pb-[calc(64px+env(safe-area-inset-bottom,0px))] md:pb-16">
+        <div className="flex-1 pb-[calc(144px+env(safe-area-inset-bottom,0px))] md:pb-16">
           <div
             className="lg:hidden fixed top-0 left-0 right-0 z-[110] flex items-center justify-between px-4 bg-[#F6F6F4]"
             style={{
@@ -884,44 +884,67 @@ export default function ProductDetailClient({
               </div>
             </div>
 
-            {/* Mobile Actions Section - Now positioned above Related Products */}
-            <div className="md:hidden bg-white lg:rounded-2xl mt-3 border-t border-b border-black/[0.06] shadow-sm">
-              <div className="flex items-center gap-3 px-5 py-5 pb-[calc(16px+env(safe-area-inset-bottom,0px))]">
+            {/* Mobile Actions Section - Premium Native App Style */}
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200, delay: 0.2 }}
+              className="md:hidden fixed left-0 right-0 z-[110] bg-white/70 backdrop-blur-2xl border-t border-black/[0.05] shadow-[0_-10px_40px_rgba(0,0,0,0.06)]"
+              style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px))" }}
+            >
+              <div className="flex items-center gap-4 px-5 py-4">
                 <div className="flex flex-col min-w-0 mr-auto">
-                  <span className="text-[9px] text-[#8E8E93] font-bold uppercase tracking-[0.05em] mb-0.5">
+                  <span className="text-[10px] text-black/40 font-bold uppercase tracking-[0.1em] mb-0.5">
                     НИЙТ ҮНЭ
                   </span>
-                  <span className="text-[18px] font-bold text-black leading-tight tracking-tight">
+                  <span className="text-[20px] font-extrabold text-[#FF5000] leading-tight tracking-tight">
                     {formatPrice(displayPrice * quantity)}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <motion.button
-                    whileTap={{ scale: 0.96 }}
+                    whileTap={{ scale: 0.94, y: 1 }}
                     onClick={handleAddToCart}
                     disabled={!canAddToCart}
-                    className={`flex items-center justify-center gap-1.5 px-4 h-11 rounded-xl font-bold text-[13px] transition-all duration-200 disabled:opacity-40 ${addedToCart ? "bg-emerald-500 text-white" : "bg-[#F2F2F7] text-black"}`}
+                    className={`flex items-center justify-center gap-2 px-4 h-12 rounded-2xl font-bold text-[14px] transition-all duration-300 disabled:opacity-30 ${addedToCart ? "bg-emerald-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.3)]" : "bg-black/[0.04] text-black hover:bg-black/[0.08]"}`}
                   >
-                    {addedToCart ? (
-                      <Check className="w-4 h-4" strokeWidth={2.5} />
-                    ) : (
-                      <ShoppingBag className="w-4 h-4 text-black" strokeWidth={2} />
-                    )}
-                    {addedToCart ? "Нэмэгдлээ" : "Сагсанд"}
+                    <AnimatePresence mode="wait">
+                      {addedToCart ? (
+                        <motion.div
+                          key="check"
+                          initial={{ scale: 0, rotate: -45 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          className="flex items-center gap-2"
+                        >
+                          <Check className="w-4.5 h-4.5" strokeWidth={3} />
+                          <span>Нэмэгдлээ</span>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="cart"
+                          initial={{ scale: 0.8 }}
+                          animate={{ scale: 1 }}
+                          className="flex items-center gap-2"
+                        >
+                          <ShoppingBag className="w-4.5 h-4.5" strokeWidth={2.2} />
+                          <span>Сагсанд</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.button>
 
                   <motion.button
-                    whileTap={{ scale: 0.96 }}
+                    whileTap={{ scale: 0.94, y: 1 }}
                     onClick={handleBuyNow}
                     disabled={!canAddToCart}
-                    className="flex items-center justify-center gap-1.5 px-5 h-11 rounded-xl bg-[#FF5000] text-white font-bold text-[13px] shadow-[0_4px_12px_rgba(255,80,0,0.2)] active:bg-[#E64800] transition-colors disabled:opacity-40"
+                    className="flex items-center justify-center gap-2 px-6 h-12 rounded-2xl bg-gradient-to-br from-[#FF5000] to-[#FF8000] text-white font-bold text-[14px] shadow-[0_8px_25px_rgba(255,80,0,0.3)] active:shadow-inner transition-all disabled:opacity-30"
                   >
-                    Авах <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+                    Авах <ArrowRight className="w-5 h-5" strokeWidth={3} />
                   </motion.button>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Related Products Full Width */}
             {product.relatedProducts && product.relatedProducts.length > 0 && (
