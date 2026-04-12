@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Soyol Shop',
   webDir: 'public',
   server: {
-    url: 'https://soyolvideoshop.mn',
+    url: 'https://soyol-io.vercel.app',
     androidScheme: 'https',
     errorPath: '/offline.html',
   },
