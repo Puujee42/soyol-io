@@ -884,9 +884,48 @@ export default function ProductDetailClient({
               </div>
             </div>
 
+            {/* Mobile Actions Section - Now positioned above Related Products */}
+            <div className="md:hidden bg-white lg:rounded-2xl mt-3 border-t border-b border-black/[0.06] shadow-sm">
+              <div className="flex items-center gap-3 px-5 py-5 pb-[calc(16px+env(safe-area-inset-bottom,0px))]">
+                <div className="flex flex-col min-w-0 mr-auto">
+                  <span className="text-[9px] text-[#8E8E93] font-bold uppercase tracking-[0.05em] mb-0.5">
+                    НИЙТ ҮНЭ
+                  </span>
+                  <span className="text-[18px] font-bold text-black leading-tight tracking-tight">
+                    {formatPrice(displayPrice * quantity)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    whileTap={{ scale: 0.96 }}
+                    onClick={handleAddToCart}
+                    disabled={!canAddToCart}
+                    className={`flex items-center justify-center gap-1.5 px-4 h-11 rounded-xl font-bold text-[13px] transition-all duration-200 disabled:opacity-40 ${addedToCart ? "bg-emerald-500 text-white" : "bg-[#F2F2F7] text-black"}`}
+                  >
+                    {addedToCart ? (
+                      <Check className="w-4 h-4" strokeWidth={2.5} />
+                    ) : (
+                      <ShoppingBag className="w-4 h-4 text-black" strokeWidth={2} />
+                    )}
+                    {addedToCart ? "Нэмэгдлээ" : "Сагсанд"}
+                  </motion.button>
+
+                  <motion.button
+                    whileTap={{ scale: 0.96 }}
+                    onClick={handleBuyNow}
+                    disabled={!canAddToCart}
+                    className="flex items-center justify-center gap-1.5 px-5 h-11 rounded-xl bg-[#FF5000] text-white font-bold text-[13px] shadow-[0_4px_12px_rgba(255,80,0,0.2)] active:bg-[#E64800] transition-colors disabled:opacity-40"
+                  >
+                    Авах <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+
             {/* Related Products Full Width */}
             {product.relatedProducts && product.relatedProducts.length > 0 && (
-              <div className="mt-10 px-5 lg:px-8">
+              <div className="mt-6 px-5 lg:px-8">
                 <RelatedProducts products={product.relatedProducts} />
               </div>
             )}
@@ -894,46 +933,7 @@ export default function ProductDetailClient({
 
         </div>
 
-        <div 
-          className="fixed md:hidden left-0 right-0 z-[100] bg-white/95 backdrop-blur-xl border-t border-black/[0.06] shadow-[0_-8px_30px_rgba(0,0,0,0.04)]" 
-          style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px))" }}
-        >
-          <div className="flex items-center gap-3 px-4 py-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
-            <div className="flex flex-col min-w-0 mr-auto">
-              <span className="text-[9px] text-[#8E8E93] font-bold uppercase tracking-[0.05em] mb-0.5">
-                НИЙТ ҮНЭ
-              </span>
-              <span className="text-[18px] font-bold text-black leading-tight tracking-tight">
-                {formatPrice(displayPrice * quantity)}
-              </span>
-            </div>
 
-            <div className="flex items-center gap-2">
-              <motion.button
-                whileTap={{ scale: 0.96 }}
-                onClick={handleAddToCart}
-                disabled={!canAddToCart}
-                className={`flex items-center justify-center gap-1.5 px-4 h-11 rounded-xl font-bold text-[13px] transition-all duration-200 disabled:opacity-40 ${addedToCart ? "bg-emerald-500 text-white" : "bg-[#F2F2F7] text-black"}`}
-              >
-                {addedToCart ? (
-                  <Check className="w-4 h-4" strokeWidth={2.5} />
-                ) : (
-                  <ShoppingBag className="w-4 h-4 text-black" strokeWidth={2} />
-                )}
-                {addedToCart ? "Нэмэгдлээ" : "Сагсанд"}
-              </motion.button>
-
-              <motion.button
-                whileTap={{ scale: 0.96 }}
-                onClick={handleBuyNow}
-                disabled={!canAddToCart}
-                className="flex items-center justify-center gap-1.5 px-5 h-11 rounded-xl bg-[#FF5000] text-white font-bold text-[13px] shadow-[0_4px_12px_rgba(255,80,0,0.2)] active:bg-[#E64800] transition-colors disabled:opacity-40"
-              >
-                Авах <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
-              </motion.button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <AnimatePresence>
