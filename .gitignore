@@ -45,4 +45,9 @@ next-env.d.ts
 
 # android secrets
 android/*.json
-!android/app/google-services.json
+android/app/google-services.json
+!android/app/google-services.json.example
+# keystore
+android/*.jks
+android/app/*.jks
+android/keystore.properties
