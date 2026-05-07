@@ -297,7 +297,7 @@ export default function ProductDetailClient({
         }}
       />
 
-      <div className="pd-root min-h-screen flex flex-col bg-[#F6F6F4] relative">
+      <div className="pd-root min-h-screen bg-[#F6F6F4] pb-[120px] md:pb-16">
         <div className="flex-1 pb-[calc(64px+env(safe-area-inset-bottom,0px))] md:pb-16">
           <div
             className="lg:hidden fixed top-0 left-0 right-0 z-[110] flex items-center justify-between px-4 bg-[#F6F6F4]"
@@ -313,25 +313,23 @@ export default function ProductDetailClient({
             >
               <ChevronLeft className="w-4 h-4 text-black" strokeWidth={2.5} />
             </motion.button>
-            <div className="flex items-center gap-2">
-              <motion.button
-                whileTap={{ scale: 0.92 }}
-                onClick={handleShare}
-                className="w-9 h-9 rounded-full bg-white flex items-center justify-center border border-black/[0.06] shadow-sm"
-              >
-                <Share2 className="w-4 h-4 text-black" strokeWidth={2} />
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.92 }}
-                onClick={handleWishlist}
-                className="w-9 h-9 rounded-full bg-white flex items-center justify-center border border-black/[0.06] shadow-sm"
-              >
-                <Heart
-                  className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-black"}`}
-                  strokeWidth={2}
-                />
-              </motion.button>
-            </div>
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={handleShare}
+              className="w-9 h-9 rounded-full bg-white flex items-center justify-center border border-black/[0.06] shadow-sm ml-auto mr-2"
+            >
+              <Share2 className="w-4 h-4 text-black" strokeWidth={2} />
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={handleWishlist}
+              className="w-9 h-9 rounded-full bg-white flex items-center justify-center border border-black/[0.06] shadow-sm"
+            >
+              <Heart
+                className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-black"}`}
+                strokeWidth={2}
+              />
+            </motion.button>
           </div>
 
           <div className="max-w-5xl mx-auto">
@@ -387,17 +385,18 @@ export default function ProductDetailClient({
                         {images.map((_, i) => (
                           <motion.div
                             key={i}
-                            animate={{
-                              width: activeImageIndex === i ? 16 : 5,
-                              backgroundColor: activeImageIndex === i ? '#FF5000' : 'rgba(0,0,0,0.2)',
-                            }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                            className="h-[5px] rounded-full"
+                            className={`h-1 rounded-full transition-all duration-300 ${
+                              activeImageIndex === i ? "w-5 bg-black" : "w-1 bg-black/20"
+                            }`}
                             onClick={() => setActiveImageIndex(i)}
                           />
                         ))}
                       </div>
                     )}
+                    
+                    <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white text-[11px] font-medium px-2 py-0.5 rounded-full tracking-wide">
+                      {activeImageIndex + 1} / {images.length}
+                    </div>
                   </div>
 
                   <div
@@ -523,10 +522,10 @@ export default function ProductDetailClient({
                         key={i}
                         whileTap={{ scale: 0.88 }}
                         onClick={() => setActiveImageIndex(i)}
-                        className={`relative shrink-0 w-14 lg:w-18 h-14 lg:h-18 rounded-2xl overflow-hidden border-2 transition-all duration-300 bg-white shadow-sm ${
+                        className={`relative shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-150 bg-white ${
                           activeImageIndex === i 
-                            ? "border-orange-500 shadow-[0_0_0_3px_rgba(255,80,0,0.15)]" 
-                            : "border-transparent opacity-45 hover:opacity-75"
+                            ? "border-black opacity-100" 
+                            : "border-transparent opacity-40 hover:opacity-70"
                         }`}
                       >
                         <Image
