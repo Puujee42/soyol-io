@@ -4,6 +4,7 @@ import { getCollection } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
+import { sendPushToAllUsers } from '@/lib/fcm';
 
 export type ProductFormData = {
   name: string;
@@ -66,6 +67,18 @@ export async function createProduct(data: ProductFormData) {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+
+    // Fire-and-forget: notify all users about the new product
+    sendPushToAllUsers({
+      title: '🆕 Шинэ бараа нэмэгдлээ!',
+      body: `${productData.name}${productData.price ? ` — ${productData.price}₮` : ''}`,
+      imageUrl: productData.image,
+      data: {
+        url: `/product/${result.insertedId.toString()}`,
+        productId: result.insertedId.toString(),
+        type: 'new_product',
+      },
+    }).catch((err) => console.error('FCM: Background send error:', err));
 
     revalidatePath('/');
     revalidatePath('/admin');
