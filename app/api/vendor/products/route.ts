@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
             body: `${newProduct.name}${newProduct.price ? ` — ${newProduct.price}₮` : ''}`,
             imageUrl: newProduct.image,
             data: {
-                url: `/products/${result.insertedId.toString()}`,
+                url: `/product/${result.insertedId.toString()}`,
                 productId: result.insertedId.toString(),
                 type: 'new_product'
             }
