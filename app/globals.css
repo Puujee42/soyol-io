@@ -62,6 +62,22 @@ body {
   -webkit-touch-callout: none;
 }
 
+/* Capacitor native (iOS/Android) polish */
+html.cap-native,
+html.cap-native body {
+  height: 100%;
+}
+
+/* iOS safe area padding (only in native wrapper) */
+@supports (padding: max(0px)) {
+  html.cap-native body {
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
 input,
 textarea,
 select {

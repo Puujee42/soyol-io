@@ -4,6 +4,12 @@ const config: CapacitorConfig = {
   appId: 'mn.soyol.shop',
   appName: 'Soyol Shop',
   webDir: 'public',
+  ios: {
+    // Prevent iOS WebView from adding automatic top inset (safe-area gap).
+    // We handle safe-area with CSS + viewport-fit=cover.
+    contentInset: 'never',
+    scrollEnabled: true,
+  },
   server: {
     url: 'https://soyol-io.vercel.app',
     androidScheme: 'https',

@@ -8,6 +8,7 @@ import { AuthProvider } from '@/context/AuthContext';
 
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 
 const swrDefaults = {
   revalidateOnFocus: false,
@@ -25,6 +26,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    document.documentElement.classList.add('cap-native');
+    return () => {
+      document.documentElement.classList.remove('cap-native');
+    };
+  }, []);
 
   return (
     <SWRConfig value={swrDefaults}>
