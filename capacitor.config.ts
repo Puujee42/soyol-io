@@ -20,8 +20,10 @@ const config: CapacitorConfig = {
       presentationOptions: ["badge", "sound", "alert"],
     },
     SplashScreen: {
-      launchShowDuration: 2000,
-      launchAutoHide: true,
+      // Keep splash visible until the web app signals it's ready.
+      // This improves perceived startup time on slower networks.
+      launchShowDuration: 0,
+      launchAutoHide: false,
       backgroundColor: "#ffffffff",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP",
