@@ -1,9 +1,62 @@
-import { notFound } from 'next/navigation';
-import { getCollection } from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
-import ProductDetailClient from '@/components/ProductDetailClient';
+import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
+import ProductDetailClient from "@/components/ProductDetailClient";
+import { CacheTags } from "@/lib/cache-tags";
+import { ObjectId } from "mongodb";
 
-export const revalidate = 60;
+export const revalidate = 86400;
+
+type ProductResponse = {
+  _id: string | ObjectId;
+  name: string;
+  description?: string;
+  price: number;
+  originalPrice?: number;
+  discountPercent?: number;
+  image?: string | null;
+  images?: string[];
+  category?: string;
+  stockStatus?: "in-stock" | "pre-order" | string;
+  inventory?: number;
+  brand?: string;
+  model?: string;
+  paymentMethods?: string[];
+  sections?: string[];
+  attributes?: Record<string, string>;
+  options?: any[];
+  variants?: any[];
+  shippingOrigin?: string;
+  shippingDestination?: string;
+  dispatchTime?: string;
+  sizeGuideUrl?: string;
+  wholesale?: boolean;
+  featured?: boolean;
+  isCargo?: boolean;
+  deliveryFee?: number;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  rating?: number;
+};
+
+async function fetchProductFromDb(id: string): Promise<ProductResponse | null> {
+  const { getCollection } = await import("@/lib/mongodb");
+  let objectId: InstanceType<typeof ObjectId>;
+  try {
+    objectId = new ObjectId(id);
+  } catch {
+    return null;
+  }
+  const products = await getCollection("products");
+  const product = await products.findOne({ _id: objectId } as any);
+  if (!product) return null;
+  return product as unknown as ProductResponse;
+}
+
+const getCachedProduct = unstable_cache(
+  async (id: string) => fetchProductFromDb(id),
+  ['product-detail'],
+  { revalidate: 86400 }
+);
 
 export async function generateMetadata({
   params,
@@ -12,8 +65,7 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   try {
-    const products = await getCollection('products');
-    const product = await products.findOne({ _id: new ObjectId(id) });
+    const product = await getCachedProduct(id);
     if (!product) return {};
     return {
       title: product.isCargo ? `${product.name} + Карго` : product.name,
@@ -41,22 +93,24 @@ export default async function ProductDetailPage({
   const { id } = await params;
 
   try {
-    const products = await getCollection('products');
-    const product = await products.findOne({ _id: new ObjectId(id) });
+    const product = await getCachedProduct(id);
 
     if (!product) {
       notFound();
     }
 
+    const { getCollection } = await import("@/lib/mongodb");
+    const products = await getCollection("products");
+
     const relatedProducts = await products
       .find({
         category: product.category,
-        _id: { $ne: product._id }
-      })
+        _id: { $ne: new ObjectId(id) }
+      } as any)
       .limit(4)
       .toArray();
 
-    const mappedRelatedProducts = relatedProducts.map(p => ({
+    const mappedRelatedProducts = relatedProducts.map((p: any) => ({
       id: p._id.toString(),
       name: p.name,
       image: p.image || '',
@@ -102,7 +156,7 @@ export default async function ProductDetailPage({
       relatedProducts: mappedRelatedProducts,
     };
 
-    return <ProductDetailClient product={productData} initialReviews={[]} />;
+    return <ProductDetailClient product={productData as any} initialReviews={[]} />;
   } catch {
     notFound();
   }

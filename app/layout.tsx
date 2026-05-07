@@ -73,9 +73,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
-
-  const content = (
+  return (
     <html lang="mn" className={inter.variable}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -85,20 +83,9 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen bg-white antialiased`}>
         <CapacitorBackButton />
         <ClientLayout>
-          <LuxuryNavbar />
-          <main className="min-h-screen pb-16 md:pb-0 relative z-0">{children}</main>
+          {children}
         </ClientLayout>
       </body>
     </html>
-  );
-
-  if (!googleClientId) {
-    return content;
-  }
-
-  return (
-    <GoogleOAuthProvider clientId={googleClientId}>
-      {content}
-    </GoogleOAuthProvider>
   );
 }
