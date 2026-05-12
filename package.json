@@ -2,6 +2,7 @@
   "name": "soyol-video-shop",
   "version": "2.0.0",
   "scripts": {
+    "postinstall": "patch-package",
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
@@ -66,6 +67,7 @@
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
+    "patch-package": "^8.0.1",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.21.0",
