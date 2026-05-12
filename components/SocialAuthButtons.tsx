@@ -11,6 +11,15 @@ interface SocialAuthButtonsProps {
   mode: 'signIn' | 'signUp';
 }
 
+// Apple icon
+function AppleIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+    </svg>
+  );
+}
+
 // Google icon SVG
 function GoogleIcon() {
   return (
@@ -32,7 +41,15 @@ function FacebookIcon() {
   );
 }
 
-function GoogleLoginButton({ mode, onLoading }: { mode: 'signIn' | 'signUp', onLoading: (loading: boolean) => void }) {
+function GoogleLoginButton({
+  mode,
+  onLoading,
+  disabled,
+}: {
+  mode: 'signIn' | 'signUp';
+  onLoading: (loading: boolean) => void;
+  disabled?: boolean;
+}) {
   const { login } = useAuth();
   const router = useRouter();
 
@@ -75,11 +92,12 @@ function GoogleLoginButton({ mode, onLoading }: { mode: 'signIn' | 'signUp', onL
   return (
     <button
       type="button"
+      disabled={disabled}
       onClick={() => {
         onLoading(true);
         googleLogin();
       }}
-      className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-2xl transition-all font-bold text-sm text-slate-700 shadow-sm"
+      className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 rounded-2xl transition-all font-bold text-sm text-slate-700 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
     >
       <GoogleIcon />
       Google-ээр {mode === 'signIn' ? 'нэвтрэх' : 'бүртгүүлэх'}
@@ -88,23 +106,87 @@ function GoogleLoginButton({ mode, onLoading }: { mode: 'signIn' | 'signUp', onL
 }
 
 export default function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
-  const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | null>(null);
+  const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | 'apple' | null>(null);
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleAppleLogin = async () => {
+    try {
+      setLoadingProvider('apple');
+      const { Capacitor } = await import('@capacitor/core');
+
+      if (Capacitor.isNativePlatform()) {
+        const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
+        const result = await SignInWithApple.authorize({
+          clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID || 'mn.soyol.shop',
+          redirectURI: 'https://soyol-io.vercel.app/api/auth/apple',
+          scopes: 'email name',
+        });
+
+        const res = await fetch('/api/auth/apple', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            identityToken: result.response.identityToken,
+            fullName: {
+              givenName: result.response.givenName,
+              familyName: result.response.familyName,
+            },
+            email: result.response.email,
+          }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          login(data.user);
+          if (data.isNewUser) {
+            router.push('/complete-profile');
+          } else {
+            toast.success('Амжилттай нэвтэрлээ!');
+            router.push('/profile');
+          }
+        } else {
+          toast.error(data.error || 'Apple-ээр нэвтрэхэд алдаа гарлаа');
+        }
+      } else {
+        toast.error('Apple нэвтрэлт зөвхөн iOS дээр ажилладаг');
+      }
+    } catch (error) {
+      console.error('Apple login error:', error);
+      toast.error('Apple-ээр нэвтрэхэд алдаа гарлаа');
+    } finally {
+      setLoadingProvider(null);
+    }
+  };
 
   return (
     <div className="space-y-3">
-      {/* Divider */}
       <div className="flex items-center gap-3 my-4">
         <div className="flex-1 h-px bg-slate-200" />
         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">эсвэл</span>
         <div className="flex-1 h-px bg-slate-200" />
       </div>
 
-      {/* Google button (Only if Client ID is configured) */}
+      <button
+        type="button"
+        onClick={handleAppleLogin}
+        disabled={!!loadingProvider}
+        className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-black hover:bg-gray-900 rounded-2xl transition-all disabled:opacity-60 disabled:cursor-not-allowed font-bold text-sm text-white shadow-sm"
+      >
+        {loadingProvider === 'apple' ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          <AppleIcon />
+        )}
+        Apple-ээр {mode === 'signIn' ? 'нэвтрэх' : 'бүртгүүлэх'}
+      </button>
+
       {googleClientId ? (
-        <GoogleLoginButton 
-          mode={mode} 
-          onLoading={(loading) => setLoadingProvider(loading ? 'google' : null)} 
+        <GoogleLoginButton
+          mode={mode}
+          disabled={!!loadingProvider && loadingProvider !== 'google'}
+          onLoading={(loading) => setLoadingProvider(loading ? 'google' : null)}
         />
       ) : (
         <div className="p-3 bg-orange-50 rounded-xl border border-orange-100">
@@ -114,7 +196,6 @@ export default function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
         </div>
       )}
 
-      {/* Facebook button */}
       <button
         type="button"
         onClick={() => {
