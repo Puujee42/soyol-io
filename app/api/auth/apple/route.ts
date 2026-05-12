@@ -13,9 +13,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Identity token шаардлагатай' }, { status: 400 });
     }
 
-    const payload = JSON.parse(
-      Buffer.from(identityToken.split('.')[1], 'base64url').toString()
-    );
+    const tokenParts = identityToken.split('.');
+    if (tokenParts.length < 2) {
+      return NextResponse.json({ error: 'Apple token буруу форматтай байна' }, { status: 400 });
+    }
+
+    let payload: { sub?: string; email?: string };
+    try {
+      payload = JSON.parse(Buffer.from(tokenParts[1], 'base64url').toString());
+    } catch {
+      return NextResponse.json({ error: 'Apple token уншиж чадсангүй' }, { status: 400 });
+    }
 
     const appleUserId = payload.sub;
     const appleEmail = email || payload.email;

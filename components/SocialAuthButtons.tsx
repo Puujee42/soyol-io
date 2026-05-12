@@ -124,16 +124,22 @@ export default function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
           scopes: 'email name',
         });
 
+        const identityToken = result.response?.identityToken;
+        if (!identityToken) {
+          toast.error('Apple-ээс нэвтрэх токен ирээгүй. Тохиргоо (Sign In with Apple) шалгана уу.');
+          return;
+        }
+
         const res = await fetch('/api/auth/apple', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            identityToken: result.response.identityToken,
+            identityToken,
             fullName: {
-              givenName: result.response.givenName,
-              familyName: result.response.familyName,
+              givenName: result.response?.givenName,
+              familyName: result.response?.familyName,
             },
-            email: result.response.email,
+            email: result.response?.email,
           }),
         });
 
@@ -152,9 +158,20 @@ export default function SocialAuthButtons({ mode }: SocialAuthButtonsProps) {
       } else {
         toast.error('Apple нэвтрэлт зөвхөн iOS дээр ажилладаг');
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Apple login error:', error);
-      toast.error('Apple-ээр нэвтрэхэд алдаа гарлаа');
+      const pluginMessage =
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        typeof (error as { message: string }).message === 'string'
+          ? (error as { message: string }).message
+          : null;
+      toast.error(
+        pluginMessage && pluginMessage.length > 0
+          ? pluginMessage
+          : 'Apple-ээр нэвтрэхэд алдаа гарлаа',
+      );
     } finally {
       setLoadingProvider(null);
     }
