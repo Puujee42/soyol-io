@@ -799,75 +799,70 @@ export default function LuxuryNavbar() {
 
       {/* ── MOBILE BOTTOM NAV — Tab Bar ───────────────────────────────────── */}
       <div
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white/95 border-t border-slate-100 backdrop-blur-[20px]"
         style={{
-          paddingBottom: "env(safe-area-inset-bottom)",
+          height: "calc(49px + env(safe-area-inset-bottom, 0px))",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+          WebkitBackdropFilter: "blur(20px)",
         }}
       >
-        <div
-          className="bg-white/95 border-t border-slate-100 backdrop-blur-[20px] pointer-events-auto"
-          style={{
-            WebkitBackdropFilter: "blur(20px)",
-          }}
-        >
-          <div className="flex items-stretch h-16">
-            {mobileNavItems.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/" && pathname.startsWith(item.href));
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => {
-                    triggerHaptic();
-                    if (isActive) {
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }
-                  }}
-                  className="flex-1 flex flex-col items-center justify-center gap-0.5 py-1"
-                >
-                  <div className="relative flex flex-col items-center">
-                    {/* Pill background for active state */}
-                    <div
-                      className={`flex items-center justify-center w-12 h-7 rounded-full transition-all duration-200 ${isActive ? "bg-[#FF5000]/10" : "bg-transparent"
-                        }`}
-                    >
-                      <Icon
-                        className={`w-[22px] h-[22px] transition-all duration-200 ${isActive ? "text-[#FF5000]" : "text-slate-400"
-                          }`}
-                        strokeWidth={isActive ? 2.5 : 1.8}
-                        fill={isActive ? "currentColor" : "none"}
-                      />
-                      {mounted && item.count !== undefined && item.count > 0 && (
-                        <span className="absolute -top-0.5 right-0.5 w-4 h-4 bg-[#FF5000] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-                          {item.count > 9 ? "9+" : item.count}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <span
-                    className={`text-[10px] transition-all duration-200 ${isActive
-                      ? "font-bold text-[#FF5000]"
-                      : "font-medium text-slate-400"
+        <div className="flex items-stretch h-[49px]">
+          {mobileNavItems.map((item) => {
+            const isActive =
+              pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(item.href));
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => {
+                  triggerHaptic();
+                  if (isActive) {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+                className="flex-1 flex flex-col items-center justify-center gap-0.5 py-1"
+              >
+                <div className="relative flex flex-col items-center">
+                  {/* Pill background for active state */}
+                  <div
+                    className={`flex items-center justify-center w-12 h-7 rounded-full transition-all duration-200 ${isActive ? "bg-[#FF5000]/10" : "bg-transparent"
                       }`}
                   >
-                    {item.name}
-                  </span>
-                  {/* Active indicator dot - unified and subtle */}
-                  <motion.div
-                    initial={false}
-                    animate={{
-                      scale: isActive ? 1 : 0,
-                      opacity: isActive ? 1 : 0
-                    }}
-                    className="w-1 h-1 rounded-full bg-[#FF5000] mt-0.5"
-                  />
-                </Link>
-              );
-            })}
-          </div>
+                    <Icon
+                      className={`w-[22px] h-[22px] transition-all duration-200 ${isActive ? "text-[#FF5000]" : "text-slate-400"
+                        }`}
+                      strokeWidth={isActive ? 2.5 : 1.8}
+                      fill={isActive ? "currentColor" : "none"}
+                    />
+                    {mounted && item.count !== undefined && item.count > 0 && (
+                      <span className="absolute -top-0.5 right-0.5 w-4 h-4 bg-[#FF5000] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+                        {item.count > 9 ? "9+" : item.count}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <span
+                  className={`text-[10px] transition-all duration-200 ${isActive
+                    ? "font-bold text-[#FF5000]"
+                    : "font-medium text-slate-400"
+                    }`}
+                >
+                  {item.name}
+                </span>
+                {/* Active indicator dot - unified and subtle */}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    scale: isActive ? 1 : 0,
+                    opacity: isActive ? 1 : 0
+                  }}
+                  className="w-1 h-1 rounded-full bg-[#FF5000] mt-0.5"
+                />
+              </Link>
+            );
+          })}
         </div>
       </div>
     </>

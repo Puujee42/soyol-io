@@ -555,6 +555,16 @@ select {
     opacity: 1;
     transform: translateY(0);
   }
+
+  .mobile-nav-pb {
+    padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-nav-pb {
+      padding-bottom: 0 !important;
+    }
+  }
 }
 
 /* ── Disable hover flashes on touch devices ─────────────────────────────── */
