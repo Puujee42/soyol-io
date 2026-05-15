@@ -1706,3 +1706,273 @@
     ]
   }
 ]
+
+--- Request 2026-05-15T05:56:27.403Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  }
+]
+
+--- Request 2026-05-15T06:00:18.652Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  }
+]
+
+--- Request 2026-05-15T06:00:41.909Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Сайн байна уу! Та \"Соёл видео шоп\"-ын туслах оператортой холбогдлоо. Таны таалалд нийцсэн видео аппаратурыг олоход туслахад би үргэлж бэлэн байх болно. Таныг юу сонирхож байна вэ? 😊"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "tanaid ymar huvtsas baigaa we"
+      }
+    ]
+  }
+]
+
+--- Request 2026-05-15T06:03:38.738Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Сайн байна уу! Та \"Соёл видео шоп\"-ын туслах оператортой холбогдлоо. Таны таалалд нийцсэн видео аппаратурыг олоход туслахад би үргэлж бэлэн байх болно. Таныг юу сонирхож байна вэ? 😊"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "tanaid ymar huvtsas baigaa we"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Хөөх, таныг хувцас сонирхож байгаад гайхаж байна! Бид камер, дрон, гэрэл, микрофон зэрэг видео хэрэгслээр мэргэшсэн дэлгүүр. Хувцас тал дээр би танд"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "ymar huvtsas baina"
+      }
+    ]
+  }
+]
+
+--- Request 2026-05-15T06:06:16.499Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  }
+]
+
+--- Request 2026-05-15T06:06:30.411Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Сайн байна уу? Таныг Соёл Видео Шопын Ухаалаг Зөвлөх угтаж байна. Та сайхан амарч байна уу? 😊\n\nТаны эрэлхийлж буй зүйл юу вэ? Би танд хэрхэн тусалж болох вэ?\nТанд өөр туслах зүйл байна уу? 😊"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "tanaih yu zardag ve"
+      }
+    ]
+  }
+]
+
+--- Request 2026-05-15T06:10:02.447Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi bi hoslol sonirhoj baina"
+      }
+    ]
+  }
+]
+
+--- Request 2026-05-15T06:10:29.228Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi bi hoslol sonirhoj baina"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Та ямар төрлийн хосол сонирхож байна вэ? Жишээлбэл, спорт хослол уу эсвэл өдөр тутмын хослол уу? Таны хэрэгцээг илүү тодорхой болгохын тулд нэмэлт мэдээлэл өгнө үү. 😊\n"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "zagwarlaga toron oruulgatai"
+      }
+    ]
+  }
+]
+
+--- Request 2026-05-15T06:11:04.044Z ---
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "hi bi hoslol sonirhoj baina"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Та ямар төрлийн хосол сонирхож байна вэ? Жишээлбэл, спорт хослол уу эсвэл өдөр тутмын хослол уу? Таны хэрэгцээг илүү тодорхой болгохын тулд нэмэлт мэдээлэл өгнө үү. 😊\n"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "zagwarlaga toron oruulgatai"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Та \"загварлаг торон оруулагатай\" гэдгээрээ юуг хэлж байгаагаа тодруулна уу. Ямар төрлийн хувцас, эсвэл ямар нэгэн тодорхой барааны төрлийн тухай яриад байна вэ? Жишээ нь, загварлаг торон оруулагатай даашинз уу, цамц уу эсвэл өөр зүйл үү? 😊"
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "maak"
+      }
+    ]
+  }
+]

@@ -55,36 +55,34 @@ export async function POST(req: Request) {
     const result = await streamText({
       model: openrouter.chat('google/gemini-2.5-flash'),
       system: `
-    You are the "Loyal Assistant Operator" for Soyol Video Shop, a premium electronics and video equipment store in Mongolia.
+    Та бол "Соёл Видео Шоп" (Soyol Video Shop) дэлгүүрийн "Ухаалаг Зөвлөх" юм. Манай дэлгүүр нь бүх төрлийн бараа бүтээгдэхүүн зардаг (Taobao шиг) Монголын онлайн худалдааны томоохон дэлгүүр юм.
     
-    Your Personality:
-    - Professional yet friendly and approachable.
-    - Helpful, proactive, and knowledgeable about video gear (cameras, lights, drones, audio).
-    - You speak fluent Mongolian (primary) and English.
-    - Always address the user politely.
+    Таны үндсэн зорилго:
+    - Хэрэглэгчийн хэрэгцээг маш сайн ойлгож, түүнд тохирсон хамгийн зөв барааг санал болгох.
+    - Хэрэглэгч яг юу хайж байгаагаа мэдэхгүй байвал 'getShopCategories' ашиглан дэлгүүрийн ерөнхий бүтцийг харж, тодруулах асуултууд асуух.
+    - Хамгийн сүүлийн үеийн барааг 'getNewestProducts' ашиглан олж, хэрэглэгчдэд санал болгох.
     
-    Your Capabilities:
-    - Help users find products using the 'searchProducts' tool.
-    - Check stock availability using 'checkInventory'.
-    - Add items to the cart using 'addToCart' (only if the user explicitly confirms).
-    - Guide users to specific pages using 'navigateToPage'.
+    Таны зан чанар:
+    - Мэргэжлийн, найрсаг, туслахад үргэлж бэлэн.
+    - Монгол хэлээр маш цэвэрхэн, эелдэг харилцана (Мөн англиар харилцаж чадна).
+    - Хэрэглэгчийг үргэлж хүндэтгэн "Та" гэж харьцана.
     
-    Output Requirements:
-    - ALWAYS give a clear final answer in Mongolian after any tool call.
-    - NEVER finish the conversation with tool-calls. Always continue and return a final assistant message.
-    - If products are found, start the response with: "Танд дараах бараануудыг санал болгож байна ✨"
-    - PRESENT products by including card markers in this exact format on its own line:
+    Боломжууд (Tools):
+    - 'getShopCategories': Дэлгүүрийн барааны ангиллуудыг харах.
+    - 'getNewestProducts': Хамгийн сүүлд нэмэгдсэн бараануудыг харах.
+    - 'searchProducts': Тодорхой бараа хайх.
+    - 'checkInventory': Барааны үлдэгдэл, үнэ шалгах.
+    - 'addToCart': Сагсанд бараа нэмэх.
+    - 'navigateToPage': Хуудас руу шилжих.
+    
+    Гаралтын шаардлага (Output Requirements):
+    - Tool call-ын дараа үргэлж Монгол хэлээр тодорхой хариулт өгөх.
+    - Барааг харуулахдаа заавал энэ хэлбэрээр бичнэ (шинэ мөрөнд):
         [PRODUCT_CARD: {"id":"...","name":"...","price":1234,"image":"..."}]
-      Only include id, name, price, image keys in the card JSON.
-    - Do NOT print raw tool call JSON; summarize first, then include PRODUCT_CARD tags.
-    - Use friendly, concise sentences. Avoid repeating the same content.
-    - Always end your response with: "Танд өөр туслах зүйл байна уу? 😊"
-    - Never say phrases implying no warranty (e.g., "баталгаа байхгүй"). Use helpful phrasing instead.
-    - If the user sends an image, analyze it using your multimodal capabilities. Infer the likely product type, brand, or model from the image and use 'searchProducts' with a concise Mongolian query to find matching items in the shop.
-    - If the image contains a specific product, describe what you see and suggest matching products from our catalog.
+    - Харилцааг үргэлж: "Танд өөр туслах зүйл байна уу? 😊" гэж дуусгах.
     
-    Context:
-    - Today's date is ${new Date().toLocaleDateString('mn-MN')}.
+    Контекст:
+    - Өнөөдөр: ${new Date().toLocaleDateString('mn-MN')}.
     ${userContext ? '- ' + userContext : ''}
     `,
       stopWhen: stepCountIs(8),
@@ -192,7 +190,7 @@ export async function POST(req: Request) {
                   { description: { $regex: regex } },
                   { category: { $regex: regex } }
                 ]
-              }).limit(5).toArray();
+              }).limit(10).toArray();
               
               return products.map(p => ({
                 id: p._id.toString(),
@@ -200,11 +198,43 @@ export async function POST(req: Request) {
                 price: p.price,
                 stock: p.inventory ?? 0,
                 description: p.description || '',
-                image: p.image || ''
+                image: p.image || '',
+                category: p.category || ''
               }));
             } catch (error) {
               console.error('Search error:', error);
               return [];
+            }
+          },
+        }),
+        getShopCategories: tool({
+          description: 'Дэлгүүрийн бүх барааны ангиллуудыг харах.',
+          inputSchema: zodSchema(z.object({})),
+          execute: async () => {
+            try {
+              const productsCollection = await getCollection('products');
+              const categories = await productsCollection.distinct('category');
+              return `Боломжит ангиллууд: ${categories.filter(Boolean).join(', ')}`;
+            } catch (error) {
+              return 'Error fetching categories.';
+            }
+          },
+        }),
+        getNewestProducts: tool({
+          description: 'Хамгийн сүүлд нэмэгдсэн бараануудыг харах.',
+          inputSchema: zodSchema(z.object({})),
+          execute: async () => {
+            try {
+              const productsCollection = await getCollection('products');
+              const products = await productsCollection.find({}).sort({ createdAt: -1 }).limit(5).toArray();
+              return products.map(p => ({
+                id: p._id.toString(),
+                name: p.name,
+                price: p.price,
+                image: p.image || ''
+              }));
+            } catch (error) {
+              return 'Error fetching newest products.';
             }
           },
         }),
