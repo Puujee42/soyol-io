@@ -46,6 +46,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     const [viewMode, setViewMode] = useState<'menu' | 'chat_selection' | 'video_selection' | 'chat' | 'video_call' | 'ai_chat'>('menu');
     const [connectingMode, setConnectingMode] = useState<'chat' | 'video_call' | null>(null);
     const [isVoiceCall, setIsVoiceCall] = useState(false);
+    const [callRoom, setCallRoom] = useState<string | null>(null);
 
     const connectToAdmin = async (mode: 'chat' | 'video_call') => {
         setConnectingMode(mode);
@@ -63,6 +64,27 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
             };
 
             setSelectedAdmin(supportAdmin);
+
+            if (mode === 'video_call') {
+                const roomName = `call-${effectiveUser.id}-${Date.now()}`;
+                setCallRoom(roomName);
+                
+                // Send call invitation message
+                await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(guestId ? { 'x-guest-id': guestId } : {})
+                    },
+                    body: JSON.stringify({
+                        receiverId: 'support_admin',
+                        content: isVoiceCall ? '📞 Дуут дуудлага хийх хүсэлт' : '📹 Видео дуудлага хийх хүсэлт',
+                        type: 'call_invite',
+                        roomName: roomName
+                    }),
+                });
+            }
+
             setViewMode(mode);
         } catch (e) {
             console.error("Failed to connect to support", e);
@@ -123,8 +145,9 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                             <h3 className="font-bold text-white text-lg">
                                 {viewMode === 'menu' ? t('chat', 'greeting') :
                                     viewMode === 'chat' && selectedAdmin ? (selectedAdmin.name || 'Chat') :
-                                        viewMode === 'ai_chat' ? t('chat', 'aiAssistant') :
-                                            viewMode === 'video_selection' ? t('chat', 'selectVideoOperator') : t('chat', 'selectOperator')}
+                                    viewMode === 'ai_chat' ? t('chat', 'aiAssistant') :
+                                    viewMode === 'video_call' ? (isVoiceCall ? t('chat', 'voiceCall') : t('chat', 'videoCall')) :
+                                    viewMode === 'video_selection' ? t('chat', 'selectVideoOperator') : t('chat', 'selectOperator')}
                             </h3>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
@@ -214,12 +237,46 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                             <ChatWindow
                                 otherUser={selectedAdmin}
                                 guestId={guestId}
-                                onStartCall={() => {
+                                onStartCall={async () => {
                                     setIsVoiceCall(false);
+                                    const roomName = `call-${effectiveUser.id}-${Date.now()}`;
+                                    setCallRoom(roomName);
+                                    await fetch('/api/messages', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            ...(guestId ? { 'x-guest-id': guestId } : {})
+                                        },
+                                        body: JSON.stringify({
+                                            receiverId: selectedAdmin.userId,
+                                            content: '📹 Видео дуудлага хийх хүсэлт',
+                                            type: 'call_invite',
+                                            roomName: roomName
+                                        }),
+                                    });
                                     setViewMode('video_call');
                                 }}
-                                onStartVoiceCall={() => {
+                                onStartVoiceCall={async () => {
                                     setIsVoiceCall(true);
+                                    const roomName = `call-${effectiveUser.id}-${Date.now()}`;
+                                    setCallRoom(roomName);
+                                    await fetch('/api/messages', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            ...(guestId ? { 'x-guest-id': guestId } : {})
+                                        },
+                                        body: JSON.stringify({
+                                            receiverId: selectedAdmin.userId,
+                                            content: '📞 Дуут дуудлага хийх хүсэлт',
+                                            type: 'call_invite',
+                                            roomName: roomName
+                                        }),
+                                    });
+                                    setViewMode('video_call');
+                                }}
+                                onJoinCall={(roomName) => {
+                                    setCallRoom(roomName);
                                     setViewMode('video_call');
                                 }}
                                 onBack={handleBack}
@@ -227,9 +284,9 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                         ) : viewMode === 'ai_chat' ? (
                             <AIChatWindow onBack={handleBack} />
                         ) : viewMode === 'video_call' && selectedAdmin ? (
-                            <div className="h-full overflow-y-auto bg-white">
+                            <div className="h-full overflow-y-auto">
                                 <VideoCall
-                                    prefilledRoom={`call-${effectiveUser.id}-${selectedAdmin._id}`}
+                                    prefilledRoom={callRoom || `call-${effectiveUser.id}-${selectedAdmin._id}`}
                                     onBack={handleBack}
                                     initialVideoDisabled={isVoiceCall}
                                 />

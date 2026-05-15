@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import { getCollection } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { auth } from '@/lib/auth';
+import { auth, currentUser } from '@/lib/auth';
 import { sendOrderStatusUpdate } from '@/lib/email';
 import { deductInventory } from '@/lib/inventory';
 
 // Get all orders (Admin only)
 export async function GET(request: Request) {
     try {
-        const { userId: authUserId, role } = await auth();
-        if (!authUserId || role !== 'admin') {
+         const user = await currentUser();
+        if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -77,8 +77,8 @@ export async function GET(request: Request) {
 // Update order (Status, Delivery Estimate)
 export async function PUT(request: Request) {
     try {
-        const { userId, role } = await auth();
-        if (!userId || role !== 'admin') {
+         const user = await currentUser();
+        if (!user || user.role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -148,11 +148,17 @@ export async function PUT(request: Request) {
                 (async () => {
                     try {
                         const usersCollection = await getCollection('users');
-                        const owner = await usersCollection.findOne({ _id: new ObjectId(existingOrder.userId) });
-                        if (owner?.email) {
+                        let owner = null;
+                        
+                        // Only attempt to find user if userId is a valid ObjectId string
+                        if (existingOrder.userId && existingOrder.userId !== 'guest' && /^[0-9a-fA-F]{24}$/.test(existingOrder.userId)) {
+                            owner = await usersCollection.findOne({ _id: new ObjectId(existingOrder.userId) });
+                        }
+
+                        if (owner?.email || existingOrder.shipping?.email) {
                             await sendOrderStatusUpdate(
                                 { ...existingOrder, deliveryEstimate: deliveryEstimate || existingOrder.deliveryEstimate },
-                                owner.email,
+                                owner?.email || existingOrder.shipping?.email,
                                 status
                             );
                         }

@@ -38,8 +38,13 @@ export default function QPay({ orderId, amount, onSuccess }: QPayProps) {
   const [timeLeft, setTimeLeft] = useState(900); // 15 minutes in seconds
   const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     initiatePayment();
+
+     // Make sure the QR view is visible (mobile sometimes keeps prior scroll position).
+    rootRef.current?.scrollIntoView({ block: "start" });
 
     // Countdown timer
     const timer = setInterval(() => {
@@ -64,15 +69,22 @@ export default function QPay({ orderId, amount, onSuccess }: QPayProps) {
         }),
       });
 
-      if (!res.ok) throw new Error("Invoice creation failed");
-      const data = await res.json();
+      const data = await res.json().catch(() => null as any);
+      if (!res.ok) {
+        const msg =
+          (data && typeof data === "object" && "error" in data && typeof (data as any).error === "string"
+            ? (data as any).error
+            : "Invoice creation failed");
+        throw new Error(msg);
+      }
       setQpayData(data);
       setLoading(false);
 
       // Start Polling
       startPolling(data.invoiceId);
     } catch (error) {
-      toast.error("QPay холболт амжилтгүй боллоо");
+     const msg = error instanceof Error ? error.message : "QPay холболт амжилтгүй боллоо";
+      toast.error(msg);
       setLoading(false);
     }
   };
@@ -170,7 +182,7 @@ export default function QPay({ orderId, amount, onSuccess }: QPayProps) {
   }
 
   return (
-    <div className="bg-slate-900 border border-white/10 rounded-3xl overflow-hidden shadow-2xl max-w-md mx-auto">
+   <div ref={rootRef} className="bg-slate-900 border border-white/10 rounded-3xl overflow-hidden shadow-2xl max-w-md mx-auto">
       {/* Header */}
       <div className="p-6 border-b border-white/5 bg-slate-800/50 flex items-center justify-between">
         <div className="flex items-center gap-3">

@@ -4,6 +4,10 @@ import { ObjectId } from 'mongodb';
 import { checkPayment } from '@/lib/qpay';
 import { deductInventory } from '@/lib/inventory';
 
+export async function GET(req: NextRequest) {
+    return POST(req);
+}
+
 export async function POST(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
@@ -50,8 +54,12 @@ export async function POST(req: NextRequest) {
         );
 
         // Deduct inventory since order is now confirmed
-        if (order.items && order.items.length > 0) {
-            await deductInventory(orderId, order.items);
+         try {
+            if (order.items && order.items.length > 0) {
+                await deductInventory(orderId, order.items);
+            }
+        } catch (e) {
+            console.error('[QPay Callback] Failed to deduct inventory:', e);
         }
 
         // Notify Admin

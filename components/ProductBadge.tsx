@@ -8,6 +8,7 @@ interface ProductBadgeProps {
     isFeatured?: boolean;
     showTrendingBadge?: boolean;
     className?: string;
+    createdAt?: string | Date;
 }
 
 export default function ProductBadge({
@@ -15,15 +16,17 @@ export default function ProductBadge({
     sections = [],
     isFeatured = false,
     showTrendingBadge = false,
-    className = ''
+    className = '',
+    createdAt
 }: ProductBadgeProps) {
     let badgeLabel = '';
     let badgeIcon = '';
     let badgeStyle = '';
 
     const isNew = sections.includes('Шинэ');
+    const isActuallyNew = isNew && (!createdAt || (new Date().getTime() - new Date(createdAt).getTime()) < 24 * 60 * 60 * 1000);
 
-    if (isNew) {
+    if (isActuallyNew) {
         badgeLabel = 'Шинэ';
         badgeIcon = '✨';
         badgeStyle = 'bg-gradient-to-r from-[#007AFF] to-[#005AD6] shadow-[0_4px_12px_rgba(0,122,255,0.25)]';

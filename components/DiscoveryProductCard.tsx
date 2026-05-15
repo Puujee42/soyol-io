@@ -173,6 +173,7 @@ export default function DiscoveryProductCard({
             rating={product.rating}
             sections={product.sections}
             isFeatured={product.featured}
+            createdAt={product.createdAt}
             showTrendingBadge={showTrendingBadge}
             className="z-10 shadow-sm scale-95 origin-top-left"
           />

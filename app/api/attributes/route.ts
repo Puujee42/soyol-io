@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import { getCollection } from '@/lib/mongodb';
-import { auth } from '@/lib/auth';
+import { auth, currentUser } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
 
 export async function GET() {
@@ -17,10 +17,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const { userId, role } = await auth();
-    if (!userId || role !== 'admin') {
+    const user = await currentUser();
+    if (!user || user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+
 
     const body = await req.json();
     const { name, type, options } = body;
@@ -56,8 +57,8 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   try {
-    const { userId, role } = await auth();
-    if (!userId || role !== 'admin') {
+    const user = await currentUser();
+    if (!user || user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -96,8 +97,8 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
-    const { userId, role } = await auth();
-    if (!userId || role !== 'admin') {
+    const user = await currentUser();
+    if (!user || user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

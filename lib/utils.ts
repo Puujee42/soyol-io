@@ -54,6 +54,18 @@ export function isNewProduct(id: string): boolean {
 }
 
 /**
+ * Check if a date is within the last 24 hours
+ */
+export function isWithin24Hours(date: string | Date | undefined): boolean {
+  if (!date) return false;
+  const createdAt = new Date(date);
+  const now = new Date();
+  const diffInMs = now.getTime() - createdAt.getTime();
+  const diffInHours = diffInMs / (1000 * 60 * 60);
+  return diffInHours < 24;
+}
+
+/**
  * Calculate discount percentage
  */
 export function calculateDiscount(originalPrice: number, salePrice: number): number {

@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import type { Product } from "@/models/Product";
 import ProductBadge from "@/components/ProductBadge";
 import { triggerHaptic, hapticSuccess } from "@/lib/haptics";
+import { isWithin24Hours } from "@/lib/utils";
 
 interface UniversalProductCardProps {
   product: Product;
@@ -179,7 +180,7 @@ const UniversalProductCard = memo(({
                   </div>
                 )}
 
-              {statusBadgeMode === "new" && (
+              {statusBadgeMode === "new" && isWithin24Hours(product.createdAt) && (
                 <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-md rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
                   <span className="text-[11px] leading-none">✨</span>
                   <span className="text-[10px] sm:text-[11px] font-bold text-[#007AFF] uppercase tracking-wider leading-none mt-[1px]">
@@ -206,6 +207,7 @@ const UniversalProductCard = memo(({
                     product.sections?.includes("Онцлох")
                   }
                   sections={product.sections}
+                  createdAt={product.createdAt}
                 />
               )}
             </div>
