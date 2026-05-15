@@ -22,6 +22,33 @@ export async function GET(request: NextRequest) {
 
     const conditions: object[] = [];
 
+    const section = searchParams.get("section");
+    if (section === "Бэлэн") {
+      conditions.push({
+        $or: [
+          { sections: "Бэлэн" },
+          { 
+            $and: [
+              { sections: { $ne: "Захиалга" } },
+              { stockStatus: "in-stock" }
+            ]
+          }
+        ]
+      });
+    } else if (section === "Захиалга") {
+      conditions.push({
+        $or: [
+          { sections: "Захиалга" },
+          { 
+            $and: [
+              { sections: { $ne: "Бэлэн" } },
+              { stockStatus: "pre-order" }
+            ]
+          }
+        ]
+      });
+    }
+
     if (stockStatus) {
       filter.stockStatus = stockStatus;
     }

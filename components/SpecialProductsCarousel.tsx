@@ -151,7 +151,10 @@ export default function SpecialProductsCarousel({ products }: SpecialProductsCar
                     </div>
                     <div>
                         <h2 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
-                            Онцгой бараанууд
+                            Танд санал болгох онцгой бараанууд
+
+
+
                         </h2>
                         <p className="text-sm lg:text-base text-slate-500 font-medium mt-0.5">
                             Таны анхаарлыг татах бараанууд
