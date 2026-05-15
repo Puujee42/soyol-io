@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import useSWR from "swr";
 import { useAuth } from "@/context/AuthContext";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, isWithin24Hours } from "@/lib/utils";
 import { Product } from "@/models/Product";
 import { useCartStore } from "@/store/cartStore";
 import toast from "react-hot-toast";
@@ -450,6 +450,16 @@ export default function ProductDetailClient({
                   </div>
 
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
+                    {/* New Badge */}
+                    {product.sections?.includes("Шинэ") && isWithin24Hours(product.createdAt) && (
+                      <div className="flex items-center gap-1.5 bg-gradient-to-r from-[#007AFF] to-[#005AD6] px-3 py-1.5 rounded-full shadow-[0_4px_12px_rgba(0,122,255,0.25)]">
+                        <span className="text-[11px] leading-none">✨</span>
+                        <span className="text-[10px] font-bold text-white tracking-wider uppercase">
+                          Шинэ
+                        </span>
+                      </div>
+                    )}
+
                     {/* Ready Badge */}
                     {product.sections?.includes("Бэлэн") && (
                       <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full border border-black/[0.06] shadow-sm">

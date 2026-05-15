@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
     (async () => {
       try {
         let recipientEmail = body.shipping?.email || body.email;
-        if (!recipientEmail && userId !== 'guest') {
+        if (!recipientEmail && userId !== 'guest' && /^[0-9a-fA-F]{24}$/.test(userId)) {
           const usersCollection = await getCollection('users');
           const owner = await usersCollection.findOne({ _id: new ObjectId(userId) });
           recipientEmail = owner?.email;

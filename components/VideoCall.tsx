@@ -66,7 +66,7 @@ export default function VideoCall({
   // If we have token and we are in call
   if (inCall && token) {
     return (
-      <div className="fixed inset-0 z-[200] bg-black">
+      <div className="relative h-full w-full bg-black overflow-hidden rounded-[2.5rem]">
         <LiveKitRoom
           video={!initialVideoDisabled}
           audio={true}
@@ -74,7 +74,7 @@ export default function VideoCall({
           serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
           data-lk-theme="default"
           onDisconnected={onLeave}
-          style={{ height: '100dvh', width: '100vw' }}
+          style={{ height: '100%', width: '100%' }}
         >
           {/* Default UI with custom top bar to show Room name / Kick capability */}
           <VideoConference />
@@ -90,8 +90,8 @@ export default function VideoCall({
 
   // Pre-call UI
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="h-full flex items-center justify-center p-4 bg-transparent">
+      <div className="w-full max-w-sm">
         {onBack && (
           <button
             onClick={onBack}
@@ -109,15 +109,15 @@ export default function VideoCall({
               <Video className="w-8 h-8 text-orange-500" />
             )}
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          <h1 className="text-xl font-bold text-white mb-1">
             {initialVideoDisabled ? 'Дуут дуудлага' : 'Видео дуудлага'}
           </h1>
-          <p className="text-slate-600">Өрөөний нэр оруулж дуудлага эхлүүлнэ үү</p>
+          <p className="text-slate-400 text-sm">Өрөөний нэр оруулж дуудлага эхлүүлнэ үү</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div className="bg-slate-800/50 backdrop-blur-md rounded-3xl border border-white/10 p-6 shadow-xl space-y-4">
            <div>
-            <label htmlFor="room-input" className="block text-sm font-medium text-slate-700 mb-2">
+            <label htmlFor="room-input" className="block text-xs font-medium text-slate-400 mb-2 uppercase tracking-wider">
               Өрөөний нэр
             </label>
             <input
@@ -126,9 +126,9 @@ export default function VideoCall({
               value={room}
               onChange={e => setRoom(e.target.value)}
               placeholder="my-room-123"
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none text-base"
+              className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none text-base"
             />
-            <p className="mt-1.5 text-xs text-slate-400">Нөгөө хүнтэйгээ адил нэр ашиглана уу</p>
+            <p className="mt-2 text-[10px] text-slate-500">Нөгөө хүнтэйгээ адил нэр ашиглана уу</p>
           </div>
 
           <button
@@ -174,9 +174,9 @@ function BanControls({ currentRoom, currentIdentity }: { currentRoom: string, cu
   };
 
   return (
-    <div className="absolute top-4 left-4 z-50 flex flex-col gap-2">
-      <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
-        <span className="text-white text-sm font-semibold flex items-center gap-2">
+    <div className="absolute top-2 left-2 right-2 z-50 flex flex-col gap-2">
+       <div className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10">
+        <span className="text-white text-[10px] font-semibold flex items-center gap-2 truncate">
             Өрөө: {currentRoom}
         </span>
       </div>

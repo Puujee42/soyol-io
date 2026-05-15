@@ -27,6 +27,7 @@ interface ChatWindowProps {
     guestId?: string;
     onStartCall: () => void;
     onStartVoiceCall: () => void;
+    onJoinCall?: (roomName: string) => void;
     onBack: () => void;
 }
 
@@ -35,7 +36,7 @@ const fetcher = ([url, guestId]: [string, string | undefined]) =>
         headers: guestId ? { 'x-guest-id': guestId } : {}
     }).then((res) => res.json());
 
-export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoiceCall, onBack }: ChatWindowProps) {
+export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoiceCall, onJoinCall, onBack }: ChatWindowProps) {
     const { user } = useUser();
     const { t } = useTranslation();
     const [newMessage, setNewMessage] = useState('');
@@ -202,7 +203,10 @@ export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoi
                                 {isInvite ? (
                                     <div className="flex flex-col gap-2">
                                         <p className="font-bold">📞 Видео дуудлага хийх хүсэлт</p>
-                                        <button className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-all active:scale-95">
+                                        <button 
+                                            onClick={() => onJoinCall?.(msg.roomName || '')}
+                                            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-all active:scale-95"
+                                        >
                                             Холбогдох
                                         </button>
                                     </div>

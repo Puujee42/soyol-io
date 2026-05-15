@@ -9,6 +9,9 @@ import UserList from '@/components/Chat/UserList';
 import ChatWindow from '@/components/Chat/ChatWindow';
 import { motion } from 'framer-motion';
 import VideoCall from '@/components/VideoCall';
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 interface User {
     _id: string;
@@ -39,20 +42,16 @@ export default function AdminMessagesPage() {
     // Mobile View State: 'list' | 'chat' | 'call'
     const [mobileView, setMobileView] = useState<'list' | 'chat' | 'call'>('list');
 
+    const { data: userData, error: userError } = useSWR<User[]>('/api/users', fetcher, {
+        refreshInterval: 5000 // Poll every 5 seconds
+    });
+
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const res = await fetch('/api/users');
-                const data = await res.json();
-                setUsers(data);
-                setLoading(false);
-            } catch (err) {
-                console.error('Failed to fetch users', err);
-                setLoading(false);
-            }
-        };
-        fetchUsers();
-    }, []);
+        if (userData) {
+            setUsers(userData);
+            setLoading(false);
+        }
+    }, [userData]);
 
     useEffect(() => {
         // Just use the sorted users from the API, filtering by search happens in UserList
@@ -185,6 +184,11 @@ export default function AdminMessagesPage() {
                                             otherUser={selectedUser}
                                             onStartCall={handleStartCall}
                                             onStartVoiceCall={handleStartVoiceCall}
+                                            onJoinCall={(room) => {
+                                                setCallRoom(room);
+                                                setIsCallActive(true);
+                                                setMobileView('call');
+                                            }}
                                             onBack={() => setMobileView('list')}
                                         />
                                     ) : (

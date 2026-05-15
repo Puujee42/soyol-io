@@ -1,19 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { ChevronLeft, Package, Clock, Truck, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import useSWR from 'swr';
-import { toast } from 'react-hot-toast';
-import { formatPrice } from '@/lib/utils';
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import NativeHeader from '@/components/ui/NativeHeader';
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, Package, Clock, Truck, CheckCircle2, XCircle, ShoppingBag } from "lucide-react";
+import { toast } from "react-hot-toast";
+import useSWR from "swr";
 
-const TABS = ['Бүгд', 'Хүлээгдэж буй', 'Баталгаажсан', 'Хүргэлтэнд', 'Дууссан'];
+import { CANCELLABLE_STATUSES, type OrderStatus } from "@/types/order-types";
+
+import { useAuth } from "@/context/AuthContext";
+import { formatPrice } from "@/lib/utils";
+
+const TABS = ['Бүгд', 'Хүлээгдэж буй', 'Баталгаажсан', 'Хүргэлтэнд', 'Дууссан', 'Цуцлагдсан'];
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -43,6 +45,19 @@ export default function MyOrdersPage() {
   const handleCancel = async (orderId: string) => {
     if (!confirm('Та энэ захиалгыг цуцлахдаа итгэлтэй байна уу?')) return;
     setCancellingId(orderId);
+
+    // Optimistic update — immediately show cancelled in UI
+    const previousData = data;
+    mutate(
+      {
+        ...data,
+        orders: (data?.orders || []).map((o: { _id: string; status: string }) =>
+          o._id === orderId ? { ...o, status: 'cancelled' } : o
+        ),
+      },
+      false // don't revalidate yet
+    );
+
     try {
       const res = await fetch('/api/orders', {
         method: 'PATCH',
@@ -51,12 +66,16 @@ export default function MyOrdersPage() {
       });
       if (res.ok) {
         toast.success('Захиалга амжилттай цуцлагдлаа');
-        mutate();
+        mutate(); // revalidate from server
       } else {
-        const data = await res.json();
-        toast.error(data.error || 'Цуцлахад алдаа гарлаа');
+        // Rollback optimistic update
+        mutate(previousData, false);
+        const errData = await res.json();
+        toast.error(errData.error || 'Цуцлахад алдаа гарлаа');
       }
     } catch (e) {
+      // Rollback optimistic update
+      mutate(previousData, false);
       toast.error('Алдаа гарлаа');
     } finally {
       setCancellingId(null);
@@ -88,18 +107,31 @@ export default function MyOrdersPage() {
     if (activeTab === 'Хүлээгдэж буй') return order.status === 'pending';
     if (activeTab === 'Баталгаажсан') return order.status === 'confirmed';
     if (activeTab === 'Хүргэлтэнд') return order.status === 'processing' || order.status === 'shipped';
-    if (activeTab === 'Дууссан') return order.status === 'delivered' || order.status === 'cancelled';
+    if (activeTab === 'Дууссан') return order.status === 'delivered';
+    if (activeTab === 'Цуцлагдсан') return order.status === 'cancelled';
     return true;
   });
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans pb-20 pt-14 lg:pt-0">
-      {/* Native Header */}
-      <NativeHeader title="Миний захиалга" />
+    <div className="min-h-screen bg-[#F8FAFC] font-sans pb-20">
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-md h-14 flex items-center px-4 border-b border-slate-100 sticky top-0 z-50 lg:hidden" style={{ paddingTop: 'env(safe-area-inset-top)', height: 'calc(env(safe-area-inset-top) + 3.5rem)' }}>
+        <Link href="/profile" className="p-2 -ml-2 text-slate-900 active:scale-90 transition-transform">
+          <ChevronLeft className="w-6 h-6" strokeWidth={2.5} />
+        </Link>
+        <h1 className="flex-1 text-center text-[16px] font-black text-slate-900 pr-8">
+          Миний захиалга
+        </h1>
+      </div>
+
+      {/* Desktop Header Wrapper (for spacing) */}
+      <div className="hidden lg:block h-6" />
 
       <div className="max-w-3xl mx-auto">
-        {/* Desktop Header */}
-        <div className="hidden lg:flex items-center gap-4 py-8 px-4">
+        <div className="hidden lg:flex items-center gap-4 mb-8 px-4">
+          <Link href="/profile" className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-[#FF5000] text-slate-400 hover:text-[#FF5000] transition-all">
+            <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
+          </Link>
           <h1 className="text-3xl font-black text-slate-900">Миний захиалга</h1>
         </div>
 
@@ -201,7 +233,7 @@ export default function MyOrdersPage() {
                         <div className="flex items-center justify-between relative">
                           {/* Background Line */}
                           <div className="absolute top-[9px] left-0 right-0 h-0.5 bg-slate-100 -z-0" />
-                          
+
                           {/* Active Line */}
                           <div 
                             className="absolute top-[9px] left-0 h-0.5 bg-[#FF5000] transition-all duration-700 -z-0" 
@@ -252,7 +284,7 @@ export default function MyOrdersPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        {order.status === 'pending' && (
+                        {CANCELLABLE_STATUSES.includes(order.status as OrderStatus) && (
                           <button
                             onClick={() => handleCancel(order._id)}
                             disabled={cancellingId === order._id}
@@ -300,4 +332,4 @@ export default function MyOrdersPage() {
       </div>
     </div>
   );
-}
+}
