@@ -77,6 +77,7 @@ export default function HomePage() {
     minPrice: minPrice || undefined,
     maxPrice: maxPrice || undefined,
     limit: 40,
+    ...(activeFilter !== "all" ? { section: activeFilter } : {}),
   });
 
   // Fetch featured products separately for carousels to keep them consistent across tabs

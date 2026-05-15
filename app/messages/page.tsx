@@ -22,7 +22,9 @@ interface Message {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export default function ClientMessagesPage() {
+import { Suspense } from 'react';
+
+function MessagesContent() {
     const { user, isLoaded } = useUser();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -174,3 +176,10 @@ export default function ClientMessagesPage() {
     );
 }
 
+export default function ClientMessagesPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center"><Loader2 className="animate-spin text-amber-500" /></div>}>
+            <MessagesContent />
+        </Suspense>
+    );
+}

@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
-export default function VerifyPage() {
+function VerifyContent() {
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -165,5 +166,13 @@ export default function VerifyPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F5F5F7]"><Loader2 className="w-8 h-8 animate-spin text-[#F57E20]" /></div>}>
+      <VerifyContent />
+    </Suspense>
   );
 }
