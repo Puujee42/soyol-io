@@ -70,8 +70,8 @@ export async function createProduct(data: ProductFormData) {
 
     // Fire-and-forget: notify all users about the new product
     sendPushToAllUsers({
-      title: '🆕 Шинэ бараа нэмэгдлээ!',
-      body: `${productData.name}${productData.price ? ` — ${productData.price}₮` : ''}`,
+      title: '🔥 Шинэ бараа ирлээ!',
+      body: `${productData.name} яг одоо бэлэн байна.${productData.price ? ` Үнэ: ${productData.price}₮` : ''}`,
       imageUrl: productData.image,
       data: {
         url: `/product/${result.insertedId.toString()}`,
@@ -79,6 +79,24 @@ export async function createProduct(data: ProductFormData) {
         type: 'new_product',
       },
     }).catch((err) => console.error('FCM: Background send error:', err));
+
+    // Save global notification to Database for the in-app notification history
+    (async () => {
+      try {
+        const notifications = await getCollection('notifications');
+        await notifications.insertOne({
+          userId: 'all',
+          title: '🔥 Шинэ бараа ирлээ!',
+          message: `${productData.name} яг одоо бэлэн байна.${productData.price ? ` Үнэ: ${productData.price}₮` : ''}`,
+          type: 'new_product',
+          isRead: false,
+          link: `/product/${result.insertedId.toString()}`,
+          createdAt: new Date(),
+        });
+      } catch (err) {
+        console.error('FCM: Failed to save global product notification in DB:', err);
+      }
+    })().catch((err) => console.error('FCM: IIFE error:', err));
 
     revalidatePath('/');
     revalidatePath('/admin');
