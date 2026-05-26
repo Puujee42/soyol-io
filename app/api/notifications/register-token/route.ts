@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { getCollection } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { User, PushToken } from '@/models/User';
+import { subscribeTokenToTopic } from '@/lib/fcm';
 
 export async function POST(req: Request) {
     try {
@@ -39,6 +40,12 @@ export async function POST(req: Request) {
                     } as any // Cast to any carefully if Mongo types are still being strict
                 }
             );
+
+            // Subscribe the token to the global 'all-users' topic
+            await subscribeTokenToTopic(token, 'all-users');
+        } else {
+            // Self-healing: ensure it's subscribed in case topic registration failed earlier
+            await subscribeTokenToTopic(token, 'all-users');
         }
 
         return NextResponse.json({ success: true });

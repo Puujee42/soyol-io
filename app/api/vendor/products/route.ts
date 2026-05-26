@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
 
         // Send Push Notification in background
         sendPushToAllUsers({
-            title: '🆕 Шинэ бараа нэмэгдлээ!',
-            body: `${newProduct.name}${newProduct.price ? ` — ${newProduct.price}₮` : ''}`,
+            title: '🔥 Шинэ бараа ирлээ!',
+            body: `${newProduct.name} яг одоо бэлэн байна.${newProduct.price ? ` Үнэ: ${newProduct.price}₮` : ''}`,
             imageUrl: newProduct.image,
             data: {
                 url: `/product/${result.insertedId.toString()}`,
@@ -51,6 +51,24 @@ export async function POST(req: NextRequest) {
                 type: 'new_product'
             }
         }).catch(err => console.error('FCM: Background send error:', err));
+
+        // Save global notification to Database for the in-app notification history
+        (async () => {
+            try {
+                const notificationsCollection = await getCollection('notifications');
+                await notificationsCollection.insertOne({
+                    userId: 'all',
+                    title: '🔥 Шинэ бараа ирлээ!',
+                    message: `${newProduct.name} яг одоо бэлэн байна.${newProduct.price ? ` Үнэ: ${newProduct.price}₮` : ''}`,
+                    type: 'new_product',
+                    isRead: false,
+                    link: `/product/${result.insertedId.toString()}`,
+                    createdAt: new Date(),
+                });
+            } catch (err) {
+                console.error('FCM: Failed to save global vendor product notification in DB:', err);
+            }
+        })().catch(err => console.error('FCM: Vendor IIFE error:', err));
 
         return NextResponse.json({ success: true, productId: result.insertedId.toString() }, { status: 201 });
     } catch (error) {
