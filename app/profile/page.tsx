@@ -227,10 +227,6 @@ export default function ProfilePage() {
     { id: 'password', label: 'Нууц үг', icon: KeyRound },
   ];
 
-  const totalPaid = orders
-    .filter(o => o.status === 'completed' || o.status === 'delivered')
-    .reduce((sum, o) => sum + (Number(o.total || o.totalPrice) || 0), 0);
-
   return (
     <div className="min-h-screen bg-[#F2F2F7] pb-[120px] pt-14 lg:pt-0 font-sans">
       <NativeHeader title="Профайл" showBack={false} />
@@ -335,13 +331,6 @@ export default function ProfilePage() {
                 </div>
                 <p className="text-[24px] font-bold text-[#1A1A1A]">{dataLoading ? '—' : addressCount}</p>
                 <p className="text-[12px] text-[#999] font-medium mt-0.5">Хадгалсан хаяг</p>
-              </div>
-              <div className="bg-white rounded-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] p-4 col-span-2">
-                <div className="w-9 h-9 bg-[#FFF7ED] rounded-[10px] flex items-center justify-center mb-3">
-                  <TrendingUp className="w-5 h-5 text-[#F97316]" strokeWidth={2} />
-                </div>
-                <p className="text-[24px] font-bold text-[#1A1A1A]">{formatPrice(totalPaid)}</p>
-                <p className="text-[12px] text-[#999] font-medium mt-0.5">Нийт төлсөн төлбөр</p>
               </div>
             </div>
 

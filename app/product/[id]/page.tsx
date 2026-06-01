@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
-import ProductDetailClient from "@/components/ProductDetailClient";
+import dynamic from "next/dynamic";
+const ProductDetailClient = dynamic(() => import("../../../components/ProductDetailClient").then(m => m.ProductDetailClient), { ssr: true });
 import { CacheTags } from "@/lib/cache-tags";
 import { ObjectId } from "mongodb";
 

@@ -3,6 +3,7 @@ import { getCollection } from '@/lib/mongodb';
 import { checkPayment } from '@/lib/qpay';
 import { ObjectId } from 'mongodb';
 import { deductInventory } from '@/lib/inventory';
+import { notifyOrderStatusUpdate } from '@/lib/orderNotifications';
 
 export async function GET(
     req: NextRequest,
@@ -57,18 +58,9 @@ export async function GET(
                 }
 
                 // Notify Customer (Non-blocking)
-                try {
-                    const notificationsCollection = await getCollection('notifications');
-                    await notificationsCollection.insertOne({
-                        userId: order.userId,
-                        title: '✅ Төлбөр баталгаажлаа',
-                        message: `Таны #${order._id.toString().slice(-6)} захиалгын төлбөр амжилттай хийгдлээ.`,
-                        type: 'order',
-                        isRead: false,
-                        link: `/orders/${order._id}`,
-                        createdAt: new Date()
-                    });
-                } catch (e) { console.error('Notify error', e); }
+                notifyOrderStatusUpdate(order._id.toString(), 'confirmed').catch((err) => {
+                    console.error('[QPay Check] Failed to send status update notification:', err);
+                });
             }
         }
 

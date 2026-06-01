@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 
 import { User } from "@/models/User";
 import { sendOrderConfirmation } from "@/lib/email";
+import { notifyOrderStatusUpdate } from "@/lib/orderNotifications";
 
 export async function GET(req: NextRequest) {
   try {
@@ -286,33 +287,9 @@ export async function PATCH(req: NextRequest) {
     );
 
     // Send notification to customer
-    try {
-      const notificationsCollection = await getCollection("notifications");
-      await notificationsCollection.insertOne({
-        userId: order.userId,
-        title: "❌ Захиалга цуцлагдлаа",
-        message: "Таны захиалга амжилттай цуцлагдлаа.",
-        type: "order",
-        isRead: false,
-        link: "/orders",
-        createdAt: new Date(),
-      });
-
-      // Send FCM push to customer's phone (non-blocking)
-      if (order.userId !== "guest") {
-        const { sendPushToUser } = await import("@/lib/fcm");
-        sendPushToUser({
-          userId: order.userId,
-          title: "❌ Захиалга цуцлагдлаа",
-          body: "Таны захиалга амжилттай цуцлагдлаа.",
-          data: { url: "/orders" },
-        }).catch((err: unknown) =>
-          console.error("FCM cancel push error:", err),
-        );
-      }
-    } catch (error) {
-      console.error("Failed to send cancellation notification:", error);
-    }
+    notifyOrderStatusUpdate(orderId, "cancelled").catch((err) => {
+      console.error("Failed to send cancellation notification:", err);
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

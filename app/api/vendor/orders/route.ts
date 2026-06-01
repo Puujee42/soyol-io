@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCollection } from '@/lib/mongodb';
 import { auth } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
+import { notifyOrderStatusUpdate } from '@/lib/orderNotifications';
 
 export async function GET(req: NextRequest) {
     try {
@@ -79,6 +80,10 @@ export async function PUT(req: NextRequest) {
             { _id: new ObjectId(orderId), 'items.vendorId': userId },
             { $set: { status, updatedAt: new Date() } }
         );
+
+        notifyOrderStatusUpdate(orderId, status).catch(err => {
+            console.error('Failed to notify customer of vendor status update:', err);
+        });
 
         return NextResponse.json({ success: true });
     } catch (error) {

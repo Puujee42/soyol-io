@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { auth, currentUser } from '@/lib/auth';
 import { sendOrderStatusUpdate } from '@/lib/email';
 import { deductInventory } from '@/lib/inventory';
+import { notifyOrderStatusUpdate } from '@/lib/orderNotifications';
 
 // Get all orders (Admin only)
 export async function GET(request: Request) {
@@ -121,29 +122,10 @@ export async function PUT(request: Request) {
         // Send notification to customer (Non-blocking)
         if (existingOrder.userId && status) {
             try {
-                let title = '';
-                let message = '';
+                notifyOrderStatusUpdate(orderId, status, deliveryEstimate).catch((err) => {
+                    console.error('Failed to send status update notification:', err);
+                });
 
-                if (status === 'confirmed') {
-                    title = '✅ Захиалга баталгаажлаа!';
-                    message = `Таны захиалга баталгаажлаа. Хүргэлт: ${deliveryEstimate || existingOrder.deliveryEstimate || 'Тодорхойлогдоно'}`;
-                } else if (status === 'delivered') {
-                    title = '🚚 Захиалга хүргэгдлээ!';
-                    message = 'Таны захиалга амжилттай хүргэгдлээ. Баярлалаа!';
-                }
-
-                if (title && message) {
-                    const notificationsCollection = await getCollection('notifications');
-                    await notificationsCollection.insertOne({
-                        userId: existingOrder.userId,
-                        title,
-                        message,
-                        type: 'order',
-                        isRead: false,
-                        link: '/orders',
-                        createdAt: new Date()
-                    });
-                }
                 // Send Email (Non-blocking)
                 (async () => {
                     try {
