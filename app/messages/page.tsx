@@ -31,7 +31,13 @@ const fetcher = async (url: string) => {
     return res.json();
 };
 
+<<<<<<< HEAD
 export default function MessagesDashboardPage() {
+=======
+import { Suspense } from 'react';
+
+function MessagesContent() {
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
     const { user, isLoaded } = useUser();
     const router = useRouter();
     const [creating, setCreating] = useState(false);
@@ -198,3 +204,14 @@ export default function MessagesDashboardPage() {
         </div>
     );
 }
+<<<<<<< HEAD
+=======
+
+export default function ClientMessagesPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center"><Loader2 className="animate-spin text-amber-500" /></div>}>
+            <MessagesContent />
+        </Suspense>
+    );
+}
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255

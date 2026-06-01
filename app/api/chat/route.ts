@@ -9,7 +9,11 @@ import { Product } from '@/models/Product';
 
 const openrouter = createOpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
+<<<<<<< HEAD
   apiKey: process.env.OPENROUTER_API_KEY,
+=======
+  apiKey: process.env.Deepseek_API,
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
 });
 
 // Allow streaming responses up to 30 seconds
@@ -184,7 +188,11 @@ export async function POST(req: Request) {
                   { category: { $regex: regex } }
                 ]
               }).limit(10).toArray();
+<<<<<<< HEAD
 
+=======
+              
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
               return products.map(p => ({
                 id: p._id.toString(),
                 name: p.name,
@@ -242,7 +250,11 @@ export async function POST(req: Request) {
         const fs = await import('fs');
         const path = await import('path');
         fs.appendFileSync(path.join(process.cwd(), 'debug-log.txt'), `\n\nERROR:\n${JSON.stringify(innerError, Object.getOwnPropertyNames(innerError), 2)}`);
+<<<<<<< HEAD
       } catch (e) { }
+=======
+      } catch (e) {}
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
       throw innerError;
     }
   } catch (error: any) {
@@ -258,7 +270,11 @@ export async function POST(req: Request) {
       const fs = await import('fs');
       const path = await import('path');
       fs.appendFileSync(path.join(process.cwd(), 'debug-log.txt'), `\n\nOUTER ERROR:\n${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`);
+<<<<<<< HEAD
     } catch (e) { }
+=======
+    } catch (e) {}
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
 
     // Check for specific error types
     if (error.message?.includes('API key')) {

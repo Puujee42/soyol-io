@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+<<<<<<< HEAD
 import { Video, Phone, ArrowLeft, Loader2, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { LiveKitRoom } from '@livekit/components-react';
@@ -10,6 +11,19 @@ import { useVideoRoom } from '@/hooks/useVideoRoom';
 import ConnectionOverlay from './video-call/ConnectionOverlay';
 import RoomEventHandler from './video-call/RoomEventHandler';
 import VideoCallRoom from './video-call/VideoCallRoom';
+=======
+import { Video, Phone, ArrowLeft, Loader2, Ban } from 'lucide-react';
+import toast from 'react-hot-toast';
+import {
+  LiveKitRoom,
+  VideoConference,
+  RoomAudioRenderer,
+  ControlBar,
+  useParticipants,
+  useRoomContext
+} from '@livekit/components-react';
+import '@livekit/components-styles';
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
 
 export interface VideoCallProps {
   prefilledRoom?: string;
@@ -21,11 +35,15 @@ export interface VideoCallProps {
 
 export default function VideoCall({ 
   prefilledRoom, 
+<<<<<<< HEAD
   conversationId,
+=======
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
   onBack, 
   onDisconnected,
   initialVideoDisabled = false
 }: VideoCallProps) {
+<<<<<<< HEAD
   const {
     token,
     identity,
@@ -40,11 +58,27 @@ export default function VideoCall({
   const [inputRoom, setInputRoom] = useState(prefilledRoom || '');
   const [permissionError, setPermissionError] = useState(false);
   const [checkingPermission, setCheckingPermission] = useState(false);
+=======
+  const [room, setRoom] = useState(prefilledRoom || '');
+  const [inCall, setInCall] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+  const [token, setToken] = useState('');
+  const [identity, setIdentity] = useState('');
+
+  const connectToRoom = async () => {
+    const roomName = room.trim();
+    if (!roomName) { toast.error('Өрөөний нэр оруулна уу'); return; }
+
+    setConnecting(true);
+    const userIdentity = `user_${Math.floor(Math.random() * 10000)}`;
+    setIdentity(userIdentity);
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
 
   // Verifies client-side camera/microphone access before handshaking with LiveKit
   const verifyMediaPermissions = useCallback(async (): Promise<boolean> => {
     setCheckingPermission(true);
     try {
+<<<<<<< HEAD
       const constraints = {
         video: !initialVideoDisabled,
         audio: true
@@ -131,10 +165,56 @@ export default function VideoCall({
             </button>
           )}
         </div>
+=======
+      const res = await fetch(`/api/livekit?room=${encodeURIComponent(roomName)}&username=${encodeURIComponent(userIdentity)}`);
+      const data = await res.json();
+      
+      if (data.error) throw new Error(data.error);
+      
+      setToken(data.token);
+      setInCall(true);
+      toast.success('Дуудлагад нэгдлээ!');
+    } catch (err) {
+      toast.error('Холбогдож чадсангүй. Дахин оролдоно уу.');
+    } finally {
+      setConnecting(false);
+    }
+  };
+
+  const onLeave = useCallback(async () => {
+    setInCall(false);
+    setToken('');
+    toast('Дуудлага дууслаа', { icon: '📵' });
+    onDisconnected?.();
+  }, [onDisconnected]);
+
+  // If we have token and we are in call
+  if (inCall && token) {
+    return (
+      <div className="relative h-full w-full bg-black overflow-hidden rounded-[2.5rem]">
+        <LiveKitRoom
+          video={!initialVideoDisabled}
+          audio={true}
+          token={token}
+          serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+          data-lk-theme="default"
+          onDisconnected={onLeave}
+          style={{ height: '100%', width: '100%' }}
+        >
+          {/* Default UI with custom top bar to show Room name / Kick capability */}
+          <VideoConference />
+          <RoomAudioRenderer />
+          
+          {/* Custom Overlay for Ban Feature */}
+          <BanControls currentRoom={room} currentIdentity={identity} />
+          
+        </LiveKitRoom>
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
       </div>
     );
   }
 
+<<<<<<< HEAD
   // Render Call Room
   if (token) {
     return (
@@ -174,6 +254,8 @@ export default function VideoCall({
     );
   }
 
+=======
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
   // Pre-call UI
   return (
     <div className="h-full flex items-center justify-center p-4 bg-transparent">
@@ -188,7 +270,11 @@ export default function VideoCall({
           </button>
         )}
         <div className="text-center mb-8">
+<<<<<<< HEAD
           <div className="w-16 h-16 bg-orange-100/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-orange-500/20">
+=======
+          <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
             {initialVideoDisabled ? (
               <Phone className="w-8 h-8 text-orange-500" />
             ) : (
@@ -218,11 +304,19 @@ export default function VideoCall({
           </div>
 
           <button
+<<<<<<< HEAD
             onClick={() => handleConnect(inputRoom)}
             disabled={isConnecting || checkingPermission || !inputRoom.trim()}
             className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg transition-all"
           >
             {isConnecting || checkingPermission ? (
+=======
+            onClick={connectToRoom}
+            disabled={connecting || !room.trim()}
+            className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg transition-all"
+          >
+            {connecting ? (
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
               <><Loader2 className="w-5 h-5 animate-spin" /><span>Холбогдож байна...</span></>
             ) : (
               <><Phone className="w-5 h-5" /><span>Дуудлагад орох</span></>
@@ -230,6 +324,62 @@ export default function VideoCall({
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Subcomponent to handle kicking users
+function BanControls({ currentRoom, currentIdentity }: { currentRoom: string, currentIdentity: string }) {
+  const participants = useParticipants();
+  
+  // Exclude ourselves
+  const others = participants.filter(p => p.identity !== currentIdentity);
+
+  const handleKick = async (identity: string) => {
+    try {
+      const res = await fetch('/api/livekit/ban', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomName: currentRoom, identity }),
+      });
+      const data = await res.json();
+      if (data.success) {
+         toast.success("Хэрэглэгчийг гаргалаа");
+      } else {
+         toast.error("Алдаа гарлаа: " + data.error);
+      }
+    } catch (e) {
+      toast.error("Гаргах хүсэлт амжилтгүй боллоо");
+    }
+  };
+
+  return (
+    <div className="absolute top-2 left-2 right-2 z-50 flex flex-col gap-2">
+       <div className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10">
+        <span className="text-white text-[10px] font-semibold flex items-center gap-2 truncate">
+            Өрөө: {currentRoom}
+        </span>
+      </div>
+      
+      {others.length > 0 && (
+        <div className="bg-black/60 backdrop-blur-md p-3 rounded-xl border border-white/20 mt-2">
+            <h3 className="text-xs text-white/70 mb-2 uppercase font-semibold">Оролцогчид</h3>
+            <div className="flex flex-col gap-2">
+                {others.map(p => (
+                    <div key={p.identity} className="flex items-center justify-between gap-4 text-white text-sm">
+                        <span>{p.identity}</span>
+                        <button 
+                            onClick={() => handleKick(p.identity)}
+                            title="Гаргах (Ban)"
+                            className="p-1.5 bg-red-500 hover:bg-red-600 rounded-md transition-colors"
+                        >
+                            <Ban className="w-4 h-4 text-white" />
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+      )}
     </div>
   );
 }

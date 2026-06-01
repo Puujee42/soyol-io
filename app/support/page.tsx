@@ -50,6 +50,7 @@ const FAQS = [
     },
     {
         id: 5,
+<<<<<<< HEAD
         question: 'БАРААГ БУЦААХ БОЛОН СОЛИХООС ТАТГАЛЗАХ',
         answer: (
             <ul className="list-disc pl-4 space-y-2">
@@ -62,6 +63,10 @@ const FAQS = [
                 <li>Нэг барааны талаар хоёроос дээш буцаах тухай тохирсон боловч худалдан авагчийн буруутай үйл ажиллагаанаас болж хүлээгдэх нөхцөл</li>
             </ul>
         )
+=======
+        question: 'Холбоо барих мэдээлэл',
+        answer: 'Та манай хэрэглэгчийн үйлчилгээний төвтэй 85552229 дугаараар эсвэл info@soyolvideoshop.mn хаягаар холбогдоорой.'
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
     }
 ];
 
@@ -152,14 +157,14 @@ export default function HelpPage() {
                     <h2 className="text-[11px] font-bold text-[#999999] uppercase tracking-wider ml-4 mb-2">Холбоо барих</h2>
                     <div className="bg-white rounded-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col gap-[1px] bg-[#F5F5F5]">
 
-                        <a href="tel:77181818" className="flex items-center justify-between p-4 bg-white active:bg-gray-50 transition-colors">
+                        <a href="tel:85552229" className="flex items-center justify-between p-4 bg-white active:bg-gray-50 transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center">
                                     <PhoneCall className="w-5 h-5 text-[#FF6B00]" strokeWidth={2} />
                                 </div>
                                 <div>
                                     <div className="text-[13px] text-[#999999] font-medium mb-0.5">Утас</div>
-                                    <div className="text-[16px] font-bold text-[#1A1A1A]">77-181818</div>
+                                    <div className="text-[16px] font-bold text-[#1A1A1A]">85552229</div>
                                 </div>
                             </div>
                             <span className="text-[13px] font-bold text-[#FF6B00] px-3 py-1.5 bg-orange-50 rounded-full">Залгах</span>
@@ -178,14 +183,22 @@ export default function HelpPage() {
                             <span className="text-[13px] font-bold text-[#FF6B00] px-3 py-1.5 bg-orange-50 rounded-full">Бичих</span>
                         </a>
 
+<<<<<<< HEAD
                         <a href="mailto:office@soyolvideoshop.mn" className="flex items-center justify-between p-4 bg-white active:bg-gray-50 transition-colors">
+=======
+                        <a href="mailto:info@soyolvideoshop.mn" className="flex items-center justify-between p-4 bg-white active:bg-gray-50 transition-colors">
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
                                     <Mail className="w-5 h-5 text-gray-500" strokeWidth={2} />
                                 </div>
                                 <div>
                                     <div className="text-[13px] text-[#999999] font-medium mb-0.5">И-мэйл</div>
+<<<<<<< HEAD
                                     <div className="text-[15px] font-bold text-[#1A1A1A]">office@soyolvideoshop.mn</div>
+=======
+                                    <div className="text-[15px] font-bold text-[#1A1A1A]">info@soyolvideoshop.mn</div>
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                                 </div>
                             </div>
                         </a>

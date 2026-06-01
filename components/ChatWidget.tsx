@@ -3,7 +3,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowLeft, Video, Phone, MessageCircle, Loader2 } from 'lucide-react';
+<<<<<<< HEAD
 import SupportChatWindow from '@/components/Chat/SupportChatWindow';
+=======
+import ChatWindow from '@/components/Chat/ChatWindow';
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
 import AIChatWindow from '@/components/Chat/AIChatWindow';
 import AdminSelector from '@/components/Chat/AdminSelector';
 import VideoCall from '@/components/VideoCall';
@@ -50,6 +54,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     const [isVoiceCall, setIsVoiceCall] = useState(false);
     const [callRoom, setCallRoom] = useState<string | null>(null);
 
+<<<<<<< HEAD
     const getOrCreateConversation = async (): Promise<string> => {
         const headers: any = { 'Content-Type': 'application/json' };
         if (guestId) {
@@ -91,6 +96,12 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
             setActiveConversationId(convId);
 
             // Fetch admins online status
+=======
+    const connectToAdmin = async (mode: 'chat' | 'video_call') => {
+        setConnectingMode(mode);
+        try {
+            // Fetch admins just to check if anyone is online, optional but good for UI
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
             const res = await fetch('/api/users?role=admin');
             const data = await res.json();
             const anyOnline = Array.isArray(data) && data.some(a => a.isOnline);
@@ -108,6 +119,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                 const roomName = `call-${effectiveUser.id}-${Date.now()}`;
                 setCallRoom(roomName);
                 
+<<<<<<< HEAD
                 // Append call invitation message to conversation
                 const headers: any = { 'Content-Type': 'application/json' };
                 if (guestId) {
@@ -122,15 +134,41 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                             ? `📞 Дуут дуудлага эхэллээ: ${roomName}` 
                             : `📹 Видео дуудлага эхэллээ: ${roomName}`,
                         senderName: effectiveUser.name
+=======
+                // Send call invitation message
+                await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(guestId ? { 'x-guest-id': guestId } : {})
+                    },
+                    body: JSON.stringify({
+                        receiverId: 'support_admin',
+                        content: isVoiceCall ? '📞 Дуут дуудлага хийх хүсэлт' : '📹 Видео дуудлага хийх хүсэлт',
+                        type: 'call_invite',
+                        roomName: roomName
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                     }),
                 });
             }
 
             setViewMode(mode);
         } catch (e) {
+<<<<<<< HEAD
             console.error("Failed to connect to support:", e);
             toast.error('Холболт амжилтгүй. Дахин оролдоно уу.');
             setViewMode('menu');
+=======
+            console.error("Failed to connect to support", e);
+            // Fallback even if fetch fails
+            setSelectedAdmin({
+                _id: 'support_admin',
+                userId: 'support_admin',
+                name: 'Тусламжийн баг',
+                isOnline: true
+            });
+            setViewMode(mode);
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
         } finally {
             setConnectingMode(null);
         }
@@ -149,7 +187,10 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
         if (viewMode === 'chat' || viewMode === 'video_call' || viewMode === 'ai_chat') {
             setViewMode('menu');
             setSelectedAdmin(null);
+<<<<<<< HEAD
             setActiveConversationId(null);
+=======
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
         } else {
             setViewMode('menu');
         }
@@ -216,7 +257,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                         {connectingMode === 'chat' ? (
                                             <Loader2 className="w-6 h-6 text-white animate-spin" strokeWidth={1.5} />
                                         ) : (
+<<<<<<< HEAD
                                             <MessageCircle className="w-6 h-6 text-blue-500 group-hover:text-white" strokeWidth={1.5} />
+=======
+                                            <MessageCircle className="w-6 h-6 text-blue-500 group-hover:text-white" strokeWidth={1.2} />
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                                         )}
                                     </div>
                                     <div className="relative z-10">
@@ -234,7 +279,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                         {connectingMode === 'video_call' ? (
                                             <Loader2 className="w-6 h-6 text-white animate-spin" strokeWidth={1.5} />
                                         ) : (
+<<<<<<< HEAD
                                             <Video className="w-6 h-6 text-orange-500 group-hover:text-white" strokeWidth={1.5} />
+=======
+                                            <Video className="w-6 h-6 text-orange-500 group-hover:text-white" strokeWidth={1.2} />
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                                         )}
                                     </div>
                                     <div className="relative z-10">
@@ -255,7 +304,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                         {connectingMode === 'video_call' && isVoiceCall ? (
                                             <Loader2 className="w-6 h-6 text-white animate-spin" strokeWidth={1.5} />
                                         ) : (
+<<<<<<< HEAD
                                             <Phone className="w-6 h-6 text-emerald-500 group-hover:text-white" strokeWidth={1.5} />
+=======
+                                            <Phone className="w-6 h-6 text-emerald-500 group-hover:text-white" strokeWidth={1.2} />
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                                         )}
                                     </div>
                                     <div className="relative z-10">
@@ -272,6 +325,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                     setIsVoiceCall(false);
                                     const roomName = `call-${effectiveUser.id}-${Date.now()}`;
                                     setCallRoom(roomName);
+<<<<<<< HEAD
                                     
                                     const headers: any = { 'Content-Type': 'application/json' };
                                     if (guestId) headers['x-guest-id'] = guestId;
@@ -282,6 +336,19 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                         body: JSON.stringify({
                                             body: `📹 Видео дуудлага эхэллээ: ${roomName}`,
                                             senderName: effectiveUser.name
+=======
+                                    await fetch('/api/messages', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            ...(guestId ? { 'x-guest-id': guestId } : {})
+                                        },
+                                        body: JSON.stringify({
+                                            receiverId: selectedAdmin.userId,
+                                            content: '📹 Видео дуудлага хийх хүсэлт',
+                                            type: 'call_invite',
+                                            roomName: roomName
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                                         }),
                                     });
                                     setViewMode('video_call');
@@ -290,6 +357,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                     setIsVoiceCall(true);
                                     const roomName = `call-${effectiveUser.id}-${Date.now()}`;
                                     setCallRoom(roomName);
+<<<<<<< HEAD
 
                                     const headers: any = { 'Content-Type': 'application/json' };
                                     if (guestId) headers['x-guest-id'] = guestId;
@@ -300,6 +368,19 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                         body: JSON.stringify({
                                             body: `📞 Дуут дуудлага эхэллээ: ${roomName}`,
                                             senderName: effectiveUser.name
+=======
+                                    await fetch('/api/messages', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            ...(guestId ? { 'x-guest-id': guestId } : {})
+                                        },
+                                        body: JSON.stringify({
+                                            receiverId: selectedAdmin.userId,
+                                            content: '📞 Дуут дуудлага хийх хүсэлт',
+                                            type: 'call_invite',
+                                            roomName: roomName
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                                         }),
                                     });
                                     setViewMode('video_call');
@@ -316,7 +397,10 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                             <div className="h-full overflow-y-auto">
                                 <VideoCall
                                     prefilledRoom={callRoom || `call-${effectiveUser.id}-${selectedAdmin._id}`}
+<<<<<<< HEAD
                                     conversationId={activeConversationId || undefined}
+=======
+>>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
                                     onBack={handleBack}
                                     initialVideoDisabled={isVoiceCall}
                                 />
