@@ -28,12 +28,14 @@ export async function GET(
             .sort({ createdAt: 1 })
             .toArray();
 
-        // Map to ChatMessage format
+        // Map to ChatMessage format — include type and roomName for call invites
         const formattedMessages = messages.map(msg => ({
             id: msg._id.toString(),
             senderId: msg.senderId,
             senderName: msg.senderName || 'Guest',
             body: msg.body || msg.content || '',
+            type: msg.type || 'message',
+            roomName: msg.roomName || null,
             createdAt: msg.createdAt instanceof Date ? msg.createdAt.toISOString() : msg.createdAt,
             status: msg.status || 'sent'
         }));
@@ -66,8 +68,11 @@ export async function POST(
         const body = await req.json();
         const content = body.body || body.content || '';
         const senderName = body.senderName || (authRole === 'admin' ? 'Support Admin' : 'Guest');
+        const messageType = body.type || 'message';
+        const roomName = body.roomName || null;
 
-        if (!content || typeof content !== 'string' || !content.trim()) {
+        // Allow call_invite messages without requiring a text body
+        if (messageType !== 'call_invite' && (!content || typeof content !== 'string' || !content.trim())) {
             return NextResponse.json({ error: 'Message body is required' }, { status: 400 });
         }
 
@@ -81,21 +86,27 @@ export async function POST(
         const finalSenderId = authRole === 'admin' ? 'support_admin' : userId;
 
         const messagesCollection = await getCollection('support_messages');
-        const newMessage = {
+        const newMessage: any = {
             conversationId: new ObjectId(id),
             senderId: finalSenderId,
             senderName,
             body: content.trim(),
+            type: messageType,
             createdAt: new Date(),
             status: 'sent' as const
         };
 
+        // Only store roomName when it's a call invite
+        if (messageType === 'call_invite' && roomName) {
+            newMessage.roomName = roomName;
+        }
+
         const result = await messagesCollection.insertOne(newMessage);
 
-        // Update conversation state
+        // Update conversation last message preview
         const updateDoc: any = {
             $set: {
-                lastMessage: content.trim(),
+                lastMessage: messageType === 'call_invite' ? '📹 Видео дуудлага' : content.trim(),
                 lastMessageAt: new Date(),
                 updatedAt: new Date()
             }
@@ -115,11 +126,13 @@ export async function POST(
         const updatedConversation = await conversationsCollection.findOne({ _id: new ObjectId(id) });
 
         // Map response to ChatMessage format
-        const responseMessage = {
+        const responseMessage: any = {
             id: result.insertedId.toString(),
             senderId: finalSenderId,
             senderName,
             body: content.trim(),
+            type: messageType,
+            roomName: roomName || null,
             createdAt: newMessage.createdAt.toISOString(),
             status: 'sent' as const
         };

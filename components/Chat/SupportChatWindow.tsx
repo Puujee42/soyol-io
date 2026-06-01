@@ -298,10 +298,15 @@ export default function SupportChatWindow({
                             </span>
                         </div>
 
-                        {group.messages.map((msg) => {
+                        {group.messages.map((rawMsg) => {
+                            // Cast the message safely to avoid TS Property 'type' / 'roomName' errors
+                            const msg = rawMsg as ChatMessage & { type?: string; roomName?: string };
+                            
                             const isMe = msg.senderId === (user?.role === 'admin' ? 'support_admin' : effectiveUserId);
-                            const isInvite = msg.body.includes('эхэллээ:') || msg.body.includes('started:');
-                            const roomName = isInvite ? msg.body.split(':').pop()?.trim() : null;
+                            const isInvite = msg.type === 'call_invite' || msg.body.includes('эхэллээ:') || msg.body.includes('started:');
+                            const roomName = isInvite
+                                ? (msg.roomName || msg.body.split(':').pop()?.trim() || null)
+                                : null;
 
                             return (
                                 <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
