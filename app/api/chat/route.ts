@@ -9,7 +9,7 @@ import { Product } from '@/models/Product';
 
 const openrouter = createOpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.Deepseek_API,
+  apiKey: process.env.OPENROUTER_API_KEY,
 });
 
 // Allow streaming responses up to 30 seconds
@@ -184,7 +184,7 @@ export async function POST(req: Request) {
                   { category: { $regex: regex } }
                 ]
               }).limit(10).toArray();
-              
+
               return products.map(p => ({
                 id: p._id.toString(),
                 name: p.name,
@@ -242,7 +242,7 @@ export async function POST(req: Request) {
         const fs = await import('fs');
         const path = await import('path');
         fs.appendFileSync(path.join(process.cwd(), 'debug-log.txt'), `\n\nERROR:\n${JSON.stringify(innerError, Object.getOwnPropertyNames(innerError), 2)}`);
-      } catch (e) {}
+      } catch (e) { }
       throw innerError;
     }
   } catch (error: any) {
@@ -258,7 +258,7 @@ export async function POST(req: Request) {
       const fs = await import('fs');
       const path = await import('path');
       fs.appendFileSync(path.join(process.cwd(), 'debug-log.txt'), `\n\nOUTER ERROR:\n${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`);
-    } catch (e) {}
+    } catch (e) { }
 
     // Check for specific error types
     if (error.message?.includes('API key')) {
