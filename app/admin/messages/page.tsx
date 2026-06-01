@@ -90,7 +90,9 @@ export default function AdminMessagesPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     body: bodyText,
-                    senderName
+                    senderName,
+                    type: 'call_invite', // 1. Added message type property
+                    roomName: room       // 2. Added roomName property
                 })
             });
         } catch (e) {
