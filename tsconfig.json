@@ -16,22 +16,21 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
       ],
       "@components/*": [
-        "components/*"
+        "./components/*"
       ],
       "@lib/*": [
-        "lib/*"
+        "./lib/*"
       ],
       "@store/*": [
-        "store/*"
+        "./store/*"
       ],
       "@models/*": [
-        "models/*"
+        "./models/*"
       ]
     },
     "incremental": true,
