@@ -238,7 +238,10 @@ export default function AIChatWindow({ onBack }: AIChatWindowProps) {
         // Remove all ACTION tags and their content for professional UI
         const cleanContent = (textContent || '').replace(/\[ACTION:.*?:END_ACTION\]/g, '');
 
-        const regex = /\[(PRODUCT_CARD|ADDRESS_CONFIRMATION):\s*(\{[\s\S]*?\})\]/g;
+        // Match both old JSON format and new attribute format
+        // New: [PRODUCT_CARD: id="...", name="...", price="...", image="..."]
+        // Old: [PRODUCT_CARD: {"id":"...","name":"...","price":123,"image":"..."}]
+        const regex = /\[(PRODUCT_CARD|ADDRESS_CONFIRMATION):\s*([\s\S]*?)\]/g;
         const parts: Array<{ type: string; content?: string; data?: any }> = [];
         let lastIndex = 0;
         let match;
@@ -250,10 +253,24 @@ export default function AIChatWindow({ onBack }: AIChatWindowProps) {
 
             try {
                 const type = match[1];
-                const data = JSON.parse(match[2]);
+                const rawData = match[2].trim();
+                let data: any = {};
+
+                if (rawData.startsWith('{')) {
+                    // Handle JSON format
+                    data = JSON.parse(rawData);
+                } else {
+                    // Handle attribute format: id="...", name="..."
+                    const attrRegex = /(\w+)="([^"]*)"/g;
+                    let attrMatch;
+                    while ((attrMatch = attrRegex.exec(rawData)) !== null) {
+                        data[attrMatch[1]] = attrMatch[2];
+                    }
+                }
+                
                 parts.push({ type: type, data: data });
             } catch (e) {
-                console.error('Failed to parse card JSON', e);
+                console.error('Failed to parse card data', e);
                 parts.push({ type: 'text', content: match[0] });
             }
 

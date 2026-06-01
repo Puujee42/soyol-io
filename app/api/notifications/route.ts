@@ -21,12 +21,22 @@ export async function GET(req: Request) {
 
         const notificationsCollection = await getCollection('notifications');
         const notifications = await notificationsCollection
-            .find({ userId })
+            .find({
+                $or: [
+                    { userId },
+                    { userId: 'all' }
+                ]
+            })
             .sort({ createdAt: -1 })
             .limit(20)
             .toArray();
 
-        return NextResponse.json({ notifications });
+        const mappedNotifications = notifications.map(n => ({
+            ...n,
+            id: n._id.toString()
+        }));
+
+        return NextResponse.json({ notifications: mappedNotifications });
     } catch (error) {
         console.error('Error fetching notifications:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

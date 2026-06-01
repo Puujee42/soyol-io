@@ -3,16 +3,18 @@
 import { SWRConfig } from 'swr';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import FloatingChatButton from '@/components/FloatingChatButton';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import LuxuryNavbar from "@/components/LuxuryNavbar";
 import Footer from "@/components/Footer";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { motion, AnimatePresence } from 'framer-motion';
 
 const swrDefaults = {
   revalidateOnFocus: false,
@@ -24,9 +26,82 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   usePushNotifications();
 
+  const [isOffline, setIsOffline] = useState(false);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  // Offline status banner logic
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOffline(false);
+      toast.success("Интернет холболт сэргэлээ", {
+        icon: '📡',
+        style: { borderRadius: '12px', background: '#1c1c1e', color: '#fff', fontWeight: '600' }
+      });
+    };
+    const handleOffline = () => {
+      setIsOffline(true);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setIsOffline(true);
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // iOS-style swipe-to-go-back gesture detection (Mobile Native & Touch WebView)
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform() && typeof window !== 'undefined' && !('ontouchstart' in window)) return;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const thresholdX = 80; // Swipe distance threshold to trigger back navigation
+    const maxEdgeDistance = 35; // Touch must start within 35px of left edge
+    const maxAngleDev = 30; // Max allowed vertical angle deviation (mostly horizontal swipe)
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.changedTouches.length !== 1) return;
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+
+      const dx = endX - touchStartX;
+      const dy = endY - touchStartY;
+
+      if (
+        touchStartX <= maxEdgeDistance &&
+        dx > thresholdX &&
+        Math.abs(dy) < Math.abs(dx) * Math.tan((maxAngleDev * Math.PI) / 180)
+      ) {
+        import('@capacitor/haptics').then((m) => {
+          m.Haptics.impact({ style: 'light' as any }).catch(() => {});
+        }).catch(() => {});
+        window.history.back();
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
@@ -93,12 +168,39 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         <LanguageProvider>
           <AuthProvider>
             <ErrorBoundary>
+              <AnimatePresence>
+                {isOffline && (
+                  <motion.div
+                    initial={{ y: -60, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -60, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 450, damping: 30 }}
+                    className="fixed top-0 left-0 right-0 z-[9999] bg-[#FF3B30] text-white px-4 py-2.5 text-center text-[11px] font-bold shadow-md flex items-center justify-center gap-2"
+                    style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 6px)' }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                    Интернет холболт тасарлаа. Холболтоо шалгана уу!
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {!isAdminRoute && <LuxuryNavbar />}
               <main className={isAdminRoute 
                 ? "min-h-screen relative z-0" 
                 : "min-h-screen relative z-0 mobile-nav-pb"
               }>
-                {children}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={pathname}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="w-full h-full"
+                  >
+                    {children}
+                  </motion.div>
+                </AnimatePresence>
               </main>
               {!isAdminRoute && <Footer />}
               <FloatingChatButton />
