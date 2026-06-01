@@ -16,11 +16,7 @@ const nextConfig = {
       {
         source: "/api/:path*",
         headers: [
-<<<<<<< HEAD
           { key: "Access-Control-Allow-Origin", value: allowedOrigin },
-=======
-          { key: "Access-Control-Allow-Origin", value: "https://soyol-io.vercel.app" },
->>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
           { key: "Access-Control-Allow-Methods", value: "GET, POST, PUT, DELETE, PATCH, OPTIONS" },
           { key: "Access-Control-Allow-Headers", value: "Content-Type, Authorization, Cookie" },
           { key: "Access-Control-Allow-Credentials", value: "true" },

@@ -27,11 +27,7 @@ interface ChatWindowProps {
     guestId?: string;
     onStartCall: () => void;
     onStartVoiceCall: () => void;
-<<<<<<< HEAD
-    onJoinCall?: (roomName: string) => void; // 1. Added onJoinCall to props interface
-=======
     onJoinCall?: (roomName: string) => void;
->>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
     onBack: () => void;
 }
 
@@ -40,18 +36,14 @@ const fetcher = ([url, guestId]: [string, string | undefined]) =>
         headers: guestId ? { 'x-guest-id': guestId } : {}
     }).then((res) => res.json());
 
-<<<<<<< HEAD
 export default function ChatWindow({ 
     otherUser, 
     guestId, 
     onStartCall, 
     onStartVoiceCall, 
-    onJoinCall, // 2. Added onJoinCall to destructured parameters
+    onJoinCall, 
     onBack 
 }: ChatWindowProps) {
-=======
-export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoiceCall, onJoinCall, onBack }: ChatWindowProps) {
->>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
     const { user } = useUser();
     const { t } = useTranslation();
     const [newMessage, setNewMessage] = useState('');
@@ -189,7 +181,8 @@ export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoi
                     </div>
                 )}
 
-                {Array.isArray(messages) && messages.map((msg) => {
+                {Array.isArray(messages) && messages.map((rawMsg) => {
+                    const msg = rawMsg as Message & { roomName?: string };
                     const effectiveUserId = user?.id || guestId;
                     const isMe = msg.senderId === effectiveUserId;
                     const isInvite = msg.type === 'call_invite';
@@ -209,9 +202,9 @@ export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoi
                         );
                     }
 
-                    // 3. Extract the room name from msg.body (cast to any to satisfy TypeScript checks, falls back to content if needed)
-                    const roomName = isInvite 
-                        ? (((msg as any).body || msg.content) as string | undefined)?.split(':').pop()?.trim() 
+                    // Extract inviteRoomName gracefully from multiple fields
+                    const inviteRoomName = isInvite
+                        ? (msg.roomName || ((msg.content || (msg as any).body) as string | undefined)?.split(':').pop()?.trim() || null)
                         : null;
 
                     return (
@@ -223,15 +216,10 @@ export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoi
                                 {isInvite ? (
                                     <div className="flex flex-col gap-2">
                                         <p className="font-bold">📞 Видео дуудлага хийх хүсэлт</p>
-<<<<<<< HEAD
-                                        {/* 4. Added onClick event handler to trigger onJoinCall */}
                                         <button 
-                                            onClick={() => roomName && onJoinCall?.(roomName)}
-=======
-                                        <button 
-                                            onClick={() => onJoinCall?.(msg.roomName || '')}
->>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
-                                            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-all active:scale-95"
+                                            onClick={() => inviteRoomName && onJoinCall?.(inviteRoomName)}
+                                            disabled={!inviteRoomName}
+                                            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             Холбогдох
                                         </button>

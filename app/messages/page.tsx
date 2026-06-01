@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import useSWR from 'swr';
 import { useUser } from '@/context/AuthContext';
 import { MessageSquare, ArrowLeft, Loader2, Plus, MessageCircle } from 'lucide-react';
@@ -31,13 +31,7 @@ const fetcher = async (url: string) => {
     return res.json();
 };
 
-<<<<<<< HEAD
-export default function MessagesDashboardPage() {
-=======
-import { Suspense } from 'react';
-
 function MessagesContent() {
->>>>>>> f496bf203b987aa35b4840ff338977bb9636d255
     const { user, isLoaded } = useUser();
     const router = useRouter();
     const [creating, setCreating] = useState(false);
@@ -204,8 +198,6 @@ function MessagesContent() {
         </div>
     );
 }
-<<<<<<< HEAD
-=======
 
 export default function ClientMessagesPage() {
     return (
@@ -214,4 +206,3 @@ export default function ClientMessagesPage() {
         </Suspense>
     );
 }
->>>>>>> f496bf203b987aa35b4840ff338977bb9636d255

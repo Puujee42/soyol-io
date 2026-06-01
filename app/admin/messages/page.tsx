@@ -3,9 +3,9 @@
 import { useState, useMemo } from 'react';
 import useSWR from 'swr';
 import { useUser } from '@/context/AuthContext';
-import { 
-    Loader2, MessageSquare, Video, Phone, ArrowLeft, 
-    Search, User, Clock, AlertCircle, MessageCircle 
+import {
+    Loader2, MessageSquare, Video, Phone, ArrowLeft,
+    Search, User, Clock, AlertCircle, MessageCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import SupportChatWindow from '@/components/Chat/SupportChatWindow';
@@ -51,7 +51,7 @@ export default function AdminMessagesPage() {
     // Filtered and sorted conversations
     const sortedConversations = useMemo(() => {
         if (!conversations) return [];
-        
+
         // Sort by lastMessageAt descending
         const sorted = [...conversations].sort((a, b) => {
             const timeA = new Date(a.lastMessageAt || a.createdAt).getTime();
@@ -90,8 +90,6 @@ export default function AdminMessagesPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     body: bodyText,
-                    type: 'call_invite',
-                    roomName: room,
                     senderName
                 })
             });
@@ -221,8 +219,8 @@ export default function AdminMessagesPage() {
                                                 onClick={() => handleSelectConversation(conv)}
                                                 className={`
                                                     w-full text-left p-3.5 rounded-xl transition-all flex items-center justify-between gap-3 group relative
-                                                    ${isSelected 
-                                                        ? 'bg-gradient-to-r from-orange-500/10 to-amber-600/10 border border-orange-500/20 text-white' 
+                                                    ${isSelected
+                                                        ? 'bg-gradient-to-r from-orange-500/10 to-amber-600/10 border border-orange-500/20 text-white'
                                                         : 'hover:bg-white/5 border border-transparent text-slate-300 hover:text-white'
                                                     }
                                                 `}
@@ -266,9 +264,8 @@ export default function AdminMessagesPage() {
                         `}>
                             {isCallActive ? (
                                 <div className="flex-1 h-full p-4 bg-slate-950">
-                                    <VideoCall 
-                                        conversationId={selectedConversation?._id}
-                                        prefilledRoom={callRoom} 
+                                    <VideoCall
+                                        prefilledRoom={callRoom}
                                         onDisconnected={handleCallDisconnected}
                                         initialVideoDisabled={isVoiceCall}
                                         onBack={handleCallDisconnected}
