@@ -1,185 +1,200 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import useSWR from 'swr';
 import { useUser } from '@/context/AuthContext';
-import { Send, Video, Phone, ArrowLeft, Loader2 } from 'lucide-react';
+import { MessageSquare, ArrowLeft, Loader2, Plus, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
-import AdminSelector from '@/components/Chat/AdminSelector';
-import Image from 'next/image';
-import VideoCall from '@/components/VideoCall';
+import { useRouter } from 'next/navigation';
 
-interface Message {
+interface Conversation {
     _id: string;
-    senderId: string;
-    receiverId: string;
-    content: string;
-    type: 'text' | 'call_invite';
-    roomName?: string;
+    participants: string[];
     createdAt: string;
+    lastMessageAt: string;
+    lastMessage?: string;
+    unreadCount?: number;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+    // Check for guest ID
+    let guestId = '';
+    if (typeof window !== 'undefined') {
+        guestId = localStorage.getItem('soyol-guest-id') || '';
+    }
+    const headers: any = {};
+    if (guestId) {
+        headers['x-guest-id'] = guestId;
+    }
+    const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error('Failed to fetch');
+    return res.json();
+};
 
-import { Suspense } from 'react';
-
-function MessagesContent() {
+export default function MessagesDashboardPage() {
     const { user, isLoaded } = useUser();
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const adminId = searchParams.get('adminId');
+    const [creating, setCreating] = useState(false);
 
-    const [newMessage, setNewMessage] = useState('');
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const [sending, setSending] = useState(false);
+    // Generate/retrieve guest-id
+    const getGuestId = (): string => {
+        if (typeof window === 'undefined') return 'guest';
+        let id = localStorage.getItem('soyol-guest-id');
+        if (!id) {
+            id = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+            localStorage.setItem('soyol-guest-id', id);
+        }
+        return id;
+    };
 
-    const [callRoom, setCallRoom] = useState('');
-    const [isCallActive, setIsCallActive] = useState(false);
-
-    const { data: messages, mutate } = useSWR<Message[]>(
-        user && adminId ? `/api/messages?otherUserId=${adminId}` : null,
+    const { data: conversations, error, mutate } = useSWR<Conversation[]>(
+        '/api/messages/conversations',
         fetcher,
-        { refreshInterval: 3000 }
+        { refreshInterval: 4000 }
     );
 
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
-
-    const handleSend = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newMessage.trim() || sending || !adminId) return;
-
-        setSending(true);
+    const handleCreateConversation = async () => {
+        setCreating(true);
         try {
-            await fetch('/api/messages', {
+            const guestId = getGuestId();
+            const headers: any = { 'Content-Type': 'application/json' };
+            if (guestId) {
+                headers['x-guest-id'] = guestId;
+            }
+
+            const res = await fetch('/api/messages/conversations', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({
-                    receiverId: adminId,
-                    content: newMessage,
-                    type: 'text',
-                }),
+                    message: 'Харилцагч холбогдлоо.',
+                    senderName: user?.name || 'Зочин'
+                })
             });
-            setNewMessage('');
-            mutate();
-        } catch (error) {
-            console.error('Failed to send message:', error);
+
+            if (res.ok) {
+                const data = await res.json();
+                router.push(`/messages/${data.conversation._id}`);
+            } else {
+                throw new Error('Failed to create support thread');
+            }
+        } catch (err) {
+            console.error(err);
         } finally {
-            setSending(false);
+            setCreating(false);
         }
     };
 
-    const handleJoinCall = (room: string) => {
-        setCallRoom(room);
-        setIsCallActive(true);
-    };
-
-    const onDisconnected = () => {
-        setIsCallActive(false);
-        setCallRoom('');
-    }
-
-    const handleSelectAdmin = (admin: { userId: string }) => {
-        router.push(`/messages?adminId=${admin.userId}`);
-    };
-
-    if (!isLoaded) return <div className="min-h-screen bg-slate-900 flex items-center justify-center"><Loader2 className="animate-spin text-amber-500" /></div>;
-
-    if (!adminId) {
+    if (!isLoaded) {
         return (
-            <div className="min-h-screen bg-slate-900 flex flex-col">
-                <header className="border-b border-white/10 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-20 shrink-0">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                        <div className="flex items-center gap-4">
-                            <Link href="/" className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors"><ArrowLeft className="w-5 h-5" /></Link>
-                            <h1 className="text-xl font-bold text-white tracking-tight">Support Chat</h1>
-                        </div>
-                    </div>
-                </header>
-                <main className="flex-1 flex flex-col items-center justify-center p-4">
-                    <AdminSelector onSelect={handleSelectAdmin} />
-                </main>
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+                <Loader2 className="animate-spin text-orange-500 w-8 h-8" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-900 flex flex-col">
-            <header className="border-b border-white/10 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-20 shrink-0">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center gap-4">
-                        <Link href="/messages" className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors"><ArrowLeft className="w-5 h-5" /></Link>
-                        <h1 className="text-xl font-bold text-white tracking-tight">Chat with Support</h1>
+        <div className="min-h-screen bg-slate-950 flex flex-col text-slate-100">
+            {/* Header */}
+            <header className="border-b border-white/5 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-20 shrink-0">
+                <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/"
+                            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                        </Link>
+                        <h1 className="text-lg font-bold text-white tracking-tight">Мессежүүд</h1>
                     </div>
+                    <button
+                        onClick={handleCreateConversation}
+                        disabled={creating}
+                        className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white rounded-xl text-xs font-semibold shadow-lg shadow-orange-500/20 active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {creating ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                            <Plus className="w-3.5 h-3.5" />
+                        )}
+                        Шинэ чат
+                    </button>
                 </div>
             </header>
 
-            <main className="flex-1 flex flex-col max-w-3xl mx-auto w-full p-4 h-[calc(100vh-80px)]">
-                {isCallActive ? (
-                    <VideoCall prefilledRoom={callRoom} onDisconnected={onDisconnected} />
+            {/* Main Content */}
+            <main className="flex-1 max-w-4xl mx-auto w-full p-4 flex flex-col justify-start">
+                {conversations === undefined ? (
+                    <div className="flex-1 flex items-center justify-center py-20">
+                        <Loader2 className="animate-spin text-orange-500 w-6 h-6" />
+                    </div>
+                ) : conversations.length === 0 ? (
+                    <div className="flex-1 flex flex-col items-center justify-center py-20 text-center space-y-4">
+                        <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-slate-400">
+                            <MessageCircle className="w-8 h-8 opacity-40" />
+                        </div>
+                        <div className="space-y-1">
+                            <h3 className="font-bold text-white">Чат одоогоор байхгүй байна</h3>
+                            <p className="text-xs text-slate-500 max-w-[260px] leading-relaxed">
+                                Тусламжийн багтай чатлахын тулд "Шинэ чат" товчийг дарна уу.
+                            </p>
+                        </div>
+                        <button
+                            onClick={handleCreateConversation}
+                            className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-xs font-semibold rounded-xl transition-all shadow-md active:scale-95"
+                        >
+                            Чат эхлүүлэх
+                        </button>
+                    </div>
                 ) : (
-                    <>
-                        <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
-                            {Array.isArray(messages) && messages.length === 0 && <div className="text-center text-slate-500 mt-10">Start a conversation with support.</div>}
-                            {Array.isArray(messages) && messages.map((msg) => {
-                                const isMe = msg.senderId === user?.id;
-                                const isInvite = msg.type === 'call_invite';
+                    <div className="space-y-3">
+                        <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Харилцаанууд</h2>
+                        <div className="grid gap-2">
+                            {conversations.map((conv) => {
+                                const hasUnread = conv.unreadCount && conv.unreadCount > 0;
+                                const formattedTime = new Date(conv.lastMessageAt || conv.createdAt).toLocaleDateString([], {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
 
                                 return (
-                                    <div key={msg._id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${isMe
-                                            ? 'bg-amber-600 text-white rounded-tr-none'
-                                            : 'bg-slate-800 text-slate-200 rounded-tl-none border border-white/5'
-                                            }`}>
-                                            {isInvite ? (
-                                                <div className="flex flex-col gap-2">
-                                                    <p className="font-medium flex items-center gap-2"><Video className="w-4 h-4" /> Video Call Invite</p>
-                                                    <button onClick={() => handleJoinCall(msg.roomName!)} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors">
-                                                        Join Call
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <p>{msg.content}</p>
-                                            )}
-                                            <span className="text-[10px] opacity-60 mt-1 block text-right">
-                                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </span>
+                                    <Link
+                                        key={conv._id}
+                                        href={`/messages/${conv._id}`}
+                                        className="group p-4 bg-slate-900 hover:bg-slate-800/80 border border-white/5 rounded-2xl transition-all flex items-center justify-between gap-4 shadow-sm hover:shadow-md"
+                                    >
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-orange-500/10 to-amber-600/10 border border-orange-500/20 flex items-center justify-center text-orange-400 group-hover:scale-105 transition-transform shrink-0">
+                                                <MessageSquare className="w-5 h-5" />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h4 className="font-bold text-white text-sm truncate">
+                                                    Тусламжийн чат #{conv._id.slice(-4)}
+                                                </h4>
+                                                <p className="text-xs text-slate-400 truncate max-w-[260px] md:max-w-md mt-0.5">
+                                                    {conv.lastMessage || 'Зурвас байхгүй'}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
+
+                                        <div className="flex flex-col items-end shrink-0 gap-1.5">
+                                            <span className="text-[10px] text-slate-500">
+                                                {formattedTime}
+                                            </span>
+                                            {hasUnread && (
+                                                <span className="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full min-w-[20px] text-center shadow-md animate-pulse">
+                                                    {conv.unreadCount}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </Link>
                                 );
                             })}
-                            <div ref={messagesEndRef} />
                         </div>
-
-                        <form onSubmit={handleSend} className="bg-slate-800/50 p-2 rounded-2xl border border-white/10 flex gap-2 shrink-0">
-                            <input
-                                type="text"
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Type a message..."
-                                className="flex-1 bg-transparent border-none px-4 py-2 text-white placeholder-slate-500 focus:outline-none"
-                            />
-                            <button
-                                type="submit"
-                                disabled={!newMessage.trim() || sending}
-                                className="p-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <Send className="w-5 h-5" />
-                            </button>
-                        </form>
-                    </>
+                    </div>
                 )}
             </main>
         </div>
-    );
-}
-
-export default function ClientMessagesPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-slate-900 flex items-center justify-center"><Loader2 className="animate-spin text-amber-500" /></div>}>
-            <MessagesContent />
-        </Suspense>
     );
 }

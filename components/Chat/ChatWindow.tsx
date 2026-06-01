@@ -27,7 +27,7 @@ interface ChatWindowProps {
     guestId?: string;
     onStartCall: () => void;
     onStartVoiceCall: () => void;
-    onJoinCall?: (roomName: string) => void;
+    onJoinCall?: (roomName: string) => void; // 1. Added onJoinCall to props interface
     onBack: () => void;
 }
 
@@ -36,7 +36,14 @@ const fetcher = ([url, guestId]: [string, string | undefined]) =>
         headers: guestId ? { 'x-guest-id': guestId } : {}
     }).then((res) => res.json());
 
-export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoiceCall, onJoinCall, onBack }: ChatWindowProps) {
+export default function ChatWindow({ 
+    otherUser, 
+    guestId, 
+    onStartCall, 
+    onStartVoiceCall, 
+    onJoinCall, // 2. Added onJoinCall to destructured parameters
+    onBack 
+}: ChatWindowProps) {
     const { user } = useUser();
     const { t } = useTranslation();
     const [newMessage, setNewMessage] = useState('');
@@ -194,6 +201,11 @@ export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoi
                         );
                     }
 
+                    // 3. Extract the room name from msg.body (cast to any to satisfy TypeScript checks, falls back to content if needed)
+                    const roomName = isInvite 
+                        ? (((msg as any).body || msg.content) as string | undefined)?.split(':').pop()?.trim() 
+                        : null;
+
                     return (
                         <div key={msg._id?.toString()} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                             <div className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm ${isMe
@@ -203,8 +215,9 @@ export default function ChatWindow({ otherUser, guestId, onStartCall, onStartVoi
                                 {isInvite ? (
                                     <div className="flex flex-col gap-2">
                                         <p className="font-bold">📞 Видео дуудлага хийх хүсэлт</p>
+                                        {/* 4. Added onClick event handler to trigger onJoinCall */}
                                         <button 
-                                            onClick={() => onJoinCall?.(msg.roomName || '')}
+                                            onClick={() => roomName && onJoinCall?.(roomName)}
                                             className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-all active:scale-95"
                                         >
                                             Холбогдох

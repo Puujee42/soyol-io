@@ -1,204 +1,296 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import {
-    Loader2, BarChart3, Package, ShoppingCart, MessageCircle, Tag, Layers,
-    Video, Phone
-} from 'lucide-react';
-import UserList from '@/components/Chat/UserList';
-import ChatWindow from '@/components/Chat/ChatWindow';
-import { motion } from 'framer-motion';
-import VideoCall from '@/components/VideoCall';
+import { useState, useMemo } from 'react';
 import useSWR from 'swr';
+import { useUser } from '@/context/AuthContext';
+import { 
+    Loader2, MessageSquare, Video, Phone, ArrowLeft, 
+    Search, User, Clock, AlertCircle, MessageCircle 
+} from 'lucide-react';
+import Link from 'next/link';
+import SupportChatWindow from '@/components/Chat/SupportChatWindow';
+import VideoCall from '@/components/VideoCall';
+import toast from 'react-hot-toast';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-interface User {
+interface Conversation {
     _id: string;
-    name?: string;
-    email?: string;
-    image?: string;
     userId: string;
-    role?: string;
-    isOnline?: boolean;
+    userName?: string;
     lastMessage?: string;
-    unreadCount?: number;
+    lastMessageAt: string;
+    adminUnreadCount?: number;
+    userUnreadCount?: number;
+    createdAt: string;
 }
 
-export default function AdminMessagesPage() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [viewFilter, setViewFilter] = useState<'all' | 'clients' | 'admins'>('all');
+const fetcher = (url: string) => fetch(url).then((res) => {
+    if (!res.ok) throw new Error('Failed to fetch');
+    return res.json();
+});
 
-    // Call State
+export default function AdminMessagesPage() {
+    const { user, isLoaded } = useUser();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+
+    // Call state variables
     const [callRoom, setCallRoom] = useState('');
     const [isCallActive, setIsCallActive] = useState(false);
     const [isVoiceCall, setIsVoiceCall] = useState(false);
-    const [callDuration, setCallDuration] = useState(0);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Mobile View State: 'list' | 'chat' | 'call'
+    // Mobile View state: 'list' | 'chat' | 'call'
     const [mobileView, setMobileView] = useState<'list' | 'chat' | 'call'>('list');
 
-    const { data: userData, error: userError } = useSWR<User[]>('/api/users', fetcher, {
-        refreshInterval: 5000 // Poll every 5 seconds
-    });
+    // SWR fetcher to poll conversations list every 5 seconds
+    const { data: conversations, error, mutate } = useSWR<Conversation[]>(
+        '/api/messages/conversations',
+        fetcher,
+        { refreshInterval: 5000 }
+    );
 
-    useEffect(() => {
-        if (userData) {
-            setUsers(userData);
-            setLoading(false);
-        }
-    }, [userData]);
+    // Filtered and sorted conversations
+    const sortedConversations = useMemo(() => {
+        if (!conversations) return [];
+        
+        // Sort by lastMessageAt descending
+        const sorted = [...conversations].sort((a, b) => {
+            const timeA = new Date(a.lastMessageAt || a.createdAt).getTime();
+            const timeB = new Date(b.lastMessageAt || b.createdAt).getTime();
+            return timeB - timeA;
+        });
 
-    useEffect(() => {
-        // Just use the sorted users from the API, filtering by search happens in UserList
-        setFilteredUsers(users);
-    }, [users]);
+        if (!searchTerm.trim()) return sorted;
 
-    // Timer logic
-    useEffect(() => {
-        if (isCallActive) {
-            timerRef.current = setInterval(() => {
-                setCallDuration(prev => prev + 1);
-            }, 1000);
-        } else {
-            if (timerRef.current) clearInterval(timerRef.current);
-            setCallDuration(0);
-        }
-        return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
-        };
-    }, [isCallActive]);
+        return sorted.filter((c) => {
+            const name = c.userName?.toLowerCase() || 'guest';
+            const id = c._id.toLowerCase();
+            return name.includes(searchTerm.toLowerCase()) || id.includes(searchTerm.toLowerCase());
+        });
+    }, [conversations, searchTerm]);
 
-    const formatDuration = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    const handleSelectConversation = (conv: Conversation) => {
+        setSelectedConversation(conv);
+        setMobileView('chat');
     };
 
-    const startCall = async (isVoice: boolean = false) => {
-        if (!selectedUser) return;
+    const handleBackToList = () => {
+        setMobileView('list');
+    };
 
-        const room = `call-${Date.now()}`;
+    const postCallInvite = async (conversationId: string, room: string, isVoice: boolean) => {
+        const bodyText = isVoice
+            ? `📞 Дуут дуудлага эхэллээ: ${room}`
+            : `📹 Видео дуудлага эхэллээ: ${room}`;
+
+        const senderName = user?.name || 'Support Admin';
+
         try {
-            await fetch('/api/messages', {
+            await fetch(`/api/messages/conversations/${conversationId}/messages`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    receiverId: selectedUser.userId,
-                    content: isVoice 
-                        ? `📞 Дуут дуудлага эхэллээ: ${room}`
-                        : `📹 Видео дуудлага эхэллээ: ${room}`,
-                    type: 'call_invite',
-                    roomName: room
+                    body: bodyText,
+                    senderName
                 })
             });
+        } catch (e) {
+            console.error('Failed to post call invite message:', e);
+        }
+    };
+
+    const handleStartCall = async (isVoice: boolean = false) => {
+        if (!selectedConversation) return;
+
+        const room = `call-${selectedConversation._id}-${Date.now()}`;
+        try {
+            // Send call invite in the chat feed
+            await postCallInvite(selectedConversation._id, room, isVoice);
 
             setCallRoom(room);
             setIsVoiceCall(isVoice);
             setIsCallActive(true);
             setMobileView('call');
-        } catch (e) {
-            console.error(e);
+            toast.success(isVoice ? 'Дуут дуудлага эхэллээ' : 'Видео дуудлага эхэллээ');
+        } catch (err) {
+            console.error(err);
+            toast.error('Дуудлага үүсгэхэд алдаа гарлаа');
         }
     };
 
-    const handleStartCall = () => startCall(false);
-    const handleStartVoiceCall = () => startCall(true);
+    const handleJoinCall = (room: string) => {
+        setCallRoom(room);
+        setIsVoiceCall(false); // Default to video if joined from message
+        setIsCallActive(true);
+        setMobileView('call');
+    };
 
-    const onDisconnected = () => {
+    const handleCallDisconnected = () => {
         setIsCallActive(false);
         setCallRoom('');
         setMobileView('chat');
     };
 
-    const handleSelectUser = (user: User) => {
-        setSelectedUser(user);
-        setMobileView('chat');
+    // Helper format timestamp
+    const formatTimestamp = (dateStr: string) => {
+        try {
+            const date = new Date(dateStr);
+            const now = new Date();
+            if (date.toDateString() === now.toDateString()) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        } catch (e) {
+            return '';
+        }
     };
 
+    if (!isLoaded) {
+        return (
+            <div className="h-screen bg-slate-950 flex items-center justify-center">
+                <Loader2 className="animate-spin text-orange-500 w-8 h-8" />
+            </div>
+        );
+    }
+
     return (
-        <div className="flex-1 flex flex-col min-w-0 h-screen bg-slate-950 relative">
+        <div className="flex-1 flex flex-col min-w-0 h-screen bg-slate-950 relative text-slate-100">
             {/* Header (Desktop & Mobile when not in call) */}
             {!isCallActive && (
-                <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl shrink-0 z-20">
+                <header className="border-b border-white/5 bg-slate-900/60 backdrop-blur-xl shrink-0 z-20">
                     <div className="pl-16 pr-4 sm:pl-20 sm:pr-8 lg:px-8 py-5 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div>
-                                <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">Мессеж & Дуудлага</h1>
-                                <p className="text-xs text-slate-400 mt-1">Хэрэглэгчидтэй харилцах</p>
-                            </div>
+                        <div>
+                            <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                                <MessageSquare className="w-5 h-5 text-orange-500" />
+                                Тусламжийн чатууд
+                            </h1>
+                            <p className="text-xs text-slate-400 mt-1">Харилцагчдын шууд тусламж, дуудлагыг удирдах</p>
                         </div>
-
-                        {/* Call Status Indicator (Desktop Header) */}
-                        {isCallActive && (
-                            <div className="hidden md:flex items-center gap-4 bg-emerald-500/10 px-4 py-2 rounded-2xl border border-emerald-500/20">
-                                <div className="relative">
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping absolute inset-0" />
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full relative" />
-                                </div>
-                                <span className="text-xs font-black text-emerald-400 uppercase tracking-widest">Дуудлага идэвхтэй</span>
-                                <div className="w-px h-4 bg-emerald-500/20" />
-                                <span className="text-sm font-mono font-bold text-white">{formatDuration(callDuration)}</span>
-                            </div>
-                        )}
                     </div>
                 </header>
             )}
 
             <main className="flex-1 flex overflow-hidden relative">
-                {loading ? (
-                    <div className="w-full flex justify-center items-center"><Loader2 className="animate-spin text-amber-500 w-10 h-10" /></div>
+                {error ? (
+                    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-red-400">
+                        <AlertCircle className="w-10 h-10 mb-2" />
+                        <h3 className="font-bold">Алдаа гарлаа</h3>
+                        <p className="text-xs text-slate-500 max-w-xs mt-1">Чатны өгөгдлийг серверээс татаж чадсангүй.</p>
+                    </div>
+                ) : !conversations ? (
+                    <div className="flex-1 flex items-center justify-center">
+                        <Loader2 className="animate-spin text-orange-500 w-8 h-8" />
+                    </div>
                 ) : (
                     <>
-                        {/* User List Sidebar */}
+                        {/* Conversation Sidebar (hidden on mobile if in chat or call) */}
                         <div className={`
                             ${mobileView === 'list' ? 'flex' : 'hidden lg:flex'} 
-                            w-full lg:w-80 h-full flex-col border-r border-slate-800 bg-slate-900/40
+                            w-full lg:w-80 h-full flex-col border-r border-white/5 bg-slate-900/40 shrink-0
                         `}>
-                            <UserList
-                                users={filteredUsers}
-                                selectedUser={selectedUser}
-                                onSelectUser={handleSelectUser}
-                            />
+                            {/* Search bar */}
+                            <div className="p-4 border-b border-white/5">
+                                <div className="relative">
+                                    <Search className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
+                                    <input
+                                        type="text"
+                                        placeholder="Хэрэглэгч хайх..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full pl-9 pr-4 py-2.5 bg-slate-950/80 border border-white/5 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-orange-500/50"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Conversation List */}
+                            <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-none">
+                                {sortedConversations.length === 0 ? (
+                                    <div className="text-center py-10 text-slate-500 text-xs">
+                                        Харилцан яриа олдсонгүй
+                                    </div>
+                                ) : (
+                                    sortedConversations.map((conv) => {
+                                        const isSelected = selectedConversation?._id === conv._id;
+                                        const hasUnread = conv.adminUnreadCount && conv.adminUnreadCount > 0;
+                                        const displayName = conv.userName || `Зочин #${conv._id.slice(-4)}`;
+
+                                        return (
+                                            <button
+                                                key={conv._id}
+                                                onClick={() => handleSelectConversation(conv)}
+                                                className={`
+                                                    w-full text-left p-3.5 rounded-xl transition-all flex items-center justify-between gap-3 group relative
+                                                    ${isSelected 
+                                                        ? 'bg-gradient-to-r from-orange-500/10 to-amber-600/10 border border-orange-500/20 text-white' 
+                                                        : 'hover:bg-white/5 border border-transparent text-slate-300 hover:text-white'
+                                                    }
+                                                `}
+                                            >
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <div className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 group-hover:scale-105 transition-transform shrink-0 border border-white/5">
+                                                        <User className="w-4 h-4" />
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <h4 className="font-semibold text-xs truncate">
+                                                            {displayName}
+                                                        </h4>
+                                                        <p className="text-[10px] text-slate-500 truncate mt-0.5 max-w-[160px]">
+                                                            {conv.lastMessage || 'Зурвас байхгүй'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col items-end shrink-0 gap-1.5">
+                                                    <span className="text-[9px] text-slate-500 flex items-center gap-0.5">
+                                                        <Clock className="w-2.5 h-2.5" />
+                                                        {formatTimestamp(conv.lastMessageAt || conv.createdAt)}
+                                                    </span>
+                                                    {hasUnread && (
+                                                        <span className="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[16px] text-center shadow-md animate-pulse">
+                                                            {conv.adminUnreadCount}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </button>
+                                        );
+                                    })
+                                )}
+                            </div>
                         </div>
 
-                        {/* Chat / Call Content Area */}
+                        {/* Workspace Panel (Chat or Call container) */}
                         <div className={`
                             ${mobileView !== 'list' ? 'flex' : 'hidden lg:flex'} 
                             flex-1 h-full flex-col relative
                         `}>
                             {isCallActive ? (
-                                <VideoCall 
-                                    prefilledRoom={callRoom} 
-                                    onDisconnected={onDisconnected}
-                                    initialVideoDisabled={isVoiceCall}
-                                />
+                                <div className="flex-1 h-full p-4 bg-slate-950">
+                                    <VideoCall 
+                                        conversationId={selectedConversation?._id}
+                                        prefilledRoom={callRoom} 
+                                        onDisconnected={handleCallDisconnected}
+                                        initialVideoDisabled={isVoiceCall}
+                                        onBack={handleCallDisconnected}
+                                    />
+                                </div>
                             ) : (
-                                <div className="flex-1 h-full bg-slate-950/30 flex flex-col">
-                                    {selectedUser ? (
-                                        <ChatWindow
-                                            otherUser={selectedUser}
-                                            onStartCall={handleStartCall}
-                                            onStartVoiceCall={handleStartVoiceCall}
-                                            onJoinCall={(room) => {
-                                                setCallRoom(room);
-                                                setIsCallActive(true);
-                                                setMobileView('call');
-                                            }}
-                                            onBack={() => setMobileView('list')}
+                                <div className="flex-1 h-full flex flex-col p-4">
+                                    {selectedConversation ? (
+                                        <SupportChatWindow
+                                            conversationId={selectedConversation._id}
+                                            guestId={undefined}
+                                            onStartCall={() => handleStartCall(false)}
+                                            onStartVoiceCall={() => handleStartCall(true)}
+                                            onJoinCall={handleJoinCall}
+                                            onBack={handleBackToList}
                                         />
                                     ) : (
-                                        <div className="flex-1 flex flex-col items-center justify-center text-slate-500 p-8 text-center bg-[#0B1120]">
-                                            <div className="w-20 h-20 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
+                                        <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-center bg-[#0B1120] rounded-2xl border border-white/5 shadow-xl p-8">
+                                            <div className="w-20 h-20 rounded-full bg-slate-800/40 flex items-center justify-center mb-4 border border-white/5">
                                                 <MessageCircle className="w-8 h-8 text-slate-400" strokeWidth={1.5} />
                                             </div>
-                                            <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Чат сонгох</h3>
-                                            <p className="text-sm max-w-[260px] text-slate-400 font-medium leading-relaxed">
-                                                Зүүн талаас харилцагчаа сонгож чатлах эсвэл видео дуудлага хийнэ үү.
+                                            <h3 className="text-lg font-bold text-white mb-2 tracking-tight">Чат сонгоно уу</h3>
+                                            <p className="text-xs max-w-[260px] text-slate-400 leading-relaxed mx-auto">
+                                                Зүүн талын жагсаалтаас хэрэглэгчийн чатыг сонгож харилцааг эхлүүлнэ үү.
                                             </p>
                                         </div>
                                     )}

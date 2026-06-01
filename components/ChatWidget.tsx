@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowLeft, Video, Phone, MessageCircle, Loader2 } from 'lucide-react';
-import ChatWindow from '@/components/Chat/ChatWindow';
+import SupportChatWindow from '@/components/Chat/SupportChatWindow';
 import AIChatWindow from '@/components/Chat/AIChatWindow';
 import AdminSelector from '@/components/Chat/AdminSelector';
 import VideoCall from '@/components/VideoCall';
 import { useUser } from '@/context/AuthContext';
 import { useTranslation } from '@/hooks/useTranslation';
+import toast from 'react-hot-toast';
 
 interface ChatWidgetProps {
     isOpen: boolean;
@@ -43,15 +44,53 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
     const effectiveUser = user || { id: guestId, name: 'Зочин' };
 
     const [selectedAdmin, setSelectedAdmin] = useState<AdminUser | null>(null);
+    const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<'menu' | 'chat_selection' | 'video_selection' | 'chat' | 'video_call' | 'ai_chat'>('menu');
     const [connectingMode, setConnectingMode] = useState<'chat' | 'video_call' | null>(null);
     const [isVoiceCall, setIsVoiceCall] = useState(false);
     const [callRoom, setCallRoom] = useState<string | null>(null);
 
+    const getOrCreateConversation = async (): Promise<string> => {
+        const headers: any = { 'Content-Type': 'application/json' };
+        if (guestId) {
+            headers['x-guest-id'] = guestId;
+        }
+
+        // Fetch user's existing conversations
+        const listRes = await fetch('/api/messages/conversations', { headers });
+        if (listRes.ok) {
+            const list = await listRes.json();
+            if (Array.isArray(list) && list.length > 0) {
+                return list[0]._id;
+            }
+        }
+
+        // Create new support conversation if none exists
+        const createRes = await fetch('/api/messages/conversations', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+                message: 'Шууд тусламжийн чат эхэллээ.',
+                senderName: effectiveUser.name
+            })
+        });
+
+        if (createRes.ok) {
+            const data = await createRes.json();
+            return data.conversation._id;
+        }
+
+        throw new Error('Failed to establish support conversation');
+    };
+
     const connectToAdmin = async (mode: 'chat' | 'video_call') => {
         setConnectingMode(mode);
         try {
-            // Fetch admins just to check if anyone is online, optional but good for UI
+            // First get or create conversation ID
+            const convId = await getOrCreateConversation();
+            setActiveConversationId(convId);
+
+            // Fetch admins online status
             const res = await fetch('/api/users?role=admin');
             const data = await res.json();
             const anyOnline = Array.isArray(data) && data.some(a => a.isOnline);
@@ -69,33 +108,29 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                 const roomName = `call-${effectiveUser.id}-${Date.now()}`;
                 setCallRoom(roomName);
                 
-                // Send call invitation message
-                await fetch('/api/messages', {
+                // Append call invitation message to conversation
+                const headers: any = { 'Content-Type': 'application/json' };
+                if (guestId) {
+                    headers['x-guest-id'] = guestId;
+                }
+                
+                await fetch(`/api/messages/conversations/${convId}/messages`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...(guestId ? { 'x-guest-id': guestId } : {})
-                    },
+                    headers,
                     body: JSON.stringify({
-                        receiverId: 'support_admin',
-                        content: isVoiceCall ? '📞 Дуут дуудлага хийх хүсэлт' : '📹 Видео дуудлага хийх хүсэлт',
-                        type: 'call_invite',
-                        roomName: roomName
+                        body: isVoiceCall 
+                            ? `📞 Дуут дуудлага эхэллээ: ${roomName}` 
+                            : `📹 Видео дуудлага эхэллээ: ${roomName}`,
+                        senderName: effectiveUser.name
                     }),
                 });
             }
 
             setViewMode(mode);
         } catch (e) {
-            console.error("Failed to connect to support", e);
-            // Fallback even if fetch fails
-            setSelectedAdmin({
-                _id: 'support_admin',
-                userId: 'support_admin',
-                name: 'Тусламжийн баг',
-                isOnline: true
-            });
-            setViewMode(mode);
+            console.error("Failed to connect to support:", e);
+            toast.error('Холболт амжилтгүй. Дахин оролдоно уу.');
+            setViewMode('menu');
         } finally {
             setConnectingMode(null);
         }
@@ -103,8 +138,6 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
 
     const handleSelectAdmin = (admin: AdminUser) => {
         setSelectedAdmin(admin);
-        // If we were in video selection, we should probably start a video call here
-        // For now, let's just go to chat, but we need to implement the video logic
         if (viewMode === 'video_selection') {
             setViewMode('video_call');
         } else {
@@ -116,13 +149,11 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
         if (viewMode === 'chat' || viewMode === 'video_call' || viewMode === 'ai_chat') {
             setViewMode('menu');
             setSelectedAdmin(null);
+            setActiveConversationId(null);
         } else {
             setViewMode('menu');
         }
     };
-
-    // Reset view when closed/opened?
-    // useEffect(() => { if(!isOpen) setViewMode('menu'); }, [isOpen]);
 
     return (
         <AnimatePresence>
@@ -139,7 +170,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                         <div className="flex items-center gap-3">
                             {viewMode !== 'menu' && (
                                 <button onClick={handleBack} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
-                                    <ArrowLeft className="w-5 h-5 text-slate-300" strokeWidth={1.2} />
+                                    <ArrowLeft className="w-5 h-5 text-slate-300" strokeWidth={1.5} />
                                 </button>
                             )}
                             <h3 className="font-bold text-white text-lg">
@@ -151,7 +182,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                             </h3>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
-                            <X className="w-5 h-5 text-slate-400 hover:text-white" strokeWidth={1.2} />
+                            <X className="w-5 h-5 text-slate-400 hover:text-white" strokeWidth={1.5} />
                         </button>
                     </div>
 
@@ -185,7 +216,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                         {connectingMode === 'chat' ? (
                                             <Loader2 className="w-6 h-6 text-white animate-spin" strokeWidth={1.5} />
                                         ) : (
-                                            <MessageCircle className="w-6 h-6 text-blue-500 group-hover:text-white" strokeWidth={1.2} />
+                                            <MessageCircle className="w-6 h-6 text-blue-500 group-hover:text-white" strokeWidth={1.5} />
                                         )}
                                     </div>
                                     <div className="relative z-10">
@@ -203,7 +234,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                         {connectingMode === 'video_call' ? (
                                             <Loader2 className="w-6 h-6 text-white animate-spin" strokeWidth={1.5} />
                                         ) : (
-                                            <Video className="w-6 h-6 text-orange-500 group-hover:text-white" strokeWidth={1.2} />
+                                            <Video className="w-6 h-6 text-orange-500 group-hover:text-white" strokeWidth={1.5} />
                                         )}
                                     </div>
                                     <div className="relative z-10">
@@ -224,7 +255,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                         {connectingMode === 'video_call' && isVoiceCall ? (
                                             <Loader2 className="w-6 h-6 text-white animate-spin" strokeWidth={1.5} />
                                         ) : (
-                                            <Phone className="w-6 h-6 text-emerald-500 group-hover:text-white" strokeWidth={1.2} />
+                                            <Phone className="w-6 h-6 text-emerald-500 group-hover:text-white" strokeWidth={1.5} />
                                         )}
                                     </div>
                                     <div className="relative z-10">
@@ -233,25 +264,24 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                     </div>
                                 </button>
                             </div>
-                        ) : viewMode === 'chat' && selectedAdmin ? (
-                            <ChatWindow
-                                otherUser={selectedAdmin}
+                        ) : viewMode === 'chat' && activeConversationId ? (
+                            <SupportChatWindow
+                                conversationId={activeConversationId}
                                 guestId={guestId}
                                 onStartCall={async () => {
                                     setIsVoiceCall(false);
                                     const roomName = `call-${effectiveUser.id}-${Date.now()}`;
                                     setCallRoom(roomName);
-                                    await fetch('/api/messages', {
+                                    
+                                    const headers: any = { 'Content-Type': 'application/json' };
+                                    if (guestId) headers['x-guest-id'] = guestId;
+
+                                    await fetch(`/api/messages/conversations/${activeConversationId}/messages`, {
                                         method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            ...(guestId ? { 'x-guest-id': guestId } : {})
-                                        },
+                                        headers,
                                         body: JSON.stringify({
-                                            receiverId: selectedAdmin.userId,
-                                            content: '📹 Видео дуудлага хийх хүсэлт',
-                                            type: 'call_invite',
-                                            roomName: roomName
+                                            body: `📹 Видео дуудлага эхэллээ: ${roomName}`,
+                                            senderName: effectiveUser.name
                                         }),
                                     });
                                     setViewMode('video_call');
@@ -260,17 +290,16 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                                     setIsVoiceCall(true);
                                     const roomName = `call-${effectiveUser.id}-${Date.now()}`;
                                     setCallRoom(roomName);
-                                    await fetch('/api/messages', {
+
+                                    const headers: any = { 'Content-Type': 'application/json' };
+                                    if (guestId) headers['x-guest-id'] = guestId;
+
+                                    await fetch(`/api/messages/conversations/${activeConversationId}/messages`, {
                                         method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            ...(guestId ? { 'x-guest-id': guestId } : {})
-                                        },
+                                        headers,
                                         body: JSON.stringify({
-                                            receiverId: selectedAdmin.userId,
-                                            content: '📞 Дуут дуудлага хийх хүсэлт',
-                                            type: 'call_invite',
-                                            roomName: roomName
+                                            body: `📞 Дуут дуудлага эхэллээ: ${roomName}`,
+                                            senderName: effectiveUser.name
                                         }),
                                     });
                                     setViewMode('video_call');
@@ -287,6 +316,7 @@ export default function ChatWidget({ isOpen, onClose }: ChatWidgetProps) {
                             <div className="h-full overflow-y-auto">
                                 <VideoCall
                                     prefilledRoom={callRoom || `call-${effectiveUser.id}-${selectedAdmin._id}`}
+                                    conversationId={activeConversationId || undefined}
                                     onBack={handleBack}
                                     initialVideoDisabled={isVoiceCall}
                                 />
